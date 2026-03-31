@@ -2,6 +2,7 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -38,12 +39,22 @@
   --white: #ffffff;
   --black: #0d0d0d;
   --cream: #f5f0e8;
+  --bg-main: #ebf4f5;
   --accent-red: #d32f2f;
   --muted: #6b6560;
 
+  /* Neobrutalism tokens */
+  --brutal-border: 3px solid #0d0d0d;
+  --brutal-border-2: 2px solid #0d0d0d;
+  --brutal-shadow: 4px 4px 0px 0px #0d0d0d;
+  --brutal-shadow-lg: 6px 6px 0px 0px #0d0d0d;
+  --brutal-shadow-sm: 2px 2px 0px 0px #0d0d0d;
+  --brutal-radius: 0px;
+
   --font-serif: "Playfair Display", serif;
-  --font-sans: "DM Sans", sans-serif;
-  --font-display: "Bebas Neue", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-heading: "Space Grotesk", sans-serif;
   --font-serif-italic: "DM Serif Display", serif;
 
   --text-caption: 0.75rem;
@@ -188,4 +199,145 @@
   --color-cream: var(--cream);
   --color-ink: var(--black);
   --color-accent-red: var(--accent-red);
+  --color-bg-main: var(--bg-main);
+  --font-heading: var(--font-heading);
+}
+
+/* ── Neobrutalism Global Styles ───────────────── */
+body {
+  background-color: var(--bg-main);
+  font-family: var(--font-sans);
+}
+
+/* Neobrutalism utility classes */
+.brutal-card {
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow);
+  border-radius: 0;
+  background: white;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.brutal-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--brutal-shadow-lg);
+}
+
+.brutal-btn-primary {
+  background: #0d0d0d;
+  color: white;
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow);
+  border-radius: 0;
+  padding: 12px 24px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brutal-btn-primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--brutal-shadow-lg);
+}
+
+.brutal-btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.brutal-btn-secondary {
+  background: white;
+  color: #0d0d0d;
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow);
+  border-radius: 0;
+  padding: 12px 24px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brutal-btn-secondary:hover {
+  background: #0d0d0d;
+  color: white;
+  transform: translate(-2px, -2px);
+  box-shadow: var(--brutal-shadow-lg);
+}
+
+.brutal-btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.brutal-btn-red {
+  background: #d32f2f;
+  color: white;
+  border: var(--brutal-border);
+  box-shadow: var(--brutal-shadow);
+  border-radius: 0;
+  padding: 12px 24px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brutal-btn-red:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--brutal-shadow-lg);
+}
+
+.brutal-input {
+  border: var(--brutal-border);
+  border-radius: 0;
+  padding: 12px 16px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  background: white;
+  width: 100%;
+  transition: box-shadow 0.15s ease;
+  outline: none;
+}
+
+.brutal-input:focus {
+  box-shadow: var(--brutal-shadow);
+  background: #ebf4f5;
+}
+
+.brutal-tag {
+  border: 2px solid #0d0d0d;
+  border-radius: 0;
+  padding: 4px 12px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.brutal-tag:hover {
+  background: #0d0d0d;
+  color: white;
 }

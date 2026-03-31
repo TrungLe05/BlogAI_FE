@@ -1,90 +1,124 @@
-export default function Footer() {
-  const mapItems = [
-    {
-      title: "explore",
-      content: [
-        "AI Ethics",
-        "Machine Learning",
-        "Neural Networks",
-        "Robotics",
-        "Research",
-        "Future Tech",
-      ],
-    },
-    {
-      title: "resources",
-      content: [
-        "Archive",
-        "Authors",
-        "About Us",
-        "Advertise",
-        "Careers",
-        "Contact",
-      ],
-    },
-    {
-      title: "connect",
-      content: [
-        "Twitter",
-        "LinkedIn",
-        "GitHub",
-        "Discord",
-        "RSS Feed",
-        "Newsletter",
-      ],
-    },
-  ];
+import { Link } from "react-router-dom";
+import { Github, Twitter, Instagram, Linkedin } from "lucide-react";
 
+const footerLinks = [
+  { label: "About", href: "/about" },
+  { label: "Explore", href: "/explore" },
+  { label: "Contact", href: "/contact" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+];
+
+const socialLinks = [
+  { icon: <Twitter size={18} />, href: "https://twitter.com", label: "Twitter" },
+  { icon: <Github size={18} />, href: "https://github.com", label: "GitHub" },
+  { icon: <Instagram size={18} />, href: "https://instagram.com", label: "Instagram" },
+  { icon: <Linkedin size={18} />, href: "https://linkedin.com", label: "LinkedIn" },
+];
+
+function Footer() {
   return (
-    <>
-      <div className="bg-black">
-        <div className="max-w-340 mx-auto px-6 py-16">
-          // top
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            <div className=" my-auto">
-              <h3 className=" text-cream font-display tracking-widest font-bold text-4xl mb-4 leading-6 ">
-                NEURAL
-              </h3>
-              <p className="italic text-muted font-serif-italic text-[16px] tracking-wider">
-                Exploring the intersection of artificial intelligence, machine
-                learning, and the future of human-computer interaction.
-              </p>
-            </div>
-
-            {mapItems.map((item, index) => (
-              <div className="" key={index}>
-                <h4 className="mb-4 uppercase text-cream text-sm tracking-wider font-semibold font-display">
-                  {item.title}
-                </h4>
-                <ul className="space-y-2">
-                  {item.content.map((value) => (
-                    <li>
-                      <a className="hover:underline font-sans text-muted text-sm">
-                        {value}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+    <footer
+      style={{
+        background: "#0d0d0d",
+        borderTop: "3px solid #0d0d0d",
+        fontFamily: "var(--font-sans)",
+      }}
+    >
+      <div className="max-w-[1360px] mx-auto px-6 py-12">
+        <div className="grid md:grid-cols-3 gap-10 items-start mb-10">
+          {/* Brand */}
+          <div>
+            <Link to="/">
+              <span
+                className="text-2xl font-black mb-3 block"
+                style={{ fontFamily: "var(--font-display)", color: "white" }}
+              >
+                Blog<span style={{ color: "#d32f2f" }}>AI</span>
+              </span>
+            </Link>
+            <p className="text-white/60 text-sm leading-relaxed max-w-xs">
+              The platform for writers who believe ideas deserve to be read.
+              Join 10,000+ creators shaping the internet's story.
+            </p>
           </div>
-          <div className="border-t-2 pt-8 border-cream/20">
-            <div className="flex justify-between items-center md:flex-row gap-4">
-              <p className="font-sans text-xs uppercase text-muted tracking-wider">
-                © 2026 Neural Magazine. All rights reserved.
-              </p>
-              <div className="flex tracking-widest gap-6 font-sans text-xs text-muted items-center">
-                <a href="/" className=" uppercase hover:underline my-2">
-                  privacy policy
+
+          {/* Navigation */}
+          <div>
+            <h4
+              className="font-black text-xs uppercase tracking-widest mb-4 text-white/40"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Navigation
+            </h4>
+            <ul className="space-y-2">
+              {footerLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    to={link.href}
+                    className="text-sm text-white/70 hover:text-white transition-colors font-medium"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    → {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Social + CTA */}
+          <div>
+            <h4
+              className="font-black text-xs uppercase tracking-widest mb-4 text-white/40"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Follow Us
+            </h4>
+            <div className="flex gap-3 mb-6">
+              {socialLinks.map((s) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="w-10 h-10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors"
+                  style={{ border: "2px solid rgba(255,255,255,0.3)" }}
+                >
+                  {s.icon}
                 </a>
-                <a href="/" className="uppercase hover:underline ">
-                  term of service
-                </a>
-              </div>
+              ))}
             </div>
+            <Link to="/dashboard">
+              <button
+                className="brutal-btn-red text-xs"
+                style={{ padding: "10px 20px" }}
+              >
+                Start Writing Today →
+              </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div
+          className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8"
+          style={{ borderTop: "2px solid rgba(255,255,255,0.1)" }}
+        >
+          <p className="text-xs text-white/40">
+            © 2025 BlogAI. Made with ❤️ for writers everywhere.
+          </p>
+          <div className="flex items-center gap-2">
+            <div
+              className="w-2 h-2"
+              style={{ background: "#22c55e", boxShadow: "0 0 6px #22c55e" }}
+            />
+            <span className="text-xs text-white/40">All systems operational</span>
           </div>
         </div>
       </div>
-    </>
+    </footer>
   );
 }
+
+export default Footer;

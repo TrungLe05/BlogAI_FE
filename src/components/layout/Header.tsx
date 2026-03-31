@@ -1,125 +1,121 @@
-import { Menu, Search, X } from "lucide-react";
+import { Menu, Search, X, PenLine } from "lucide-react";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
   const [isSearchOpen, setSearchOpen] = useState(false);
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false); // ✅ false = ẩn mặc định
+  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const items = [
-    "BREAKING: New neural architecture achieves 99% accuracy in medical imaging",
-    "LATEST RESEARCH: Quantum computing breakthrough accelerates AI training by 1000x",
-    "TRENDING: OpenAI releases groundbreaking multimodal model",
-  ];
-
-  const listItems = [
-    "ai ethics",
-    "machine learning",
-    "neural networks",
-    "robotics",
-    "future tech",
-    "research",
+  const navItems = [
+    { label: "Explore", href: "/explore" },
+    { label: "Features", href: "/#features" },
+    { label: "Write", href: "/dashboard" },
   ];
 
   return (
-    <>
-      <div className="z-50 top-0">
-        {/* Ticker */}
-        <div className="bg-ink text-cream overflow-hidden h-8">
-          <div className="animate-marquee inline-flex items-center h-full gap-16">
-            {[...items, ...items].map((item, i) => (
-              <span
-                key={i}
-                className="whitespace-nowrap font-sans text-xs tracking-widest shrink-0"
-              >
-                ◈ &nbsp; {item}
-              </span>
-            ))}
-          </div>
-        </div>
+    <header className="sticky top-0 z-50 bg-[#ebf4f5]" style={{ borderBottom: "3px solid #0d0d0d" }}>
+      <div className="max-w-340 mx-auto px-6 h-16 flex items-center justify-between gap-6">
+        {/* Logo */}
+        <Link to="/" className="shrink-0">
+          <span
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: "clamp(22px, 3vw, 28px)",
+              fontWeight: 700,
+              color: "#0d0d0d",
+              letterSpacing: "0.05em",
+            }}
+          >
+            Blog<span style={{ color: "#d32f2f" }}>AI</span>
+          </span>
+        </Link>
 
-        {/* Masthead */}
-        <div className="p-6 bg-cream border-b-2 border-ink">
-          <div className="max-w-340 mx-auto">
-            {/* Mobile: hamburger button — chỉ hiện khi < lg */}
-            <div className="lg:hidden flex justify-between items-center mb-6">
-              <button
-                className="p-2"
-                aria-label="toggle menu"
-                onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-              >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                {/* ✅ Mở → show X | Đóng → show Menu */}
-              </button>
-            </div>
-
-            {/* Brand */}
-            <div className="text-center mb-6">
-              <a href="/">
-                <h1
-                  className="tracking-[0.18em] hover:opacity-80 transition-opacity leading-none"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "clamp(48px, 10vw, 70px)",
-                    fontWeight: 700,
-                  }}
-                >
-                  NEURAL
-                </h1>
-              </a>
-              <p className="mt-2 italic font-serif-italic text-[16px] text-muted">
-                Artificial Intelligence & Machine Learning Quarterly
-              </p>
-            </div>
-
-            {/* Search + Subscribe — chỉ hiện desktop */}
-            <div className="hidden lg:flex justify-end items-center gap-4">
-              {isSearchOpen && (
-                <input className="flex-5 border border-black px-3 py-2 rounded-2xl h-10" />
-              )}
-              <div className="flex-1 flex justify-end gap-4">
-                <button
-                  className="hover:bg-black hover:text-white p-2 cursor-pointer"
-                  onClick={() => setSearchOpen(!isSearchOpen)}
-                >
-                  <Search size={20} />
-                </button>
-                <button className="cursor-pointer tracking-tight leading-1 font-display px-6 py-4 text-sm text-cream bg-black border-black border-2 hover:bg-cream hover:text-black transition-colors">
-                  SUBSCRIBE
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Nav menu */}
-        <div className="bg-cream border-b-2 border-black">
-          <div className="max-w-340 mx-auto px-6">
-            {/*
-              ✅ Desktop (lg+): luôn hiển thị  → "lg:flex"
-              ✅ Mobile: chỉ hiện khi isMobileMenuOpen = true → "flex" hoặc "hidden"
-            */}
-            <ul
-              className={`
-                flex-col lg:flex-row lg:items-center gap-0 p-0
-                lg:flex justify-center
-                ${isMobileMenuOpen ? "flex" : "hidden"}
-              `}
+        {/* Desktop Nav */}
+        <nav className="hidden lg:flex items-center gap-0">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              to={item.href}
+              className="px-5 py-4 font-bold text-sm uppercase tracking-wider hover:bg-[#0d0d0d] hover:text-white transition-colors"
+              style={{ fontFamily: "var(--font-display)" }}
             >
-              {listItems.map((item, i) => (
-                <li
-                  key={i}
-                  className="cursor-pointer uppercase py-4 px-6 leading-1 tracking-tight font-display hover:bg-black hover:text-cream transition-colors"
-                >
-                  <a className="text-sm leading-1 tracking-tighter font-bold">
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* Desktop Right */}
+        <div className="hidden lg:flex items-center gap-3">
+          {isSearchOpen && (
+            <input
+              className="brutal-input w-52 text-sm"
+              placeholder="Search blogs..."
+              autoFocus
+              onBlur={() => setSearchOpen(false)}
+            />
+          )}
+          <button
+            className="p-2 hover:bg-[#0d0d0d] hover:text-white transition-colors"
+            onClick={() => setSearchOpen(!isSearchOpen)}
+          >
+            <Search size={18} />
+          </button>
+          <button
+            className="brutal-btn-red text-sm"
+            style={{ padding: "10px 20px" }}
+            onClick={() => navigate("/dashboard")}
+          >
+            <PenLine size={16} />
+            Start Writing
+          </button>
+        </div>
+
+        {/* Mobile Menu Toggle */}
+        <button
+          className="lg:hidden p-2"
+          onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
+          aria-label="toggle menu"
+        >
+          {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden bg-white"
+          style={{ borderTop: "2px solid #0d0d0d" }}
+        >
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              to={item.href}
+              className="block px-6 py-4 font-bold text-sm uppercase tracking-wider hover:bg-[#0d0d0d] hover:text-white transition-colors"
+              style={{
+                fontFamily: "var(--font-display)",
+                borderBottom: "1px solid #0d0d0d",
+              }}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <div className="p-4">
+            <button
+              className="brutal-btn-red w-full justify-center"
+              onClick={() => {
+                navigate("/dashboard");
+                setMobileMenuOpen(false);
+              }}
+            >
+              <PenLine size={16} />
+              Start Writing
+            </button>
           </div>
         </div>
-      </div>
-    </>
+      )}
+    </header>
   );
 }
 

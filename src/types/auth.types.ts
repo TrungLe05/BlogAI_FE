@@ -4,16 +4,39 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  name: string
+  fullName: string
   email: string
-  password: string
+  passwordHash: string
+}
+
+export interface updateUserRequest{
+  fullName?: string
+  avatarUrl?: File
 }
 
 export interface AuthResponse {
-  accessToken: string
+  accessToken: string,
   user: {
     id: string
     email: string
     name: string
   }
+}
+
+export interface LoginResponse{
+  token: string,
+  refreshToken: string
+}
+
+export interface User {
+  id: string
+  email: string
+  fullName: string
+  avatarUrl: string
+}
+
+export interface ApiResponse<T> {
+  code: number
+  result: T
+  message?: string
 }
