@@ -2,7 +2,7 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -28,10 +28,10 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-      .duration-500 {
-        --tw-duration: .5s;
-        transition-duration: .5s
-    }
+  .duration-500 {
+    --tw-duration: 0.5s;
+    transition-duration: 0.5s;
+  }
 }
 
 /* ── Design tokens ───────────────────────────── */
@@ -215,7 +215,9 @@ body {
   box-shadow: var(--brutal-shadow);
   border-radius: 0;
   background: white;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .brutal-card:hover {
@@ -236,7 +238,9 @@ body {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -265,7 +269,9 @@ body {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -296,7 +302,9 @@ body {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -334,10 +342,183 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .brutal-tag:hover {
   background: #0d0d0d;
   color: white;
+}
+
+/* TipTap editor styles */
+.tiptap {
+  outline: none;
+  min-height: 420px;
+}
+
+.tiptap p {
+  margin-bottom: 0.75rem;
+}
+.tiptap h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 1.2rem 0 0.5rem;
+}
+.tiptap h2 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin: 1rem 0 0.4rem;
+}
+.tiptap h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0.8rem 0 0.3rem;
+}
+.tiptap ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.tiptap ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.tiptap blockquote {
+  border-left: 4px solid #d32f2f;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #666;
+  font-style: italic;
+}
+.tiptap hr {
+  border: none;
+  border-top: 3px solid #0d0d0d;
+  margin: 1.5rem 0;
+}
+.tiptap a {
+  color: #d32f2f;
+  text-decoration: underline;
+}
+
+/* Ảnh inline — resizable feel */
+.tiptap img {
+  max-width: 100%;
+  height: auto;
+  border: 3px solid #0d0d0d;
+  margin: 1rem 0;
+  display: block;
+}
+.tiptap img.ProseMirror-selectednode {
+  outline: 3px solid #d32f2f;
+}
+
+/* Placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* Preview prose styles — dùng class riêng để không ảnh hưởng chỗ khác */
+.prose-content {
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+.prose-content p {
+  margin-bottom: 0.9rem;
+}
+.prose-content h1 {
+  font-size: 2rem;
+  font-weight: 900;
+  margin: 1.4rem 0 0.5rem;
+  color: #0d0d0d;
+}
+.prose-content h2 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  margin: 1.2rem 0 0.4rem;
+  color: #0d0d0d;
+}
+.prose-content h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 1rem 0 0.3rem;
+  color: #0d0d0d;
+}
+.prose-content ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 0.9rem;
+}
+.prose-content ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 0.9rem;
+}
+.prose-content li {
+  margin-bottom: 0.3rem;
+}
+.prose-content blockquote {
+  border-left: 4px solid #d32f2f;
+  padding: 0.5rem 0 0.5rem 1rem;
+  margin: 1.2rem 0;
+  color: #666;
+  font-style: italic;
+  background: #fafafa;
+}
+.prose-content hr {
+  border: none;
+  border-top: 3px solid #0d0d0d;
+  margin: 1.8rem 0;
+}
+.prose-content a {
+  color: #d32f2f;
+  text-decoration: underline;
+}
+.prose-content a:hover {
+  opacity: 0.8;
+}
+.prose-content img {
+  max-width: 100%;
+  height: auto;
+  border: 3px solid #0d0d0d;
+  margin: 1.2rem 0;
+  display: block;
+}
+.prose-content strong {
+  font-weight: 700;
+}
+.prose-content em {
+  font-style: italic;
+}
+.prose-content u {
+  text-decoration: underline;
+}
+.prose-content code {
+  background: #f0f0f0;
+  padding: 2px 6px;
+  font-family: monospace;
+  font-size: 0.9em;
+  border: 1px solid #ddd;
+}
+.prose-content pre {
+  background: #0d0d0d;
+  color: #f0f0f0;
+  padding: 1rem;
+  overflow-x: auto;
+  margin-bottom: 0.9rem;
+  border-left: 4px solid #d32f2f;
+}
+.prose-content pre code {
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
 }

@@ -26,7 +26,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<LandingPage />} />
             <Route path="/explore" element={<ExplorePage />} />
-            <Route path="/blog/:id" element={<BlogDetailPage />} />
+            <Route path="/blog/:blogId" element={<BlogDetailPage />} />
           </Route>
 
           <Route element={<ProtectedRoute />}>

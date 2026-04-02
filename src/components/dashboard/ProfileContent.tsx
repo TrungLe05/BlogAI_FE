@@ -1,11 +1,11 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Camera,
   Edit3,
   Share2,
   Heart,
   Lock,
-  Bell, 
+  Bell,
   Check,
   ExternalLink,
   Eye,
@@ -16,6 +16,8 @@ import { authApi } from "@/api/authApi";
 import useAuthStore from "@/stores/authStore";
 import Cookies from "js-cookie";
 import { userApi } from "@/api/userApi";
+import blogApi from "@/api/blogApi";
+import { BlogResponse } from "@/types/blog.types";
 
 const USER = {
   name: "Sarah Chen",
@@ -31,74 +33,6 @@ const USER = {
   posts: 47,
   joinedDate: "February 2023",
 };
-
-const MY_POSTS = [
-  {
-    id: 1,
-    category: "Tech",
-    title: "The Art of Storytelling in the Age of AI",
-    excerpt:
-      "What makes human-crafted stories irreplaceable even as artificial intelligence becomes an increasingly capable writing tool...",
-    imageUrl:
-      "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=300&h=200&fit=crop",
-    date: "Mar 20, 2025",
-    readTime: 8,
-    views: 12400,
-    likes: 892,
-    comments: 34,
-    status: "published",
-  },
-  {
-    id: 2,
-    category: "Machine Learning",
-    title: "How I Built a Custom AI Writing Assistant in a Weekend",
-    excerpt:
-      "A step-by-step breakdown of using the Gemini API to build a writing tool that understands your personal style...",
-    imageUrl:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&h=200&fit=crop",
-    date: "Mar 12, 2025",
-    readTime: 12,
-    views: 9800,
-    likes: 734,
-    comments: 51,
-    status: "published",
-  },
-  {
-    id: 3,
-    category: "Personal",
-    title: "Year Two of Full-Time Writing: What Nobody Tells You",
-    excerpt:
-      "After 24 months writing online, here's the unfiltered truth about the creative life...",
-    imageUrl:
-      "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=300&h=200&fit=crop",
-    date: "Feb 28, 2025",
-    readTime: 9,
-    views: 7200,
-    likes: 541,
-    comments: 28,
-    status: "published",
-  },
-];
-
-const DRAFTS = [
-  {
-    id: 4,
-    title: "The Psychology of Productivity (Work in Progress)",
-    excerpt: "Exploring why some productivity systems fail...",
-    lastEdited: "2 days ago",
-    wordCount: 1240,
-  },
-];
-
-const CATEGORIES_LIST = [
-  "Tech",
-  "Lifestyle",
-  "Business",
-  "Personal",
-  "Design",
-  "Travel",
-  "Science",
-];
 
 function StatBox({ value, label }: { value: string; label: string }) {
   return (
@@ -168,41 +102,74 @@ function BrutalToggle({
     </div>
   );
 }
+interface ProfileContentProps {
+  onEditBlog: (blogId: string) => void;
+}
+export function ProfileContent({ onEditBlog }: ProfileContentProps) {
+  const [activeTab, setActiveTab] = useState<"published" | "drafts">(
+    "published",
+  );
 
-export function ProfileContent() {
-  const [activeTab, setActiveTab] = useState<
-    "published" | "drafts" | "scheduled"
-  >("published");
   const { user } = useAuthStore();
-  console.log("user: ", user);
-  // Đặt type rõ ràng cho form để tránh nhầm field
+
   const [form, setForm] = useState<{
     fullName: string;
-    email: string; // Chỉ dùng để hiển thị, không gửi lên
+    email: string;
     avatarUrl: string;
   }>({
     fullName: user?.fullName ?? "",
     email: user?.email ?? "",
     avatarUrl: user?.avatarUrl ?? "",
   });
+
   const [saved, setSaved] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(user?.avatarUrl);
   const fileRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
   const setAuth = useAuthStore((state) => state.setAuth);
+  const [myPublishBlog, setMyPublishBlog] = useState<BlogResponse[]>([]);
+  const [myDraftBlog, setMyDraftBlog] = useState<BlogResponse[]>([]);
+
+  const getBlogsPublish = async () => {
+    try {
+      const { data } = await blogApi.getAllBlogPublishByAuthor();
+      console.log("blog published: ", data.result);
+      setMyPublishBlog(data.result);
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+
+  const getBlogsDraft = async () => {
+    try {
+      const { data } = await blogApi.getAllBlogDraftByAuthor();
+      console.log("blogs draft: ", data.result);
+      setMyDraftBlog(data.result);
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  };
+
+  useEffect(() => {
+    getBlogsDraft();
+    getBlogsPublish();
+  }, []);
+
+  const filterPublishBlog = myPublishBlog.filter((blog) => blog != null);
+  const filterDraftBlog = myDraftBlog.filter((blog) => blog != null);
 
   const handleSave = async () => {
-  try {
-    const { data } = await userApi.updateMe({ fullName: form.fullName });
-    setUser(data.result);
-    setSaved(true);
-  } catch (err) {
-    // handle error
-  } finally {
-    setTimeout(() => setSaved(false), 2500);
-  }
-};
+    try {
+      const { data } = await userApi.updateMe({ fullName: form.fullName });
+      setUser(data.result);
+      setSaved(true);
+    } catch (err) {
+      // handle error
+    } finally {
+      setTimeout(() => setSaved(false), 2500);
+    }
+  };
 
   const handleLogout = () => {
     authApi.logout().catch((e) => console.log(e));
@@ -213,20 +180,21 @@ export function ProfileContent() {
   };
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  setAvatarPreview(URL.createObjectURL(file)); // preview tạm ngay lập tức
+    setAvatarPreview(URL.createObjectURL(file)); // preview tạm ngay lập tức
 
-  try {
-    const { data } = await userApi.updateMe({ avatarUrl: file });
-    setUser(data.result); // cập nhật store với avatarUrl thật từ server
-  } catch (err) {
-    setAvatarPreview(user?.avatarUrl); // rollback nếu lỗi
-  }
-};
+    try {
+      const { data } = await userApi.updateMe({ avatarUrl: file });
+      setUser(data.result); // cập nhật store với avatarUrl thật từ server
+    } catch (err) {
+      setAvatarPreview(user?.avatarUrl); // rollback nếu lỗi
+    }
+  };
   const fmtNum = (n: number) =>
     n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
+
 
   return (
     <div className="overflow-auto h-full" style={{ background: "#ebf4f5" }}>
@@ -244,8 +212,11 @@ export function ProfileContent() {
             {/* Avatar */}
             <div className="relative shrink-0">
               <img
-                src={avatarPreview || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"}
-                alt={USER.name}
+                src={
+                  avatarPreview ||
+                  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"
+                }
+                alt={user?.fullName}
                 className="w-24 h-24 object-cover"
                 style={{
                   border: "4px solid white",
@@ -285,29 +256,7 @@ export function ProfileContent() {
               <p className="text-white/70 text-sm leading-relaxed max-w-lg mb-3">
                 {/* {form.bio} */}
               </p>
-              {/* <div className="flex flex-wrap items-center gap-3 text-white/50 text-xs mb-3">
-                {form.location && (
-                  <span className="flex items-center gap-1">
-                    <MapPin size={11} />
-                    {form.location}
-                  </span>
-                )}
-                {form.website && (
-                  <a
-                    href={`https://${form.website}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 hover:text-[#d32f2f] transition-colors"
-                  >
-                    <Globe size={11} />
-                    {form.website}
-                  </a>
-                )}
-                <span className="flex items-center gap-1">
-                  <BookOpen size={11} />
-                  Joined {USER.joinedDate}
-                </span>
-              </div> */}
+
               <div className="flex flex-wrap gap-2">
                 <StatBox value={fmtNum(USER.followers)} label="Followers" />
                 <StatBox value={String(USER.following)} label="Following" />
@@ -351,7 +300,7 @@ export function ProfileContent() {
                 boxShadow: "4px 4px 0 #0d0d0d",
               }}
             >
-              {(["published", "drafts", "scheduled"] as const).map((t) => (
+              {(["published", "drafts"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setActiveTab(t)}
@@ -360,8 +309,6 @@ export function ProfileContent() {
                     fontFamily: "var(--font-display)",
                     background: activeTab === t ? "#0d0d0d" : "transparent",
                     color: activeTab === t ? "white" : "#555",
-                    borderRight:
-                      t !== "scheduled" ? "2px solid #0d0d0d" : "none",
                   }}
                 >
                   {t}
@@ -370,7 +317,7 @@ export function ProfileContent() {
                       className="ml-1.5 text-xs px-1.5 font-black"
                       style={{ background: "#d32f2f", color: "white" }}
                     >
-                      {DRAFTS.length}
+                      {filterDraftBlog.length}
                     </span>
                   )}
                 </button>
@@ -379,9 +326,123 @@ export function ProfileContent() {
 
             {activeTab === "published" && (
               <div className="space-y-3">
-                {MY_POSTS.map((post) => (
+                {filterPublishBlog.map((post) => (
                   <article
-                    key={post.id}
+                    key={post.blogId}
+                    className="bg-white flex gap-3 group transition-all"
+                    style={{
+                      border: "3px solid #0d0d0d",
+                      boxShadow: "4px 4px 0 #0d0d0d",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translate(-2px,-2px)";
+                      e.currentTarget.style.boxShadow = "6px 6px 0 #0d0d0d";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translate(0,0)";
+                      e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
+                    }}
+                    onClick={() => navigate(`/blog/${post.blogId}`)}
+                  >
+                    <div
+                      className="shrink-0 overflow-hidden"
+                      style={{ width: "120px" }}
+                    >
+                      <img
+                        src={post.coverImageUrl}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                        style={{ display: "block" }}
+                      />
+                    </div>
+                    <div className="flex-1 p-3 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <div className="flex gap-1 flex-wrap">
+                            {post.tags.map((tag, index) => (
+                              <span
+                                key={index}
+                                className="text-xs font-black uppercase tracking-widest px-2 py-0.5 text-white"
+                                style={{
+                                  background: "#d32f2f",
+                                  fontFamily: "var(--font-display)",
+                                }}
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex gap-1.5">
+                            <Link
+                              to={`/blog/${post.blogId}`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <button
+                                title="View"
+                                className="p-1.5 hover:bg-[#ebf4f5]"
+                                style={{ border: "2px solid #0d0d0d" }}
+                              >
+                                <ExternalLink size={11} />
+                              </button>
+                            </Link>
+                            
+                          </div>
+                        </div>
+                        <h3
+                          className="font-black text-sm leading-tight mb-1"
+                          style={{ fontFamily: "var(--font-display)" }}
+                        >
+                          {post.title}
+                        </h3>
+                        <p
+                          className="text-xs leading-relaxed"
+                          style={{ color: "#666" }}
+                        >
+                          {/* {post.excerpt} */}
+                        </p>
+                      </div>
+                      <div
+                        className="flex flex-wrap items-center gap-3 pt-2 mt-1"
+                        style={{ borderTop: "1px solid #f0f0f0" }}
+                      >
+                        <span className="text-xs" style={{ color: "#999" }}>
+                          {post.createdAt} ·{/* {post.readTime}m */}
+                        </span>
+                        <div className="flex items-center gap-2 ml-auto">
+                          <span
+                            className="flex items-center gap-1 text-xs font-bold"
+                            style={{ color: "#555" }}
+                          >
+                            <Eye size={11} />
+                            {fmtNum(post.viewCount)}
+                          </span>
+                          <span
+                            className="flex items-center gap-1 text-xs font-bold"
+                            style={{ color: "#d32f2f" }}
+                          >
+                            <Heart size={11} />
+                            {/* {fmtNum(post.likes)} */}
+                          </span>
+                          <span
+                            className="text-xs font-bold"
+                            style={{ color: "#555" }}
+                          >
+                            {/* 💬 {post.comments} */}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+                {/*    */}
+              </div>
+            )}
+
+            {activeTab === "drafts" && (
+              <div className="space-y-3">
+                {filterDraftBlog.map((draft) => (
+                  <article
+                    key={draft.blogId}
                     className="bg-white flex gap-3 group transition-all"
                     style={{
                       border: "3px solid #0d0d0d",
@@ -401,8 +462,8 @@ export function ProfileContent() {
                       style={{ width: "120px" }}
                     >
                       <img
-                        src={post.imageUrl}
-                        alt={post.title}
+                        src={draft.coverImageUrl}
+                        alt={draft.title}
                         className="w-full h-full object-cover"
                         style={{ display: "block" }}
                       />
@@ -410,29 +471,30 @@ export function ProfileContent() {
                     <div className="flex-1 p-3 flex flex-col justify-between">
                       <div>
                         <div className="flex items-center justify-between mb-1.5">
-                          <span
-                            className="text-xs font-black uppercase tracking-widest px-2 py-0.5 text-white"
-                            style={{
-                              background: "#d32f2f",
-                              fontFamily: "var(--font-display)",
-                            }}
-                          >
-                            {post.category}
-                          </span>
-                          <div className="flex gap-1.5">
-                            <Link to={`/blog/${post.id}`}>
-                              <button
-                                title="View"
-                                className="p-1.5 hover:bg-[#ebf4f5]"
-                                style={{ border: "2px solid #0d0d0d" }}
+                          <div className="flex gap-1 flex-wrap">
+                            {draft.tags.map((tag, index) => (
+                              <span
+                                key={index}
+                                className="text-xs font-black uppercase tracking-widest px-2 py-0.5 text-white"
+                                style={{
+                                  background: "#d32f2f",
+                                  fontFamily: "var(--font-display)",
+                                }}
                               >
-                                <ExternalLink size={11} />
-                              </button>
-                            </Link>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                          <div className="flex gap-1.5">
+                            
                             <button
                               title="Edit"
                               className="p-1.5 hover:bg-[#ebf4f5]"
                               style={{ border: "2px solid #0d0d0d" }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEditBlog(draft.blogId); // hoặc draft.blogId
+                              }}
                             >
                               <Edit3 size={11} />
                             </button>
@@ -442,13 +504,13 @@ export function ProfileContent() {
                           className="font-black text-sm leading-tight mb-1"
                           style={{ fontFamily: "var(--font-display)" }}
                         >
-                          {post.title}
+                          {draft.title}
                         </h3>
                         <p
                           className="text-xs leading-relaxed"
                           style={{ color: "#666" }}
                         >
-                          {post.excerpt}
+                          {/* {post.excerpt} */}
                         </p>
                       </div>
                       <div
@@ -456,7 +518,7 @@ export function ProfileContent() {
                         style={{ borderTop: "1px solid #f0f0f0" }}
                       >
                         <span className="text-xs" style={{ color: "#999" }}>
-                          {post.date} · {post.readTime}m
+                          {draft.createdAt} ·{/* {post.readTime}m */}
                         </span>
                         <div className="flex items-center gap-2 ml-auto">
                           <span
@@ -464,97 +526,26 @@ export function ProfileContent() {
                             style={{ color: "#555" }}
                           >
                             <Eye size={11} />
-                            {fmtNum(post.views)}
+                            {fmtNum(draft.viewCount)}
                           </span>
                           <span
                             className="flex items-center gap-1 text-xs font-bold"
                             style={{ color: "#d32f2f" }}
                           >
                             <Heart size={11} />
-                            {fmtNum(post.likes)}
+                            {/* {fmtNum(post.likes)} */}
                           </span>
                           <span
                             className="text-xs font-bold"
                             style={{ color: "#555" }}
                           >
-                            💬 {post.comments}
+                            {/* 💬 {post.comments} */}
                           </span>
                         </div>
                       </div>
                     </div>
                   </article>
                 ))}
-              </div>
-            )}
-
-            {activeTab === "drafts" && (
-              <div className="space-y-3">
-                {DRAFTS.map((draft) => (
-                  <article
-                    key={draft.id}
-                    className="bg-white p-4"
-                    style={{
-                      border: "3px solid #0d0d0d",
-                      boxShadow: "4px 4px 0 #0d0d0d",
-                    }}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <span
-                          className="text-xs font-black uppercase px-2 py-0.5 mb-2 inline-block"
-                          style={{
-                            background: "#f0f0f0",
-                            color: "#666",
-                            border: "2px solid #ccc",
-                            fontFamily: "var(--font-display)",
-                          }}
-                        >
-                          Draft
-                        </span>
-                        <h3
-                          className="font-black text-sm"
-                          style={{ fontFamily: "var(--font-display)" }}
-                        >
-                          {draft.title}
-                        </h3>
-                        <p className="text-xs mt-0.5" style={{ color: "#888" }}>
-                          Last edited {draft.lastEdited} · {draft.wordCount}{" "}
-                          words
-                        </p>
-                      </div>
-                      <button
-                        className="brutal-btn-primary text-xs shrink-0"
-                        style={{ padding: "7px 12px" }}
-                      >
-                        <Edit3 size={11} /> Continue
-                      </button>
-                    </div>
-                    <p className="text-xs mt-2" style={{ color: "#666" }}>
-                      {draft.excerpt}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            )}
-
-            {activeTab === "scheduled" && (
-              <div
-                className="text-center py-12 bg-white"
-                style={{
-                  border: "3px solid #0d0d0d",
-                  boxShadow: "4px 4px 0 #0d0d0d",
-                }}
-              >
-                <p className="text-4xl mb-3">📅</p>
-                <h3
-                  className="font-black text-lg mb-2"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  No Scheduled Posts
-                </h3>
-                <p className="text-sm" style={{ color: "#888" }}>
-                  Schedule posts from the Write → Settings tab.
-                </p>
               </div>
             )}
           </div>
@@ -597,7 +588,9 @@ export function ProfileContent() {
                         setForm({ ...form, [key]: e.target.value })
                       }
                       className="brutal-input"
-                      disabled = {key as keyof typeof form == "email" ? true : false}
+                      disabled={
+                        (key as keyof typeof form) == "email" ? true : false
+                      }
                     />
                   </div>
                 ))}
@@ -667,4 +660,4 @@ export function ProfileContent() {
   );
 }
 
-export default ProfileContent;
+// export default ProfileContent;
