@@ -4,7 +4,6 @@ import { Eye, EyeOff, PenLine } from "lucide-react";
 import { authApi } from "@/api/authApi";
 import { toast } from "sonner";
 import useAuthStore from "@/stores/authStore";
-import Cookies from "js-cookie";
 import { userApi } from "@/api/userApi";
 
 function LoginPage() {

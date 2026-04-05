@@ -21,12 +21,14 @@ const blogApi = {
     axiosClient.post<ApiResponse<BlogResponse>>("/blogs", data),
   saveDraft: (data: {
     title: string;
+    summary: string;
     content: string;
     tags: string[];
     coverImage?: File | null;
   }) => {
     const formData = new FormData();
     formData.append("title", data.title);
+    formData.append("summary", data.summary);
     formData.append("content", data.content);
     data.tags.forEach((tag) => formData.append("tags", tag));
     if (data.coverImage) {
@@ -40,6 +42,7 @@ const blogApi = {
     blogId: string,
     data: {
       title: string;
+      summary: string;
       content: string;
       tags: string[];
       coverImage?: File | null;
@@ -47,6 +50,7 @@ const blogApi = {
   ) => {
     const formData = new FormData();
     formData.append("title", data.title);
+    formData.append("summary", data.summary);
     formData.append("content", data.content);
     data.tags.forEach((tag) => formData.append("tags", tag));
     if (data.coverImage) formData.append("coverImageUrl", data.coverImage);
@@ -65,16 +69,16 @@ const blogApi = {
 
   deleteBlog: (blogId: string) =>
     axiosClient.delete<ApiResponse<void>>(`/blogs/${blogId}`),
-  saveAndPublishBlog: (
-    data: {
-      title: string;
-      content: string;
-      tags: string[];
-      coverImage?: File | null;
-    },
-  ) => {
+  saveAndPublishBlog: (data: {
+    title: string;
+    summary: string;
+    content: string;
+    tags: string[];
+    coverImage?: File | null;
+  }) => {
     const formData = new FormData();
     formData.append("title", data.title);
+    formData.append("summary", data.summary);
     formData.append("content", data.content);
     data.tags.forEach((tag) => formData.append("tags", tag));
     if (data.coverImage) formData.append("coverImageUrl", data.coverImage);
@@ -87,6 +91,21 @@ const blogApi = {
       },
     );
   },
+  getRelatedBlogs: (tags: string[], currentBlogId: string) =>
+    axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs/related", {
+      params: { tags, currentBlogId },
+      paramsSerializer: { indexes: null },
+    }),
+  generateTitles: (content: string) =>
+    axiosClient.post<ApiResponse<string[]>>("/ai/generate-titles", { content }),
+
+  generateSummary: (content: string) =>
+    axiosClient.post<ApiResponse<string>>("/ai/generate-summary", { content }),
+  toggleLike: (blogId: string) =>
+  axiosClient.post<ApiResponse<BlogResponse>>(`/blogs/${blogId}/like`),
+
+incrementView: (blogId: string) =>
+  axiosClient.post<ApiResponse<number>>(`/blogs/${blogId}/view`),
 };
 
 export default blogApi;

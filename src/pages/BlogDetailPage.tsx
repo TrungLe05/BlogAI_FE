@@ -1,4 +1,5 @@
 import blogApi from "@/api/blogApi";
+import useAuthStore from "@/stores/authStore";
 import { BlogResponse } from "@/types/blog.types";
 import {
   ArrowLeft,
@@ -7,49 +8,90 @@ import {
   Share2,
   Bookmark,
   MessageCircle,
+  Heart,
+  Eye,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-
-const relatedPosts = [
-  {
-    id: 2,
-    title: "The Psychology Behind Viral Content",
-    author: "Marcus Rivera",
-    readTime: 7,
-    imageUrl:
-      "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=300&h=200&fit=crop",
-    category: "Writing",
-  },
-  {
-    id: 3,
-    title: "Building Your Personal Brand as a Writer",
-    author: "Alex Kim",
-    readTime: 9,
-    imageUrl:
-      "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=300&h=200&fit=crop",
-    category: "Business",
-  },
-];
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 function BlogDetailPage() {
   const { blogId } = useParams<{ blogId: string }>();
-  console.log("BlogId: ", blogId?.toString());
   const [blogDetail, setBlogDetail] = useState<BlogResponse | null>(null);
+  const [blogRelated, setBlogRelated] = useState<BlogResponse[] | null>(null);
+  const [isLiking, setIsLiking] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+
+  const handleClickTag = (tag: string) => {
+    navigate("/explore", { state: { selectedTag: tag } });
+  };
+
+  // Fetch blog detail + increment view
   useEffect(() => {
     if (!blogId) return;
-    const fetchBlog = async () => {
+
+    let cancelled = false;
+
+    const load = async () => {
       try {
         const { data } = await blogApi.getBlogDetailById(blogId);
+        if (cancelled) return;
         setBlogDetail(data.result);
+
+        const { data: viewData } = await blogApi.incrementView(blogId);
+        if (cancelled) return;
+        setBlogDetail((prev) =>
+          prev ? { ...prev, viewCount: viewData.result } : prev,
+        );
       } catch (e) {
-        console.error("Failed to fetch blog:", e);
-      } finally {
-        // setIsLoading(false);
+        console.error(e);
       }
     };
-    fetchBlog();
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [blogId]);
+
+  // Fetch related blogs
+  useEffect(() => {
+    if (!blogDetail?.blogId || !blogDetail?.tags?.length) return;
+    blogApi
+      .getRelatedBlogs(blogDetail.tags, blogDetail.blogId)
+      .then(({ data }) => setBlogRelated(data.result))
+      .catch(console.error);
+  }, [blogDetail?.blogId]);
+
+  // Toggle like
+  const handleToggleLike = async () => {
+    if (!blogId || isLiking) return;
+    setIsLiking(true);
+    try {
+      const { data } = await blogApi.toggleLike(blogId);
+      setBlogDetail((prev) =>
+        prev
+          ? {
+              ...prev,
+              likeCount: data.result.likeCount,
+              likedByCurrentUser: data.result.likedByCurrentUser,
+            }
+          : prev,
+      );
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  const filterBlogRelated = (blogRelated ?? [])
+    .sort((a, b) => b.viewCount - a.viewCount)
+    .slice(0, 3);
+
+  const isAuthor = blogDetail?.author.email === user?.email;
+
   return (
     <div
       className="min-h-screen"
@@ -69,20 +111,23 @@ function BlogDetailPage() {
         <div className="grid lg:grid-cols-[1fr_320px] gap-8 items-start">
           {/* Main Article */}
           <article>
-            {/* Category */}
-            {blogDetail?.tags.map((blog, index) => (
-              <span
-                key={index}
-                className="inline-block mb-4 px-3 py-1 text-xs font-black uppercase tracking-widest text-white"
-                style={{
-                  background: "#d32f2f",
-                  border: "2px solid #0d0d0d",
-                  fontFamily: "var(--font-display)",
-                }}
-              >
-                {blog}
-              </span>
-            ))}
+            {/* Tags */}
+            <div className="flex gap-2 flex-wrap">
+              {blogDetail?.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="cursor-pointer inline-block mb-4 px-3 py-1 text-xs font-black uppercase tracking-widest text-white"
+                  style={{
+                    background: "#d32f2f",
+                    border: "2px solid #0d0d0d",
+                    fontFamily: "var(--font-display)",
+                  }}
+                  onClick={() => handleClickTag(tag)}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
 
             {/* Title */}
             <h1
@@ -94,7 +139,6 @@ function BlogDetailPage() {
                 lineHeight: 1.1,
               }}
             >
-              {/* The Art of Storytelling in the<br className="hidden lg:block" /> Age of AI */}
               {blogDetail?.title}
             </h1>
 
@@ -108,7 +152,10 @@ function BlogDetailPage() {
             >
               <div className="flex items-center gap-3">
                 <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+                  src={
+                    blogDetail?.author.avatarUrl ||
+                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+                  }
                   alt="author"
                   className="w-12 h-12"
                   style={{ border: "2px solid #0d0d0d" }}
@@ -120,16 +167,54 @@ function BlogDetailPage() {
                   >
                     {blogDetail?.author.fullName}
                   </p>
+                  <p className="text-xs" style={{ color: "#888" }}>
+                    {blogDetail?.createdAt}
+                  </p>
                 </div>
               </div>
+
               <div className="flex items-center gap-4">
+                {/* View count */}
+                <div
+                  className="flex items-center gap-1 text-xs font-bold"
+                  style={{ fontFamily: "var(--font-display)", color: "#666" }}
+                >
+                  <Eye size={14} />
+                  <span>{blogDetail?.viewCount ?? 0}</span>
+                </div>
+
+                {/* Like button */}
+                <button
+                  onClick={handleToggleLike}
+                  disabled={isLiking}
+                  className="flex items-center gap-1 text-xs font-bold transition-all cursor-pointer"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    color: blogDetail?.likedByCurrentUser ? "#d32f2f" : "#666",
+                    opacity: isLiking ? 0.6 : 1,
+                  }}
+                >
+                  <Heart
+                    size={16}
+                    fill={blogDetail?.likedByCurrentUser ? "#d32f2f" : "none"}
+                    color={blogDetail?.likedByCurrentUser ? "#d32f2f" : "#666"}
+                  />
+                  <span>{blogDetail?.likeCount ?? 0}</span>
+                </button>
+
                 <div
                   className="flex items-center gap-1 text-xs font-bold"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   <Clock size={14} />
-                  <span>8 min read</span>
+                  <span>
+                    {Math.ceil(
+                      (blogDetail?.content?.split(/\s+/).length ?? 0) / 200,
+                    )}{" "}
+                    min read
+                  </span>
                 </div>
+
                 <button
                   className="flex items-center gap-1 text-xs"
                   style={{ color: "#666" }}
@@ -155,7 +240,7 @@ function BlogDetailPage() {
             >
               <img
                 src={
-                  blogDetail?.author.avatarUrl ||
+                  blogDetail?.coverImageUrl ||
                   "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=900&h=480&fit=crop"
                 }
                 alt="blog cover"
@@ -174,127 +259,95 @@ function BlogDetailPage() {
                 fontSize: "1.05rem",
               }}
             >
-              <p
-                className="mb-6 prose-content"
+              <div
+                className="prose-content"
                 dangerouslySetInnerHTML={{ __html: blogDetail?.content ?? "" }}
-              ></p>
-              {/* <p className="mb-6">
-                What makes human-crafted stories irreplaceable even as
-                artificial intelligence becomes an increasingly capable writing
-                tool? The answer lies not in the words themselves, but in the
-                lived experience behind them — the vulnerability, the
-                specificity, the moments of true emotional resonance that no
-                algorithm can authentically manufacture.
-              </p> */}
-
-              {/* Pull Quote */}
-              {/* <blockquote
-                className="my-8 p-6"
-                style={{
-                  borderLeft: "6px solid #d32f2f",
-                  background: "#ebf4f5",
-                  border: "3px solid #0d0d0d",
-                  borderLeftWidth: "8px",
-                  borderLeftColor: "#d32f2f",
-                  boxShadow: "4px 4px 0 #0d0d0d",
-                  fontStyle: "italic",
-                  fontSize: "1.2rem",
-                  color: "#0d0d0d",
-                }}
-              >
-                "The stories that change us are the ones written from the marrow
-                — from pain, from joy, from the ordinary moments we almost let
-                slip away."
-              </blockquote> */}
-
-              {/* <p className="mb-6">
-                AI can generate technically correct prose. It can mimic styles,
-                construct arguments, and organize ideas. But storytelling at its
-                highest level requires something profoundly different: the
-                willingness to be seen. To admit not knowing the answer. To sit
-                with discomfort and transform it into something that connects
-                with a stranger across time and space.
-              </p>
-
-              <h2
-                className="text-2xl font-black my-6"
-                style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
-              >
-                The Human Advantage
-              </h2>
-
-              <p className="mb-6">
-                Authenticity renders AI-generated content obsolete in one
-                crucial domain: the personal essay. When you share your
-                grandmother's recipe alongside a meditation on grief, you are
-                doing something no machine can replicate. You are bearing
-                witness to your own life — and in doing so, giving permission to
-                your reader to bear witness to theirs.
-              </p>
-
-              <p className="mb-6">
-                This is the paradox of the AI writing age: as automated content
-                floods the internet, the most scarce and valuable thing is
-                radical human authenticity. Your stumbles, your perspective,
-                your voice is your competitive advantage.
-              </p> */}
+              />
             </div>
 
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2 mb-8">
-              {["Storytelling", "AI", "Writing", "Creativity"].map((tag) => (
-                <span key={tag} className="brutal-tag">
-                  {tag}
-                </span>
-              ))}
+            {/* Like button bottom */}
+            <div className="flex items-center gap-4 mb-8">
+              <button
+                onClick={handleToggleLike}
+                disabled={isLiking}
+                className="flex items-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-widest transition-all cursor-pointer"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  border: "3px solid #0d0d0d",
+                  background: blogDetail?.likedByCurrentUser
+                    ? "#d32f2f"
+                    : "white",
+                  color: blogDetail?.likedByCurrentUser ? "white" : "#0d0d0d",
+                  boxShadow: "4px 4px 0 #0d0d0d",
+                  opacity: isLiking ? 0.6 : 1,
+                }}
+                onMouseEnter={(e) => {
+                  if (!blogDetail?.likedByCurrentUser) {
+                    e.currentTarget.style.transform = "translate(-2px,-2px)";
+                    e.currentTarget.style.boxShadow = "6px 6px 0 #0d0d0d";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translate(0,0)";
+                  e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
+                }}
+              >
+                <Heart
+                  size={18}
+                  fill={blogDetail?.likedByCurrentUser ? "white" : "none"}
+                  color={blogDetail?.likedByCurrentUser ? "white" : "#0d0d0d"}
+                />
+                {blogDetail?.likedByCurrentUser ? "Liked" : "Like"} ·{" "}
+                {blogDetail?.likeCount ?? 0}
+              </button>
             </div>
 
             {/* Author Card */}
-            <div
-              className="p-6 bg-white flex items-start gap-4"
-              style={{
-                border: "3px solid #0d0d0d",
-                boxShadow: "4px 4px 0 #0d0d0d",
-              }}
-            >
-              <img
-                src={blogDetail?.author.avatarUrl || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"}
-                alt="author"
-                className="w-16 h-16 shrink-0"
-                style={{ border: "3px solid #0d0d0d" }}
-              />
-              <div>
-                <div className="flex items-center gap-2 mb-1">
+            {!isAuthor && (
+              <div
+                className="p-6 bg-white flex items-start gap-4"
+                style={{
+                  border: "3px solid #0d0d0d",
+                  boxShadow: "4px 4px 0 #0d0d0d",
+                }}
+              >
+                <img
+                  src={
+                    blogDetail?.author.avatarUrl ||
+                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+                  }
+                  alt="author"
+                  className="w-16 h-16 shrink-0"
+                  style={{ border: "3px solid #0d0d0d" }}
+                />
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p
+                      className="font-black"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: "1.1rem",
+                      }}
+                    >
+                      {blogDetail?.author.fullName}
+                    </p>
+                    <User size={14} style={{ color: "#d32f2f" }} />
+                  </div>
                   <p
-                    className="font-black"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: "1.1rem",
-                    }}
+                    className="text-sm leading-relaxed"
+                    style={{ color: "#555" }}
                   >
-                    {blogDetail?.author.fullName}
+                    {blogDetail?.author.email}
                   </p>
-                  <User size={14} style={{ color: "#d32f2f" }} />
+                  <button
+                    className="brutal-btn-red mt-3"
+                    style={{ padding: "8px 16px", fontSize: "0.75rem" }}
+                  >
+                    Follow Author
+                  </button>
                 </div>
-                <p className="text-xs mb-3" style={{ color: "#888" }}>
-                  Tech writer & AI researcher · 12K followers
-                </p>
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: "#555" }}
-                >
-                  Sarah writes about the intersection of technology and human
-                  creativity. She has been exploring AI's impact on media for 5
-                  years.
-                </p>
-                <button
-                  className="brutal-btn-red mt-3"
-                  style={{ padding: "8px 16px", fontSize: "0.75rem" }}
-                >
-                  Follow Author
-                </button>
               </div>
-            </div>
+            )}
 
             {/* Comments */}
             <div className="mt-10">
@@ -351,49 +404,66 @@ function BlogDetailPage() {
                 </h3>
               </div>
               <div>
-                {relatedPosts.map((post, i) => (
-                  <Link
-                    key={post.id}
-                    to={`/blog/${post.id}`}
-                    className="flex gap-3 p-4 hover:bg-[#ebf4f5] transition-colors"
-                    style={{
-                      borderBottom:
-                        i < relatedPosts.length - 1
-                          ? "2px solid #0d0d0d"
-                          : "none",
-                    }}
-                  >
-                    <img
-                      src={post.imageUrl}
-                      alt={post.title}
-                      className="w-16 h-16 object-cover shrink-0"
-                      style={{ border: "2px solid #0d0d0d" }}
-                    />
-                    <div>
-                      <span
-                        className="text-xs font-black uppercase"
-                        style={{
-                          color: "#d32f2f",
-                          fontFamily: "var(--font-display)",
-                        }}
-                      >
-                        {post.category}
-                      </span>
-                      <p
-                        className="text-sm font-bold leading-tight"
-                        style={{
-                          fontFamily: "var(--font-display)",
-                          color: "#0d0d0d",
-                        }}
-                      >
-                        {post.title}
-                      </p>
-                      <p className="text-xs mt-1" style={{ color: "#888" }}>
-                        {post.readTime} min read
-                      </p>
-                    </div>
-                  </Link>
-                ))}
+                {filterBlogRelated.length > 0 ? (
+                  filterBlogRelated.map((post) => (
+                    <Link
+                      key={post.blogId}
+                      to={`/blog/${post.blogId}`}
+                      className="flex gap-3 p-4 hover:bg-[#ebf4f5] transition-colors"
+                      style={{ borderBottom: "2px solid #0d0d0d" }}
+                    >
+                      <img
+                        src={
+                          post.coverImageUrl ||
+                          "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=200&h=200&fit=crop"
+                        }
+                        alt={post.title}
+                        className="w-16 h-16 object-cover shrink-0"
+                        style={{ border: "2px solid #0d0d0d" }}
+                      />
+                      <div>
+                        <div className="flex gap-1 flex-wrap mb-1">
+                          {post.tags?.slice(0, 2).map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-xs uppercase font-black tracking-widest px-3 py-1"
+                              style={{
+                                color: "#fff",
+                                fontFamily: "var(--font-display)",
+                                background: "rgb(211, 47, 47)",
+                                border: "2px solid black",
+                              }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <p
+                          className="text-sm font-bold leading-tight line-clamp-2"
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            color: "#0d0d0d",
+                          }}
+                        >
+                          {post.title}
+                        </p>
+                        <div
+                          className="flex items-center gap-2 mt-1 text-xs"
+                          style={{ color: "#888" }}
+                        >
+                          <Eye size={11} />
+                          <span>{post.viewCount}</span>
+                          <Heart size={11} />
+                          <span>{post.likeCount}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="p-4 text-sm" style={{ color: "#888" }}>
+                    No related articles found.
+                  </p>
+                )}
               </div>
             </div>
 

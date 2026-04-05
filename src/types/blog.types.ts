@@ -10,6 +10,8 @@ export interface BlogResponse {
   tags: string[];
   createdAt?: string;
   updatedAt?: string;
+  likeCount: number;        // ✅ thêm
+  likedByCurrentUser: boolean; 
 }
 
 export interface Author {

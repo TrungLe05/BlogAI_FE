@@ -1,20 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  Bold,
-  Italic,
-  Underline,
-  Heading1,
-  Heading2,
-  Quote,
-  Link2,
-  Image,
   Save,
   Eye,
   Settings,
   Tag,
-  Globe,
-  Lock,
   LayoutDashboard,
   PenLine,
   BarChart,
@@ -27,6 +17,9 @@ import {
   ChevronUp,
   Wand2,
   UserCircle,
+  MessageCircle,
+  Bell,
+  Search,
 } from "lucide-react";
 import { ProfileContent } from "@/components/dashboard/ProfileContent";
 import { StatsContent } from "@/components/dashboard/StatsContent";
@@ -34,10 +27,11 @@ import useAuthStore from "@/stores/authStore";
 import blogApi from "@/api/blogApi";
 import { RichEditor } from "@/components/dashboard/RichEditor";
 import { TagResponse } from "@/types/blog.types";
+import { AvatarDropdown } from "@/components/dashboard/AvatarDropdown";
 
 type ActiveView = "write" | "stats" | "profile" | "settings";
 
-// ── AI Title Generator (giữ nguyên, không thay đổi) ──────────────
+// ── AI Title Generator (PRESERVED — no changes) ───────────────────
 function extractKeywords(text: string): string[] {
   const stopWords = new Set([
     "the",
@@ -116,15 +110,128 @@ const TEMPLATES = [
   (kw: string[]) =>
     `The Truth About ${cap(kw[0] || "Your Topic")} That Will Surprise You`,
 ];
-async function generateTitles(content: string): Promise<string[]> {
-  await new Promise((r) => setTimeout(r, 1800));
-  const kw = extractKeywords(content);
-  return [...TEMPLATES]
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 4)
-    .map((fn) => fn(kw));
+async function generateTitlesFromAI(content: string): Promise<string[]> {
+  const { data } = await blogApi.generateTitles(content);
+  return data.result;
 }
 
+function AISummaryPanel({
+  content,
+  summary,
+  onSummaryChange,
+}: {
+  content: string;
+  summary: string;
+  onSummaryChange: (s: string) => void;
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const hasContent = content.trim().split(/\s+/).filter(Boolean).length >= 10;
+
+  const handleGenerate = async () => {
+    if (!hasContent) return;
+    setIsLoading(true);
+    try {
+      const { data } = await blogApi.generateSummary(content);
+      onSummaryChange(data.result);
+    } catch (e) {
+      console.error("Generate summary failed:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="mb-8"
+      style={{
+        border: "3px solid #0d0d0d",
+        boxShadow: "4px 4px 0 #0d0d0d",
+        background: "white",
+      }}
+    >
+      <div
+        className="flex items-center justify-between px-6 py-4"
+        style={{ background: "#0d0d0d" }}
+      >
+        <div className="flex items-center gap-3">
+          <Sparkles size={16} color="#d32f2f" />
+          <span
+            className="font-black text-xs uppercase tracking-[0.15em] text-white"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            AI Summary
+          </span>
+          <span
+            className="px-2 py-0.5 text-xs font-black uppercase tracking-widest"
+            style={{
+              background: "#d32f2f",
+              color: "white",
+              fontFamily: "var(--font-display)",
+            }}
+          >
+            BETA
+          </span>
+        </div>
+        <button
+          onClick={handleGenerate}
+          disabled={!hasContent || isLoading}
+          className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest"
+          style={{
+            fontFamily: "var(--font-display)",
+            background: hasContent && !isLoading ? "#d32f2f" : "#555",
+            color: "white",
+            border: "3px solid white",
+            cursor: hasContent && !isLoading ? "pointer" : "not-allowed",
+            opacity: !hasContent ? 0.5 : 1,
+          }}
+        >
+          {isLoading ? (
+            <>
+              <RefreshCw size={12} className="animate-spin" /> Generating...
+            </>
+          ) : summary ? (
+            <>
+              <RefreshCw size={12} /> Regenerate
+            </>
+          ) : (
+            <>
+              <Wand2 size={12} /> Generate
+            </>
+          )}
+        </button>
+      </div>
+      <div className="p-5">
+        <p
+          className="text-xs font-black uppercase tracking-[0.15em] mb-3"
+          style={{ fontFamily: "var(--font-display)", color: "#8f6f6c" }}
+        >
+          {summary
+            ? "AI generated — edit freely ↓"
+            : "Or write your own summary ↓"}
+        </p>
+        <textarea
+          value={summary}
+          onChange={(e) => onSummaryChange(e.target.value)}
+          placeholder="Write a short summary to hook your readers..."
+          rows={3}
+          className="w-full p-4 text-sm outline-none resize-none"
+          style={{
+            border: `3px solid ${summary.length > 200 ? "#d32f2f" : "#0d0d0d"}`,
+            fontFamily: "var(--font-sans)",
+            background: "#f2fbfc",
+          }}
+        />
+        <p
+          className="text-xs mt-1 text-right"
+          style={{ color: summary.length > 200 ? "#d32f2f" : "#8f6f6c" }}
+        >
+          {summary.length}/200
+        </p>
+      </div>
+    </div>
+  );
+}
+// ── AI Title Panel (Stitch design refinements) ────────────────────
 function AITitlePanel({
   content,
   onApply,
@@ -151,8 +258,10 @@ function AITitlePanel({
       setDots(".".repeat(d));
     }, 400);
     try {
-      const titles = await generateTitles(content);
+      const titles = await generateTitlesFromAI(content); // ✅ gọi backend
       setSuggestions(titles);
+    } catch (e) {
+      console.error("Generate titles failed:", e);
     } finally {
       clearInterval(di);
       setIsLoading(false);
@@ -166,31 +275,32 @@ function AITitlePanel({
 
   return (
     <div
-      className="mb-6"
+      className="mb-8"
       style={{
         border: "3px solid #0d0d0d",
         boxShadow: "4px 4px 0 #d32f2f",
         background: "white",
       }}
     >
+      {/* Header */}
       <div
-        className="flex items-center justify-between px-5 py-3 cursor-pointer select-none"
+        className="flex items-center justify-between px-6 py-4 cursor-pointer select-none"
         style={{
           background: "#0d0d0d",
           borderBottom: isOpen ? "3px solid #0d0d0d" : "none",
         }}
         onClick={() => isOpen && !isLoading && setIsOpen(false)}
       >
-        <div className="flex items-center gap-2">
-          <Sparkles size={15} color="#d32f2f" />
+        <div className="flex items-center gap-3">
+          <Sparkles size={16} color="#d32f2f" />
           <span
-            className="font-black text-xs uppercase tracking-widest text-white"
+            className="font-black text-xs uppercase tracking-[0.15em] text-white"
             style={{ fontFamily: "var(--font-display)" }}
           >
             AI Title Generator
           </span>
           <span
-            className="px-2 py-0.5 text-xs font-black"
+            className="px-2 py-0.5 text-xs font-black uppercase tracking-widest"
             style={{
               background: "#d32f2f",
               color: "white",
@@ -200,9 +310,14 @@ function AITitlePanel({
             BETA
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {!hasContent && (
-            <span className="text-xs text-white/50">Write 10+ words first</span>
+            <span
+              className="text-xs text-white/40"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Write 10+ words first
+            </span>
           )}
           <button
             onClick={(e) => {
@@ -210,29 +325,32 @@ function AITitlePanel({
               handleGenerate();
             }}
             disabled={!hasContent || isLoading}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-black uppercase transition-all"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
             style={{
               fontFamily: "var(--font-display)",
               background: hasContent && !isLoading ? "#d32f2f" : "#555",
               color: "white",
-              border: "2px solid white",
-              boxShadow: hasContent && !isLoading ? "2px 2px 0 white" : "none",
+              border: "3px solid white",
+              boxShadow:
+                hasContent && !isLoading
+                  ? "3px 3px 0 rgba(255,255,255,0.3)"
+                  : "none",
               cursor: hasContent && !isLoading ? "pointer" : "not-allowed",
               opacity: !hasContent ? 0.5 : 1,
             }}
           >
             {isLoading ? (
               <>
-                <RefreshCw size={11} className="animate-spin" /> Generating
+                <RefreshCw size={12} className="animate-spin" /> Generating
                 {dots}
               </>
             ) : suggestions.length > 0 ? (
               <>
-                <RefreshCw size={11} /> Regenerate
+                <RefreshCw size={12} /> Regenerate
               </>
             ) : (
               <>
-                <Wand2 size={11} /> Generate
+                <Wand2 size={12} /> Generate
               </>
             )}
           </button>
@@ -243,7 +361,7 @@ function AITitlePanel({
                 setIsOpen(false);
               }}
             >
-              <ChevronUp size={15} color="white" />
+              <ChevronUp size={16} color="white" />
             </button>
           )}
           {!isOpen && suggestions.length > 0 && (
@@ -253,20 +371,21 @@ function AITitlePanel({
                 setIsOpen(true);
               }}
             >
-              <ChevronDown size={15} color="white" />
+              <ChevronDown size={16} color="white" />
             </button>
           )}
         </div>
       </div>
+      {/* Suggestions */}
       {isOpen && (
-        <div className="p-4">
+        <div className="p-5">
           {isLoading ? (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <p
-                className="text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2"
+                className="text-xs font-black uppercase tracking-[0.15em] mb-3 flex items-center gap-2"
                 style={{ fontFamily: "var(--font-display)", color: "#d32f2f" }}
               >
-                <Sparkles size={11} className="animate-pulse" />
+                <Sparkles size={12} className="animate-pulse" />
                 Analysing{dots}
               </p>
               {[1, 2, 3, 4].map((i) => (
@@ -274,9 +393,9 @@ function AITitlePanel({
                   key={i}
                   className="animate-pulse"
                   style={{
-                    height: "44px",
+                    height: "48px",
                     background: `rgba(211,47,47,${0.04 * i + 0.04})`,
-                    border: "2px solid #e5e5e5",
+                    border: "3px solid #e7f0f1",
                   }}
                 />
               ))}
@@ -284,32 +403,31 @@ function AITitlePanel({
           ) : suggestions.length > 0 ? (
             <div>
               <p
-                className="text-xs font-bold uppercase tracking-widest mb-3"
-                style={{ fontFamily: "var(--font-display)", color: "#888" }}
+                className="text-xs font-black uppercase tracking-[0.15em] mb-4"
+                style={{ fontFamily: "var(--font-display)", color: "#8f6f6c" }}
               >
                 Click to apply ↓
               </p>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {suggestions.map((s, i) => {
                   const isApplied = applied === s;
                   return (
                     <button
                       key={i}
                       onClick={() => handleApply(s)}
-                      className="w-full text-left flex items-start justify-between gap-3 transition-all group"
+                      className="w-full text-left flex items-start justify-between gap-3 transition-all group cursor-pointer"
                       style={{
-                        padding: "10px 14px",
+                        padding: "12px 16px",
                         border: `3px solid ${isApplied ? "#d32f2f" : "#0d0d0d"}`,
                         background: isApplied ? "#d32f2f" : "white",
-                        boxShadow: isApplied ? "3px 3px 0 #0d0d0d" : "none",
-                        transform: isApplied ? "translate(-2px,-2px)" : "none",
-                        cursor: "pointer",
+                        boxShadow: isApplied ? "4px 4px 0 #0d0d0d" : "none",
+                        transform: isApplied ? "translate(-4px,-4px)" : "none",
                       }}
                       onMouseEnter={(e) => {
                         if (!isApplied) {
                           e.currentTarget.style.transform =
-                            "translate(-2px,-2px)";
-                          e.currentTarget.style.boxShadow = "3px 3px 0 #d32f2f";
+                            "translate(-4px,-4px)";
+                          e.currentTarget.style.boxShadow = "4px 4px 0 #d32f2f";
                         }
                       }}
                       onMouseLeave={(e) => {
@@ -319,9 +437,9 @@ function AITitlePanel({
                         }
                       }}
                     >
-                      <div className="flex items-start gap-2 flex-1">
+                      <div className="flex items-start gap-3 flex-1">
                         <span
-                          className="shrink-0 w-5 h-5 flex items-center justify-center text-xs font-black"
+                          className="shrink-0 w-6 h-6 flex items-center justify-center text-xs font-black"
                           style={{
                             fontFamily: "var(--font-display)",
                             background: isApplied ? "white" : "#0d0d0d",
@@ -331,10 +449,10 @@ function AITitlePanel({
                           {i + 1}
                         </span>
                         <span
-                          className="text-xs font-bold leading-snug"
+                          className="text-sm font-bold leading-snug"
                           style={{
                             fontFamily: "var(--font-display)",
-                            color: isApplied ? "white" : "#0d0d0d",
+                            color: isApplied ? "white" : "#151d1e",
                           }}
                         >
                           {s}
@@ -342,13 +460,13 @@ function AITitlePanel({
                       </div>
                       {isApplied ? (
                         <CheckCheck
-                          size={14}
+                          size={15}
                           color="white"
                           className="shrink-0 mt-0.5"
                         />
                       ) : (
                         <span
-                          className="text-xs font-black opacity-0 group-hover:opacity-100 shrink-0"
+                          className="text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 shrink-0"
                           style={{
                             fontFamily: "var(--font-display)",
                             color: "#d32f2f",
@@ -369,19 +487,21 @@ function AITitlePanel({
   );
 }
 
-// ── WriteView Props (state lift lên DashboardPage) ────────────────
+// ── WriteView Props (PRESERVED) ───────────────────────────────────
 type WriteViewProps = {
   title: string;
   setTitle: (v: string) => void;
+  summary: string; // ✅ thêm
+  setSummary: (v: string) => void; // ✅ thêm
   content: string;
   setContent: (v: string) => void;
-  coverImageUrl: string; // URL từ server (khi edit blog cũ)
-  coverImageFile: File | null; // File thật để upload
+  coverImageUrl: string;
+  coverImageFile: File | null;
   setCoverImageFile: (f: File | null) => void;
-  tags: string[]; // state từ DashboardPage
+  tags: string[];
   setTags: (t: string[]) => void;
   onSaveDraft: () => void;
-  onSavePublish: () => void; // callback từ DashboardPage
+  onSavePublish: () => void;
   isDraftSaving: boolean;
   isPublishSaving: boolean;
 };
@@ -401,20 +521,17 @@ function WriteView({
   isDraftSaving,
   isPublishSaving,
 }: WriteViewProps) {
-  const [activeTab, setActiveTab] = useState<"write" | "preview" | "settings">(
-    "write",
-  );
+  const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [tagsData, setTagsData] = useState<TagResponse[] | null>([]);
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedTagInGroup, setSelectedTagInGroup] = useState("");
-  // coverImage chỉ dùng để preview UI
   const [coverImagePreview, setCoverImagePreview] = useState<string | null>(
     coverImageUrl || null,
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const wordCount = content.split(/\s+/).filter(Boolean).length;
 
-  // Khi edit blog cũ → sync preview từ URL server
+  // ── API calls (PRESERVED) ─────────────────────────
   useEffect(() => {
     if (coverImageUrl) setCoverImagePreview(coverImageUrl);
   }, [coverImageUrl]);
@@ -422,8 +539,8 @@ function WriteView({
   const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) {
-      setCoverImagePreview(URL.createObjectURL(f)); // chỉ preview
-      setCoverImageFile(f); // lưu file thật để upload
+      setCoverImagePreview(URL.createObjectURL(f));
+      setCoverImageFile(f);
     }
   };
 
@@ -466,67 +583,81 @@ function WriteView({
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className="px-6 py-3 text-sm font-black uppercase tracking-widest transition-colors"
+            className="px-8 py-3.5 text-xs font-black uppercase tracking-[0.15em] transition-colors cursor-pointer"
             style={{
               fontFamily: "var(--font-display)",
               background: activeTab === tab ? "#0d0d0d" : "transparent",
-              color: activeTab === tab ? "white" : "#555",
-              borderRight: "2px solid #0d0d0d",
+              color: activeTab === tab ? "white" : "#5b403d",
+              borderRight: "3px solid #0d0d0d",
             }}
           >
             {tab === "write" && (
-              <span className="flex items-center gap-1">
-                <PenLine size={13} /> Write
+              <span className="flex items-center gap-2">
+                <PenLine size={14} /> Write
               </span>
             )}
             {tab === "preview" && (
-              <span className="flex items-center gap-1">
-                <Eye size={13} /> Preview
+              <span className="flex items-center gap-2">
+                <Eye size={14} /> Preview
               </span>
             )}
           </button>
         ))}
       </div>
 
-      <div className="flex-1 overflow-auto" style={{ background: "#ebf4f5" }}>
+      <div className="flex-1 overflow-auto" style={{ background: "#f2fbfc" }}>
         {/* ── Write Tab ── */}
         {activeTab === "write" && (
-          <div className="max-w-250 mx-auto p-6">
+          <div className="max-w-250 mx-auto p-8">
             <AITitlePanel content={content} onApply={setTitle} />
-
-            <div className="max-w-full mx-auto pb-5">
+            {/* <AISummaryPanel // ✅ thêm
+              content={content}
+              summary={summary}
+              onSummaryChange={setSummary}
+            /> */}
+            {/* Tag Selection */}
+            <div className="max-w-full mx-auto pb-6">
               <div
-                className="bg-white p-7"
+                className="bg-white p-8"
                 style={{
                   border: "3px solid #0d0d0d",
                   boxShadow: "4px 4px 0 #0d0d0d",
                 }}
               >
                 <h2
-                  className="font-black text-lg mb-5"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="font-black text-sm uppercase tracking-widest mb-6"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    color: "#151d1e",
+                  }}
                 >
                   Post Tags
                 </h2>
 
-                {/* Tags theo group */}
                 <div className="mb-5">
                   <label
-                    className="block mb-1.5 text-xs font-black uppercase tracking-widest"
-                    style={{ fontFamily: "var(--font-display)" }}
+                    className="block mb-2 text-xs font-black uppercase tracking-[0.15em]"
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      color: "#5b403d",
+                    }}
                   >
-                    <Tag size={11} className="inline mr-1" />
+                    <Tag size={12} className="inline mr-1.5" />
                     Tags (max 5)
                   </label>
 
-                  <div className="flex gap-2 mb-2">
-                    {/* Select 1: chọn group */}
+                  <div className="flex gap-3 mb-3">
                     <select
-                      className="brutal-input flex-1"
+                      className="flex-1 px-4 py-3 text-sm outline-none"
+                      style={{
+                        border: "3px solid #0d0d0d",
+                        background: "#ffffff",
+                        fontFamily: "var(--font-sans)",
+                      }}
                       value={selectedGroup}
                       onChange={(e) => {
                         setSelectedGroup(e.target.value);
-                        setSelectedTagInGroup(""); // reset tag khi đổi group
+                        setSelectedTagInGroup("");
                       }}
                     >
                       <option value="">Select group...</option>
@@ -538,9 +669,13 @@ function WriteView({
                         ))}
                     </select>
 
-                    {/* Select 2: chọn tag trong group */}
                     <select
-                      className="brutal-input flex-1"
+                      className="flex-1 px-4 py-3 text-sm outline-none"
+                      style={{
+                        border: "3px solid #0d0d0d",
+                        background: "#ffffff",
+                        fontFamily: "var(--font-sans)",
+                      }}
                       disabled={!selectedGroup}
                       value={selectedTagInGroup}
                       onChange={(e) => {
@@ -549,7 +684,7 @@ function WriteView({
                         if (!tags.includes(tag) && tags.length < 5) {
                           setTags([...tags, tag]);
                         }
-                        setSelectedTagInGroup(""); // reset sau khi chọn
+                        setSelectedTagInGroup("");
                       }}
                     >
                       <option value="">Select tag...</option>
@@ -565,28 +700,31 @@ function WriteView({
                     </select>
                   </div>
 
-                  {/* Tags đã chọn */}
+                  {/* Selected tags */}
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
                       <span
                         key={tag}
-                        className="flex items-center gap-1 px-2 py-0.5 text-xs font-black uppercase"
+                        className="flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase tracking-widest"
                         style={{
                           background: "#0d0d0d",
                           color: "white",
                           fontFamily: "var(--font-display)",
-                          border: "2px solid #0d0d0d",
+                          border: "3px solid #0d0d0d",
                         }}
                       >
                         {tag}
-                        <button onClick={() => removeTag(tag)} className="ml-1">
-                          <X size={9} />
+                        <button
+                          onClick={() => removeTag(tag)}
+                          className="ml-1 cursor-pointer"
+                        >
+                          <X size={10} />
                         </button>
                       </span>
                     ))}
                     {tags.length >= 5 && (
                       <span
-                        className="text-xs self-center"
+                        className="text-xs font-black self-center uppercase tracking-widest"
                         style={{
                           color: "#d32f2f",
                           fontFamily: "var(--font-display)",
@@ -599,10 +737,11 @@ function WriteView({
                 </div>
               </div>
             </div>
+
             {/* Cover Image */}
             {!coverImagePreview ? (
               <div
-                className="mb-5 flex flex-col items-center justify-center cursor-pointer hover:bg-white transition-colors"
+                className="mb-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white transition-colors"
                 style={{
                   border: "3px dashed #0d0d0d",
                   height: "500px",
@@ -611,14 +750,20 @@ function WriteView({
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload
-                  size={28}
-                  style={{ color: "#999", marginBottom: "10px" }}
+                  size={32}
+                  style={{ color: "#8f6f6c", marginBottom: "12px" }}
                 />
                 <p
-                  className="font-black text-xs uppercase tracking-widest"
-                  style={{ fontFamily: "var(--font-display)", color: "#999" }}
+                  className="font-black text-xs uppercase tracking-[0.15em]"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    color: "#8f6f6c",
+                  }}
                 >
-                  Add Cover Image
+                  Click to upload cover image
+                </p>
+                <p className="text-xs mt-2" style={{ color: "#b0a0a0" }}>
+                  Recommended: 1200 × 630px
                 </p>
                 <input
                   type="file"
@@ -630,7 +775,7 @@ function WriteView({
               </div>
             ) : (
               <div
-                className="mb-5 relative"
+                className="mb-6 relative"
                 style={{ border: "3px solid #0d0d0d" }}
               >
                 <img
@@ -641,47 +786,87 @@ function WriteView({
                 />
                 <button
                   onClick={handleRemoveCover}
-                  className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center bg-white"
-                  style={{ border: "2px solid #0d0d0d" }}
+                  className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white transition-all cursor-pointer"
+                  style={{
+                    border: "3px solid #0d0d0d",
+                    boxShadow: "3px 3px 0 #0d0d0d",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#d32f2f";
+                    e.currentTarget.style.color = "white";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "white";
+                    e.currentTarget.style.color = "#0d0d0d";
+                  }}
                 >
-                  <X size={13} />
+                  <X size={14} />
                 </button>
               </div>
             )}
 
             <RichEditor content={content} onChange={setContent} />
 
-            <div className="mt-3 flex justify-between items-center">
+            {/* Footer controls */}
+            <div className="mt-4 flex justify-between items-center">
               <p
-                className="text-xs"
-                style={{ color: "#999", fontFamily: "var(--font-display)" }}
+                className="text-xs font-bold"
+                style={{ color: "#8f6f6c", fontFamily: "var(--font-display)" }}
               >
                 {wordCount} words · ~{Math.ceil(wordCount / 200)} min read
                 {wordCount >= 10 && (
-                  <span style={{ color: "#d32f2f", marginLeft: "8px" }}>
+                  <span style={{ color: "#d32f2f", marginLeft: "10px" }}>
                     ✦ AI title ready
                   </span>
                 )}
               </p>
 
-              {/* Nút Save nhỏ trong editor — gọi callback từ DashboardPage */}
               <div className="flex gap-4">
                 <button
-                  className="brutal-btn-primary text-xs"
-                  style={{ padding: "7px 18px" }}
+                  className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    background: "white",
+                    color: "#151d1e",
+                    border: "3px solid #0d0d0d",
+                    boxShadow: "4px 4px 0 #0d0d0d",
+                  }}
                   onClick={onSaveDraft}
                   disabled={isDraftSaving}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translate(-4px,-4px)";
+                    e.currentTarget.style.boxShadow = "8px 8px 0 #0d0d0d";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translate(0,0)";
+                    e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
+                  }}
                 >
-                  <Save size={13} />{" "}
+                  <Save size={14} />
                   {isDraftSaving ? "Saving..." : "Save Draft"}
                 </button>
                 <button
-                  className="brutal-btn-red text-xs"
-                  style={{ padding: "6px 18px" }}
+                  className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    background: "#af101a",
+                    color: "white",
+                    border: "3px solid #0d0d0d",
+                    boxShadow: "4px 4px 0 #0d0d0d",
+                  }}
                   onClick={onSavePublish}
                   disabled={isPublishSaving}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translate(-4px,-4px)";
+                    e.currentTarget.style.boxShadow = "8px 8px 0 #0d0d0d";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translate(0,0)";
+                    e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
+                  }}
                 >
-                  <Save size={13} /> {isPublishSaving ? "Saving..." : "Publish"}
+                  <Save size={14} />{" "}
+                  {isPublishSaving ? "Publishing..." : "Publish"}
                 </button>
               </div>
             </div>
@@ -690,17 +875,22 @@ function WriteView({
 
         {/* ── Preview Tab ── */}
         {activeTab === "preview" && (
-          <div className="max-w-200 mx-auto p-6">
+          <div className="max-w-200 mx-auto p-8">
             <div
-              className="bg-white p-7"
+              className="bg-white p-10"
               style={{
                 border: "3px solid #0d0d0d",
                 boxShadow: "4px 4px 0 #0d0d0d",
               }}
             >
               <h1
-                className="text-3xl font-black mb-6"
-                style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+                className="text-4xl font-black mb-8"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  color: "#0d0d0d",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1.1,
+                }}
               >
                 {title || "Your Post Title"}
               </h1>
@@ -710,7 +900,7 @@ function WriteView({
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
               ) : (
-                <p style={{ color: "#aaa" }}>
+                <p style={{ color: "#8f6f6c" }}>
                   Start writing to see your preview here...
                 </p>
               )}
@@ -741,14 +931,18 @@ function SideItem({
       className="flex flex-col items-center justify-center w-full py-4 gap-1.5 transition-all cursor-pointer"
       style={{
         background: active ? "#d32f2f" : "transparent",
-        color: active ? "white" : "#555",
-        borderBottom: "1px solid rgba(0,0,0,0.06)",
+        color: active ? "white" : "#5b403d",
+        borderBottom: "3px solid rgba(0,0,0,0.06)",
       }}
     >
       {icon}
       <span
-        className="text-xs font-black uppercase tracking-widest"
-        style={{ fontFamily: "var(--font-display)", lineHeight: 1 }}
+        className="text-xs font-black uppercase tracking-[0.15em]"
+        style={{
+          fontFamily: "var(--font-display)",
+          lineHeight: 1,
+          fontSize: "0.6rem",
+        }}
       >
         {label}
       </span>
@@ -756,25 +950,27 @@ function SideItem({
   );
 }
 
-// ── Dashboard Page ────────────────────────────────────────────────
+// ── Dashboard Page (API logic PRESERVED) ──────────────────────────
 function DashboardPage() {
   const [activeView, setActiveView] = useState<ActiveView>("write");
+  const navigate = useNavigate();
+  const [summary, setSummary] = useState("");
 
-  // ── Blog state (tất cả lift lên đây để handleSaveDraft truy cập được) ──
+  // ── Blog state (PRESERVED) ──
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [coverImageUrl, setCoverImageUrl] = useState(""); // URL server (edit blog cũ)
-  const [coverImageFile, setCoverImageFile] = useState<File | null>(null); // File upload mới
+  const [coverImageUrl, setCoverImageUrl] = useState("");
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [tagsSelection, setTagsSelection] = useState<string[]>([]);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
   const [isDraftSaving, setIsDraftSaving] = useState(false);
   const [isPublishSaving, setIsPublishSaving] = useState(false);
 
-  const [isLoadingBlog, setIsLoadingBlog] = useState(false);
+  const [_isLoadingBlog, setIsLoadingBlog] = useState(false);
 
-  const { user } = useAuthStore();
+  useAuthStore();
 
-  // ── Save Draft ────────────────────────────────────────────────
+  // ── Save Draft (PRESERVED) ────────────────────────
   const handleSaveDraft = async () => {
     if (tagsSelection == null || tagsSelection.length === 0) {
       alert("Vui lòng chọn tags cho bài viết");
@@ -784,23 +980,23 @@ function DashboardPage() {
     setIsDraftSaving(true);
     try {
       if (editingBlogId) {
-        // ── UPDATE blog đã có ──
-        const { data } = await blogApi.updateDraft(editingBlogId, {
+        await blogApi.updateDraft(editingBlogId, {
           title,
+          summary,
           content,
           tags: tagsSelection,
           coverImage: coverImageFile,
         });
         alert("✅ Đã cập nhật draft!");
       } else {
-        // ── CREATE blog mới ──
         const { data } = await blogApi.saveDraft({
           title,
+          summary,
           content,
           tags: tagsSelection,
           coverImage: coverImageFile,
         });
-        setEditingBlogId(data.result.blogId); // lưu lại ID sau khi tạo
+        setEditingBlogId(data.result.blogId);
         alert("✅ Đã lưu draft!");
       }
     } catch (e) {
@@ -811,6 +1007,7 @@ function DashboardPage() {
     }
   };
 
+  // ── Publish (PRESERVED) ───────────────────────────
   const handlePublishBlog = async () => {
     if (tagsSelection == null || tagsSelection.length === 0) {
       alert("Vui lòng chọn tags cho bài viết");
@@ -826,11 +1023,12 @@ function DashboardPage() {
     try {
       const { data } = await blogApi.saveAndPublishBlog({
         title,
+        summary,
         content,
         tags: tagsSelection,
         coverImage: coverImageFile,
       });
-      setEditingBlogId(data.result.blogId); // lưu lại ID sau khi tạo
+      setEditingBlogId(data.result.blogId);
       alert("✅ Đã lưu và publish blog thành công!");
     } catch (e) {
       console.log("Eror: ", e);
@@ -839,7 +1037,7 @@ function DashboardPage() {
     }
   };
 
-  // ── Edit blog từ ProfileContent ───────────────────────────────
+  // ── Edit blog từ ProfileContent (PRESERVED) ───────
   const handleEditBlog = async (blogId: string) => {
     setIsLoadingBlog(true);
     try {
@@ -848,10 +1046,11 @@ function DashboardPage() {
       setTitle(blog.title ?? "");
       setContent(blog.content ?? "");
       setCoverImageUrl(blog?.coverImageUrl ?? "");
-      setCoverImageFile(null); // reset file cũ
+      setCoverImageFile(null);
       setTagsSelection(blog.tags ?? []);
       setEditingBlogId(blogId);
       setActiveView("write");
+      setSummary(blog.summary ?? "");
     } catch (e) {
       console.error("Failed to load blog:", e);
     } finally {
@@ -889,19 +1088,19 @@ function DashboardPage() {
   return (
     <div
       style={{
-        background: "#ebf4f5",
+        background: "#f2fbfc",
         fontFamily: "var(--font-sans)",
         height: "100vh",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      {/* Top Bar */}
+      {/* ▬▬ TOP BAR ▬▬ */}
       <div
-        className="shrink-0 flex items-center justify-between px-6 h-14 bg-white"
+        className="shrink-0 flex items-center justify-between px-8 h-14 bg-white"
         style={{ borderBottom: "3px solid #0d0d0d", zIndex: 50 }}
       >
-        <div className="flex">
+        <div className="flex items-center">
           <Link to="/">
             <span
               className="text-xl font-black"
@@ -917,19 +1116,20 @@ function DashboardPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Your story begins here..."
-              className="flex-1 mx-6 pr-6 text-base font-bold bg-transparent outline-none"
+              className="flex-1 mx-8 pr-6 text-base font-bold bg-transparent outline-none"
               style={{
                 fontFamily: "var(--font-display)",
-                color: "#0d0d0d",
-                borderBottom: "2px solid #0d0d0d",
-                paddingBottom: "3px",
+                color: "#151d1e",
+                borderBottom: "3px solid #0d0d0d",
+                paddingBottom: "4px",
+                minWidth: "300px",
               }}
             />
           )}
           {activeView !== "write" && (
             <span
-              className="flex-1 mx-6 text-base font-black uppercase tracking-widest"
-              style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+              className="mx-8 text-sm font-black uppercase tracking-[0.15em]"
+              style={{ fontFamily: "var(--font-display)", color: "#151d1e" }}
             >
               {activeView === "stats"
                 ? "Your Statistics"
@@ -940,32 +1140,63 @@ function DashboardPage() {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          <h3
-            className="font-black text-xl mb-0.5"
-            style={{ fontFamily: "var(--font-display)" }}
+        <div className="flex items-center gap-3">
+          {/* Search icon */}
+          <button
+            title="Search"
+            className="w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] transition-colors cursor-pointer"
+            style={{ border: "3px solid #0d0d0d" }}
           >
-            {user?.fullName}
-          </h3>
+            <Search size={16} />
+          </button>
 
-          <img
-            src={
-              user?.avatarUrl ||
-              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face"
-            }
-            alt="user"
-            className="w-12 h-12 rounded-full object-cover shrink-0"
-            style={{ border: "2px solid #0d0d0d" }}
+          {/* Message icon */}
+          <button
+            onClick={() => navigate("/messages")}
+            title="Messages"
+            className="relative w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] transition-colors cursor-pointer"
+            style={{ border: "3px solid #0d0d0d" }}
+          >
+            <MessageCircle size={16} />
+          </button>
+
+          {/* Notification icon */}
+          <button
+            title="Notifications"
+            className="relative w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] transition-colors cursor-pointer"
+            style={{ border: "3px solid #0d0d0d" }}
+          >
+            <Bell size={16} />
+            <span
+              className="absolute -top-1.5 -right-1.5 w-4 h-4 flex items-center justify-center text-white"
+              style={{
+                fontSize: "9px",
+                fontWeight: 900,
+                background: "#d32f2f",
+                fontFamily: "var(--font-display)",
+                border: "2px solid white",
+              }}
+            >
+              3
+            </span>
+          </button>
+
+          {/* Avatar Dropdown */}
+          <AvatarDropdown
+            onSettingsClick={() => handleActiveView("settings")}
           />
         </div>
       </div>
 
-      {/* Body */}
+      {/* ▬▬ BODY ▬▬ */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div
-          className="w-20 shrink-0 gap-2 bg-white flex flex-col"
-          style={{ borderRight: "2px solid #0d0d0d" }}
+          className="w-20 shrink-0 flex flex-col"
+          style={{
+            borderRight: "3px solid #0d0d0d",
+            background: "#ecf5f6",
+          }}
         >
           {sideItems.map((item) =>
             item.href ? (
@@ -996,6 +1227,8 @@ function DashboardPage() {
               key={editingBlogId ?? "new"}
               title={title}
               setTitle={setTitle}
+              summary={summary} // ✅
+              setSummary={setSummary}
               content={content}
               setContent={setContent}
               coverImageUrl={coverImageUrl}
@@ -1003,7 +1236,7 @@ function DashboardPage() {
               setCoverImageFile={setCoverImageFile}
               tags={tagsSelection}
               setTags={setTagsSelection}
-              onSaveDraft={handleSaveDraft} // ← truyền callback xuống
+              onSaveDraft={handleSaveDraft}
               isDraftSaving={isDraftSaving}
               isPublishSaving={isPublishSaving}
               onSavePublish={handlePublishBlog}

@@ -1,12 +1,20 @@
 import { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
-import { Search, Clock, ChevronLeft, ChevronRight, Eye, TrendingUp } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Search,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  TrendingUp,
+} from "lucide-react";
 import blogApi from "@/api/blogApi";
 import { toast } from "sonner";
 import { BlogResponse, TagResponse } from "@/types/blog.types";
 
 const SORTS = ["Latest", "Most Viewed"];
-const FALLBACK_COVER = "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop";
+const FALLBACK_COVER =
+  "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop";
 const PAGE_SIZE = 9;
 
 const trending = [
@@ -24,7 +32,10 @@ const parseDate = (dateStr: string) => {
 
 function ExplorePage() {
   const [search, setSearch] = useState("");
-  const [activeTag, setActiveTag] = useState("All");
+  const location = useLocation();
+  const [activeTag, setActiveTag] = useState(
+    location.state?.selectedTag ?? "All",
+  );
   const [activeSort, setActiveSort] = useState("Latest");
   const [blogs, setBlogs] = useState<BlogResponse[]>([]);
   const [tags, setTags] = useState<TagResponse[]>([]);
@@ -56,6 +67,13 @@ function ExplorePage() {
     setPage(1);
   }, [search, activeTag, activeSort]);
 
+  useEffect(() => {
+    if (location.state?.selectedTag) {
+      setActiveTag(location.state.selectedTag);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [location.state]);
+
   const filteredAndSorted = useMemo(() => {
     return blogs
       .filter((blog) => {
@@ -66,19 +84,32 @@ function ExplorePage() {
         return matchTag && matchSearch;
       })
       .sort((a, b) => {
-        if (activeSort === "Latest") return parseDate(b.createdAt ?? "") - parseDate(a.createdAt ?? "");
+        if (activeSort === "Latest")
+          return parseDate(b.createdAt ?? "") - parseDate(a.createdAt ?? "");
         if (activeSort === "Most Viewed") return b.viewCount - a.viewCount;
         return 0;
       });
   }, [blogs, activeTag, search, activeSort]);
 
   const totalPages = Math.ceil(filteredAndSorted.length / PAGE_SIZE);
-  const paginated = filteredAndSorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated = filteredAndSorted.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
 
   return (
-    <div style={{ background: "#ebf4f5", fontFamily: "var(--font-sans)", minHeight: "100vh" }}>
+    <div
+      style={{
+        background: "#ebf4f5",
+        fontFamily: "var(--font-sans)",
+        minHeight: "100vh",
+      }}
+    >
       {/* Header */}
-      <div className="py-12 px-6" style={{ background: "#0d0d0d", borderBottom: "3px solid #d32f2f" }}>
+      <div
+        className="py-12 px-6"
+        style={{ background: "#0d0d0d", borderBottom: "3px solid #d32f2f" }}
+      >
         <div className="max-w-7xl mx-auto">
           <h1
             className="font-black mb-4"
@@ -95,7 +126,11 @@ function ExplorePage() {
             Discover blogs from writers around the world.
           </p>
           <div className="relative max-w-2xl">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: "#999" }} />
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2"
+              style={{ color: "#999" }}
+            />
             <input
               type="text"
               value={search}
@@ -144,14 +179,18 @@ function ExplorePage() {
                   fontFamily: "var(--font-display)",
                   background: activeSort === sort ? "#0d0d0d" : "transparent",
                   color: activeSort === sort ? "white" : "#555",
-                  borderRight: i < SORTS.length - 1 ? "2px solid #0d0d0d" : "none",
+                  borderRight:
+                    i < SORTS.length - 1 ? "2px solid #0d0d0d" : "none",
                 }}
               >
                 {sort}
               </button>
             ))}
           </div>
-          <p className="text-sm" style={{ color: "#888", fontFamily: "var(--font-display)" }}>
+          <p
+            className="text-sm"
+            style={{ color: "#888", fontFamily: "var(--font-display)" }}
+          >
             <span className="font-black" style={{ color: "#d32f2f" }}>
               {filteredAndSorted.length}
             </span>{" "}
@@ -185,7 +224,8 @@ function ExplorePage() {
                         boxShadow: "4px 4px 0 #0d0d0d",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translate(-2px,-2px)";
+                        e.currentTarget.style.transform =
+                          "translate(-2px,-2px)";
                         e.currentTarget.style.boxShadow = "6px 6px 0 #0d0d0d";
                       }}
                       onMouseLeave={(e) => {
@@ -194,7 +234,10 @@ function ExplorePage() {
                       }}
                     >
                       {/* Cover Image */}
-                      <div className="relative overflow-hidden" style={{ height: "180px" }}>
+                      <div
+                        className="relative overflow-hidden"
+                        style={{ height: "180px" }}
+                      >
                         <img
                           src={blog.coverImageUrl ?? FALLBACK_COVER}
                           alt={blog.title}
@@ -219,7 +262,10 @@ function ExplorePage() {
                         {/* View count */}
                         <div
                           className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 text-xs font-bold"
-                          style={{ background: "rgba(0,0,0,0.7)", color: "white" }}
+                          style={{
+                            background: "rgba(0,0,0,0.7)",
+                            color: "white",
+                          }}
                         >
                           <Eye size={11} />
                           {blog.viewCount}
@@ -230,11 +276,17 @@ function ExplorePage() {
                       <div className="p-4">
                         <h3
                           className="font-black text-base leading-tight mb-2 line-clamp-2"
-                          style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            color: "#0d0d0d",
+                          }}
                         >
                           {blog.title}
                         </h3>
-                        <p className="text-xs mb-3 leading-relaxed line-clamp-2" style={{ color: "#666" }}>
+                        <p
+                          className="text-xs mb-3 leading-relaxed line-clamp-2"
+                          style={{ color: "#666" }}
+                        >
                           {blog.summary ?? "No summary available."}
                         </p>
 
@@ -260,7 +312,10 @@ function ExplorePage() {
                               {blog.author.fullName}
                             </span>
                           </div>
-                          <div className="flex items-center gap-1 text-xs" style={{ color: "#888" }}>
+                          <div
+                            className="flex items-center gap-1 text-xs"
+                            style={{ color: "#888" }}
+                          >
                             <Clock size={11} />
                             {blog.createdAt}
                           </div>
@@ -277,31 +332,46 @@ function ExplorePage() {
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
                       className="w-10 h-10 flex items-center justify-center disabled:opacity-40"
-                      style={{ border: "3px solid #0d0d0d", background: "white", boxShadow: "3px 3px 0 #0d0d0d" }}
+                      style={{
+                        border: "3px solid #0d0d0d",
+                        background: "white",
+                        boxShadow: "3px 3px 0 #0d0d0d",
+                      }}
                     >
                       <ChevronLeft size={16} />
                     </button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => setPage(p)}
-                        className="w-10 h-10 flex items-center justify-center text-sm font-black"
-                        style={{
-                          fontFamily: "var(--font-display)",
-                          border: "3px solid #0d0d0d",
-                          background: page === p ? "#0d0d0d" : "white",
-                          color: page === p ? "white" : "#0d0d0d",
-                          boxShadow: page === p ? "3px 3px 0 #d32f2f" : "3px 3px 0 #0d0d0d",
-                        }}
-                      >
-                        {p}
-                      </button>
-                    ))}
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (p) => (
+                        <button
+                          key={p}
+                          onClick={() => setPage(p)}
+                          className="w-10 h-10 flex items-center justify-center text-sm font-black"
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            border: "3px solid #0d0d0d",
+                            background: page === p ? "#0d0d0d" : "white",
+                            color: page === p ? "white" : "#0d0d0d",
+                            boxShadow:
+                              page === p
+                                ? "3px 3px 0 #d32f2f"
+                                : "3px 3px 0 #0d0d0d",
+                          }}
+                        >
+                          {p}
+                        </button>
+                      ),
+                    )}
                     <button
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages, p + 1))
+                      }
                       disabled={page === totalPages}
                       className="w-10 h-10 flex items-center justify-center disabled:opacity-40"
-                      style={{ border: "3px solid #0d0d0d", background: "white", boxShadow: "3px 3px 0 #0d0d0d" }}
+                      style={{
+                        border: "3px solid #0d0d0d",
+                        background: "white",
+                        boxShadow: "3px 3px 0 #0d0d0d",
+                      }}
                     >
                       <ChevronRight size={16} />
                     </button>
@@ -311,10 +381,16 @@ function ExplorePage() {
             ) : (
               <div
                 className="text-center py-20 bg-white"
-                style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
+                style={{
+                  border: "3px solid #0d0d0d",
+                  boxShadow: "4px 4px 0 #0d0d0d",
+                }}
               >
                 <p className="text-6xl mb-4">📝</p>
-                <h3 className="font-black text-xl mb-2" style={{ fontFamily: "var(--font-display)" }}>
+                <h3
+                  className="font-black text-xl mb-2"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
                   No stories found
                 </h3>
                 <p style={{ color: "#888" }}>Try a different search or tag</p>
@@ -327,9 +403,18 @@ function ExplorePage() {
             {/* Trending Topics */}
             <div
               className="bg-white"
-              style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
+              style={{
+                border: "3px solid #0d0d0d",
+                boxShadow: "4px 4px 0 #0d0d0d",
+              }}
             >
-              <div className="px-5 py-3" style={{ background: "#0d0d0d", borderBottom: "3px solid #0d0d0d" }}>
+              <div
+                className="px-5 py-3"
+                style={{
+                  background: "#0d0d0d",
+                  borderBottom: "3px solid #0d0d0d",
+                }}
+              >
                 <h3
                   className="font-black text-sm uppercase tracking-widest text-white flex items-center gap-2"
                   style={{ fontFamily: "var(--font-display)" }}
@@ -341,20 +426,31 @@ function ExplorePage() {
                 <div
                   key={t.topic}
                   className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-[#ebf4f5] transition-colors"
-                  style={{ borderBottom: i < trending.length - 1 ? "1px solid #eee" : "none" }}
+                  style={{
+                    borderBottom:
+                      i < trending.length - 1 ? "1px solid #eee" : "none",
+                  }}
                 >
                   <div className="flex items-center gap-3">
                     <span
                       className="w-6 h-6 flex items-center justify-center text-xs font-black text-white"
-                      style={{ background: "#d32f2f", fontFamily: "var(--font-display)" }}
+                      style={{
+                        background: "#d32f2f",
+                        fontFamily: "var(--font-display)",
+                      }}
                     >
                       {t.num}
                     </span>
-                    <span className="text-sm font-bold" style={{ fontFamily: "var(--font-display)" }}>
+                    <span
+                      className="text-sm font-bold"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
                       {t.topic}
                     </span>
                   </div>
-                  <span className="text-xs" style={{ color: "#888" }}>{t.posts}</span>
+                  <span className="text-xs" style={{ color: "#888" }}>
+                    {t.posts}
+                  </span>
                 </div>
               ))}
             </div>
@@ -362,7 +458,10 @@ function ExplorePage() {
             {/* Popular Tags từ backend */}
             <div
               className="bg-white p-5"
-              style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
+              style={{
+                border: "3px solid #0d0d0d",
+                boxShadow: "4px 4px 0 #0d0d0d",
+              }}
             >
               <h3
                 className="font-black text-sm uppercase tracking-widest mb-4"
