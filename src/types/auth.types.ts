@@ -33,10 +33,17 @@ export interface User {
   email: string
   fullName: string
   avatarUrl: string
+  role: string
 }
 
 export interface ApiResponse<T> {
   code: number
   result: T
   message?: string
+}
+
+export interface ChangePasswordRequest{
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }

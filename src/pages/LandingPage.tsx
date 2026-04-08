@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   Pen,
@@ -7,48 +7,14 @@ import {
   PenLine,
   CheckCircle,
 } from "lucide-react";
-
-const featuredBlogs = [
-  {
-    id: 1,
-    category: "Tech",
-    title: "How AI is Reshaping the Way We Write Content",
-    author: "Sarah Chen",
-    authorAvatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
-    excerpt:
-      "Explore how large language models are transforming content creation for writers worldwide.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop",
-    readTime: 8,
-  },
-  {
-    id: 2,
-    category: "Lifestyle",
-    title: "Building a Writing Habit That Actually Sticks",
-    author: "Marcus Rivera",
-    authorAvatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-    excerpt:
-      "The science behind habit formation and how to apply it to consistent writing practice.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&h=400&fit=crop",
-    readTime: 6,
-  },
-  {
-    id: 3,
-    category: "Business",
-    title: "From Blog to Brand: Monetizing Your Writing",
-    author: "Alex Kim",
-    authorAvatar:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
-    excerpt:
-      "Practical strategies to turn your passion for writing into a sustainable income stream.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&h=400&fit=crop",
-    readTime: 10,
-  },
-];
+import { useEffect, useState } from "react";
+import { BlogResponse, TagResponse } from "@/types/blog.types";
+import blogApi from "@/api/blogApi";
+import { extractApiError } from "@/utils/apiError";
+import { toast } from "sonner";
+import tagApi from "@/api/tagApi";
+import { TagStatsResponse } from "@/types/tag.types";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const categories = [
   "Tech",
@@ -117,6 +83,37 @@ const testimonials = [
 ];
 
 function LandingPage() {
+  const [blogs, setBlogs] = useState<BlogResponse[]>([]);
+  const [tags, setTags] = useState<TagStatsResponse[]>([]);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      setLoading(true);
+      try {
+        const [blogResponse, tagResponse] = await Promise.all([
+          blogApi.get4BlogViewest(),
+          tagApi.getTopTagsByViews(),
+        ]);
+        setBlogs(blogResponse.data.result);
+        setTags(tagResponse.data.result);
+      } catch (e) {
+        toast.error(extractApiError(e));
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAll();
+  }, []);
+
+  const blogViewst = blogs?.[0];
+
+  const top3Blog = blogs?.slice(1, 4) || [];
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
   return (
     <div
       className="min-h-screen"
@@ -224,20 +221,26 @@ function LandingPage() {
                 style={{ height: "260px" }}
               >
                 <img
-                  src="https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=700&h=400&fit=crop"
-                  alt="blog preview"
+                  src={
+                    blogViewst?.coverImageUrl ||
+                    "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=700&h=400&fit=crop"
+                  }
+                  alt={blogViewst?.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <span
-                  className="absolute top-4 left-4 px-3 py-1 text-xs font-black uppercase tracking-widest text-white"
-                  style={{
-                    background: "#d32f2f",
-                    border: "2px solid #0d0d0d",
-                    fontFamily: "var(--font-display)",
-                  }}
-                >
-                  Featured
-                </span>
+                {blogViewst?.tags?.map((tag, index) => (
+                  <span
+                    key={index}
+                    className="absolute top-4 left-4 px-3 py-1 text-xs font-black uppercase tracking-widest text-white"
+                    style={{
+                      background: "#d32f2f",
+                      border: "2px solid #0d0d0d",
+                      fontFamily: "var(--font-display)",
+                    }}
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
               <div className="p-6">
                 <h3
@@ -247,15 +250,13 @@ function LandingPage() {
                     color: "#0d0d0d",
                   }}
                 >
-                  The Art of Storytelling in the Age of AI
+                  {blogViewst?.title}
                 </h3>
                 <p
                   className="mb-4 text-sm leading-relaxed"
                   style={{ color: "#666" }}
                 >
-                  What makes human-crafted stories irreplaceable even as
-                  artificial intelligence becomes an increasingly capable
-                  writing tool...
+                  {blogViewst?.summary}
                 </p>
                 <div
                   className="flex items-center justify-between"
@@ -263,7 +264,12 @@ function LandingPage() {
                 >
                   <div className="flex items-center gap-2">
                     <img
-                      src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=face"
+                      src={
+                        blogViewst?.author?.avatarUrl ||
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                          blogViewst?.author?.fullName || "User",
+                        )}&background=d32f2f&color=fff`
+                      }
                       alt="author"
                       className="w-8 h-8"
                       style={{ border: "2px solid #0d0d0d" }}
@@ -273,14 +279,14 @@ function LandingPage() {
                         className="text-xs font-bold"
                         style={{ fontFamily: "var(--font-display)" }}
                       >
-                        Sarah Chen
+                        {blogViewst?.author?.fullName}
                       </p>
-                      <p className="text-xs" style={{ color: "#888" }}>
+                      {/* <p className="text-xs" style={{ color: "#888" }}>
                         8 min read
-                      </p>
+                      </p> */}
                     </div>
                   </div>
-                  <Link to="/blog/1">
+                  <Link to={`/blog/${blogViewst?.blogId || ""}`}>
                     <button
                       className="brutal-btn-primary text-xs"
                       style={{ padding: "8px 16px" }}
@@ -322,10 +328,10 @@ function LandingPage() {
             </Link>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {featuredBlogs.map((blog) => (
+            {top3Blog?.map((blog) => (
               <Link
-                to={`/blog/${blog.id}`}
-                key={blog.id}
+                to={`/blog/${blog.blogId}`}
+                key={blog.blogId}
                 className="brutal-card overflow-hidden block"
               >
                 <div
@@ -333,20 +339,23 @@ function LandingPage() {
                   style={{ height: "200px" }}
                 >
                   <img
-                    src={blog.imageUrl}
-                    alt={blog.title}
+                    src={blog?.coverImageUrl}
+                    alt={blog?.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <span
-                    className="absolute top-3 left-3 px-2 py-1 text-xs font-black uppercase tracking-widest text-white"
-                    style={{
-                      background: "#d32f2f",
-                      border: "2px solid #0d0d0d",
-                      fontFamily: "var(--font-display)",
-                    }}
-                  >
-                    {blog.category}
-                  </span>
+                  {blog?.tags?.map((tag) => (
+                    <span
+                      key={tag}
+                      className="absolute top-3 left-3 px-2 py-1 text-xs font-black uppercase tracking-widest text-white"
+                      style={{
+                        background: "#d32f2f",
+                        border: "2px solid #0d0d0d",
+                        fontFamily: "var(--font-display)",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
                 <div className="p-5">
                   <h3
@@ -356,14 +365,14 @@ function LandingPage() {
                       color: "#0d0d0d",
                     }}
                   >
-                    {blog.title}
+                    {blog?.title}
                   </h3>
-                  <p
+                  {/* <p
                     className="mb-4 text-sm leading-relaxed"
                     style={{ color: "#666" }}
                   >
                     {blog.excerpt}
-                  </p>
+                  </p> */}
                   <div
                     className="flex items-center gap-2"
                     style={{
@@ -372,8 +381,8 @@ function LandingPage() {
                     }}
                   >
                     <img
-                      src={blog.authorAvatar}
-                      alt={blog.author}
+                      src={blog?.author?.avatarUrl}
+                      alt={blog?.author?.avatarUrl}
                       className="w-7 h-7"
                       style={{ border: "2px solid #0d0d0d" }}
                     />
@@ -381,11 +390,11 @@ function LandingPage() {
                       className="text-xs font-bold"
                       style={{ fontFamily: "var(--font-display)" }}
                     >
-                      {blog.author}
+                      {blog?.author?.fullName}
                     </span>
-                    <span className="ml-auto text-xs" style={{ color: "#888" }}>
+                    {/* <span className="ml-auto text-xs" style={{ color: "#888" }}>
                       {blog.readTime} min
-                    </span>
+                    </span> */}
                   </div>
                 </div>
               </Link>
@@ -403,15 +412,17 @@ function LandingPage() {
           Explore by Topic
         </h2>
         <div className="flex flex-wrap gap-3 justify-center">
-          {categories.map((cat) => (
-            <Link to={`/explore?cat=${cat.toLowerCase()}`} key={cat}>
-              <button
-                className="brutal-tag text-sm"
-                style={{ padding: "10px 20px", fontSize: "0.875rem" }}
-              >
-                {cat}
-              </button>
-            </Link>
+          {tags.map((tag) => (
+            <button
+              key={tag.tag}
+              className="brutal-tag text-sm"
+              style={{ padding: "10px 20px", fontSize: "0.875rem" }}
+              onClick={() =>
+                navigate("/explore", { state: { selectedTag: tag.tag } })
+              }
+            >
+              {tag?.tag}
+            </button>
           ))}
         </div>
       </section>

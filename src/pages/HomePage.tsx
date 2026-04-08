@@ -1,4 +1,9 @@
+import blogApi from "@/api/blogApi";
+import { BlogResponse } from "@/types/blog.types";
+import { extractApiError } from "@/utils/apiError";
 import { ArrowRight, Mail, Clock } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 function HomePage() {
   const listFeatured = [
@@ -71,6 +76,8 @@ function HomePage() {
       minuteCreatedPost: 15,
     },
   ];
+
+  
 
   return (
     <>

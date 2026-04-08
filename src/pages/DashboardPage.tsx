@@ -28,88 +28,78 @@ import blogApi from "@/api/blogApi";
 import { RichEditor } from "@/components/dashboard/RichEditor";
 import { TagResponse } from "@/types/blog.types";
 import { AvatarDropdown } from "@/components/dashboard/AvatarDropdown";
+import { toast } from "sonner";
+import { extractApiError } from "@/utils/apiError";
+import { validateCreateBlog, validateUpdateBlog } from "@/utils/blogValidation";
 
 type ActiveView = "write" | "stats" | "profile" | "settings";
 
-// ── AI Title Generator (PRESERVED — no changes) ───────────────────
-function extractKeywords(text: string): string[] {
-  const stopWords = new Set([
-    "the",
-    "a",
-    "an",
-    "and",
-    "or",
-    "but",
-    "in",
-    "on",
-    "at",
-    "to",
-    "for",
-    "is",
-    "are",
-    "was",
-    "were",
-    "be",
-    "been",
-    "have",
-    "has",
-    "had",
-    "do",
-    "does",
-    "did",
-    "will",
-    "would",
-    "could",
-    "should",
-    "may",
-    "might",
-    "of",
-    "that",
-    "this",
-    "with",
-    "from",
-    "by",
-    "about",
-    "as",
-    "it",
-    "its",
-    "i",
-    "you",
-    "we",
-    "they",
-    "my",
-    "your",
-    "our",
-    "their",
-  ]);
-  const words = text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, "")
-    .split(/\s+/)
-    .filter((w) => w.length > 3 && !stopWords.has(w));
-  const freq: Record<string, number> = {};
-  words.forEach((w) => {
-    freq[w] = (freq[w] || 0) + 1;
-  });
-  return Object.entries(freq)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([w]) => w);
-}
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-const TEMPLATES = [
-  (kw: string[]) =>
-    `The Ultimate Guide to ${cap(kw[0] || "Your Topic")} in 2025`,
-  (kw: string[]) =>
-    `Why ${cap(kw[0] || "This")} Is Changing Everything We Know About ${cap(kw[1] || "the World")}`,
-  (kw: string[]) =>
-    `${cap(kw[0] || "How")} ${cap(kw[1] || "To Do It")}: A Deep Dive`,
-  (kw: string[]) => `${cap(kw[0] || "Your Topic")}: What Nobody Tells You`,
-  (kw: string[]) =>
-    `From Zero to Expert: Mastering ${cap(kw[0] || "Your Craft")}`,
-  (kw: string[]) =>
-    `The Truth About ${cap(kw[0] || "Your Topic")} That Will Surprise You`,
-];
+// // ── AI Title Generator (PRESERVED — no changes) ───────────────────
+// function extractKeywords(text: string): string[] {
+//   const stopWords = new Set([
+//     "the",
+//     "a",
+//     "an",
+//     "and",
+//     "or",
+//     "but",
+//     "in",
+//     "on",
+//     "at",
+//     "to",
+//     "for",
+//     "is",
+//     "are",
+//     "was",
+//     "were",
+//     "be",
+//     "been",
+//     "have",
+//     "has",
+//     "had",
+//     "do",
+//     "does",
+//     "did",
+//     "will",
+//     "would",
+//     "could",
+//     "should",
+//     "may",
+//     "might",
+//     "of",
+//     "that",
+//     "this",
+//     "with",
+//     "from",
+//     "by",
+//     "about",
+//     "as",
+//     "it",
+//     "its",
+//     "i",
+//     "you",
+//     "we",
+//     "they",
+//     "my",
+//     "your",
+//     "our",
+//     "their",
+//   ]);
+//   const words = text
+//     .toLowerCase()
+//     .replace(/[^a-z0-9\s]/g, "")
+//     .split(/\s+/)
+//     .filter((w) => w.length > 3 && !stopWords.has(w));
+//   const freq: Record<string, number> = {};
+//   words.forEach((w) => {
+//     freq[w] = (freq[w] || 0) + 1;
+//   });
+//   return Object.entries(freq)
+//     .sort((a, b) => b[1] - a[1])
+//     .slice(0, 5)
+//     .map(([w]) => w);
+// }
+
 async function generateTitlesFromAI(content: string): Promise<string[]> {
   const { data } = await blogApi.generateTitles(content);
   return data.result;
@@ -258,7 +248,7 @@ function AITitlePanel({
       setDots(".".repeat(d));
     }, 400);
     try {
-      const titles = await generateTitlesFromAI(content); // ✅ gọi backend
+      const titles = await generateTitlesFromAI(content);
       setSuggestions(titles);
     } catch (e) {
       console.error("Generate titles failed:", e);
@@ -491,8 +481,8 @@ function AITitlePanel({
 type WriteViewProps = {
   title: string;
   setTitle: (v: string) => void;
-  summary: string; // ✅ thêm
-  setSummary: (v: string) => void; // ✅ thêm
+  summary: string;
+  setSummary: (v: string) => void;
   content: string;
   setContent: (v: string) => void;
   coverImageUrl: string;
@@ -520,6 +510,8 @@ function WriteView({
   onSavePublish,
   isDraftSaving,
   isPublishSaving,
+  summary,
+  setSummary,
 }: WriteViewProps) {
   const [activeTab, setActiveTab] = useState<"write" | "preview">("write");
   const [tagsData, setTagsData] = useState<TagResponse[] | null>([]);
@@ -610,11 +602,11 @@ function WriteView({
         {activeTab === "write" && (
           <div className="max-w-250 mx-auto p-8">
             <AITitlePanel content={content} onApply={setTitle} />
-            {/* <AISummaryPanel // ✅ thêm
+            <AISummaryPanel // ✅ thêm
               content={content}
               summary={summary}
               onSummaryChange={setSummary}
-            /> */}
+            />
             {/* Tag Selection */}
             <div className="max-w-full mx-auto pb-6">
               <div
@@ -894,6 +886,17 @@ function WriteView({
               >
                 {title || "Your Post Title"}
               </h1>
+              <h3
+                className="text-2xl font-black mb-8"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  color: "#0d0d0d",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1.1,
+                }}
+              >
+                {summary || "Your Post Summary"}
+              </h3>
               {content ? (
                 <div
                   className="prose-content"
@@ -972,8 +975,23 @@ function DashboardPage() {
 
   // ── Save Draft (PRESERVED) ────────────────────────
   const handleSaveDraft = async () => {
-    if (tagsSelection == null || tagsSelection.length === 0) {
-      alert("Vui lòng chọn tags cho bài viết");
+    const errors = editingBlogId
+      ? validateUpdateBlog({
+          title,
+          summary,
+          content,
+          coverImage: coverImageFile,
+        })
+      : validateCreateBlog({
+          title,
+          summary,
+          content,
+          tags: tagsSelection,
+          coverImage: coverImageFile,
+        });
+
+    if (errors.length > 0) {
+      errors.forEach((e) => toast.error(e.message));
       return;
     }
 
@@ -987,7 +1005,7 @@ function DashboardPage() {
           tags: tagsSelection,
           coverImage: coverImageFile,
         });
-        alert("✅ Đã cập nhật draft!");
+        toast.success("Draft updated successfully");
       } else {
         const { data } = await blogApi.saveDraft({
           title,
@@ -997,44 +1015,86 @@ function DashboardPage() {
           coverImage: coverImageFile,
         });
         setEditingBlogId(data.result.blogId);
-        alert("✅ Đã lưu draft!");
+        toast.success("Draft saved successfully");
+        setTitle("");
+        setContent("");
+        setCoverImageFile(null);
+        setCoverImageUrl("");
+        setSummary("");
       }
     } catch (e) {
-      console.error("Save draft failed:", e);
-      alert("❌ Lưu thất bại!");
+      // ✅ Backend lỗi → throw thẳng message lên toast
+      toast.error(extractApiError(e));
     } finally {
       setIsDraftSaving(false);
     }
   };
 
-  // ── Publish (PRESERVED) ───────────────────────────
   const handlePublishBlog = async () => {
-    if (tagsSelection == null || tagsSelection.length === 0) {
-      alert("Vui lòng chọn tags cho bài viết");
+    const errors = editingBlogId
+      ? validateUpdateBlog({
+          title,
+          summary,
+          content,
+          coverImage: coverImageFile,
+        })
+      : validateCreateBlog({
+          title,
+          summary,
+          content,
+          tags: tagsSelection,
+          coverImage: coverImageFile,
+        });
+
+    if (errors.length > 0) {
+      errors.forEach((e) => toast.error(e.message));
       return;
     }
 
-    const confirm = window.confirm(
-      "Bạn có chắc chắn muốn lưu và publish blog này không ? Lưu ý: khi publish blog thì không thể chỉnh sửa nữa",
-    );
-
-    if (!confirm) return;
-    setIsPublishSaving(true);
-    try {
-      const { data } = await blogApi.saveAndPublishBlog({
-        title,
-        summary,
-        content,
-        tags: tagsSelection,
-        coverImage: coverImageFile,
-      });
-      setEditingBlogId(data.result.blogId);
-      alert("✅ Đã lưu và publish blog thành công!");
-    } catch (e) {
-      console.log("Eror: ", e);
-    } finally {
-      setIsPublishSaving(false);
-    }
+    toast("Are you sure you want to publish this blog?", {
+      description: "Once published, it will no longer be possible to edit it",
+      action: {
+        label: "Confirm",
+        onClick: async () => {
+          setIsPublishSaving(true);
+          try {
+            if (editingBlogId) {
+              // ✅ Đang edit draft → update content trước → publish
+              await blogApi.updateDraft(editingBlogId, {
+                title,
+                summary,
+                content,
+                tags: tagsSelection,
+                coverImage: coverImageFile,
+              });
+              await blogApi.publishBlog(editingBlogId);
+            } else {
+              // ✅ Tạo mới → save và publish luôn
+              await blogApi.saveAndPublishBlog({
+                title,
+                summary,
+                content,
+                tags: tagsSelection,
+                coverImage: coverImageFile,
+              });
+            }
+            toast.success("Blog published successfully!");
+            setTitle("");
+            setContent("");
+            setCoverImageFile(null);
+            setCoverImageUrl("");
+            setTagsSelection([]);
+            setEditingBlogId(null);
+            setSummary("");
+          } catch (e) {
+            toast.error(extractApiError(e));
+          } finally {
+            setIsPublishSaving(false);
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   };
 
   // ── Edit blog từ ProfileContent (PRESERVED) ───────
@@ -1073,14 +1133,29 @@ function DashboardPage() {
 
   const handleActiveView = (view: ActiveView) => {
     if (editingBlogId && view === "write") {
-      const confirmed = window.confirm("Bỏ bài đang edit và tạo bài mới?");
-      if (!confirmed) return;
-      setTitle("");
-      setContent("");
-      setCoverImageUrl("");
-      setCoverImageFile(null);
-      setTagsSelection([]);
-      setEditingBlogId(null);
+      toast(
+        "Are you sure you want to discard the blog post you're currently editing and create a new one?",
+        {
+          description:
+            "You are currently editing this post. If you wish to confirm or delete the post, please select confirm ",
+          action: {
+            label: "Confirm",
+
+            onClick: () => {
+              setTitle("");
+              setContent("");
+              setCoverImageUrl("");
+              setCoverImageFile(null);
+              setTagsSelection([]);
+              setEditingBlogId(null);
+            },
+          },
+          cancel: {
+            label: "cancel",
+            onClick: () => {},
+          },
+        },
+      );
     }
     setActiveView(view);
   };

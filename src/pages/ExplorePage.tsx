@@ -7,23 +7,20 @@ import {
   ChevronRight,
   Eye,
   TrendingUp,
+  Loader2,
 } from "lucide-react";
 import blogApi from "@/api/blogApi";
 import { toast } from "sonner";
 import { BlogResponse, TagResponse } from "@/types/blog.types";
+import { TagStatsResponse } from "@/types/tag.types";
+import tagApi from "@/api/tagApi";
+import { extractApiError } from "@/utils/apiError";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
 
 const SORTS = ["Latest", "Most Viewed"];
 const FALLBACK_COVER =
   "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop";
 const PAGE_SIZE = 9;
-
-const trending = [
-  { num: 1, topic: "AI Writing Tools", posts: "2.3K posts" },
-  { num: 2, topic: "Productivity Tips", posts: "1.8K posts" },
-  { num: 3, topic: "Remote Work", posts: "1.5K posts" },
-  { num: 4, topic: "Mental Health", posts: "1.2K posts" },
-  { num: 5, topic: "Crypto & Web3", posts: "980 posts" },
-];
 
 const parseDate = (dateStr: string) => {
   const [day, month, year] = dateStr.split("/");
@@ -36,36 +33,41 @@ function ExplorePage() {
   const [activeTag, setActiveTag] = useState(
     location.state?.selectedTag ?? "All",
   );
+  const [activeGroup, setActiveGroup] = useState("All");
   const [activeSort, setActiveSort] = useState("Latest");
   const [blogs, setBlogs] = useState<BlogResponse[]>([]);
   const [tags, setTags] = useState<TagResponse[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [groupTrending, setGroupTrending] = useState<TagStatsResponse[]>([]);
 
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [blogsRes, tagsRes] = await Promise.all([
+        const [blogsRes, tagsRes, trendingRes] = await Promise.all([
           blogApi.getAllBlog(),
           blogApi.getAllTag(),
+          tagApi.getTrendingGroups(),
         ]);
+
         setBlogs(blogsRes.data.result.filter(Boolean));
         setTags(tagsRes.data.result);
+        setGroupTrending(trendingRes.data.result);
       } catch (e) {
-        toast.error("Không lấy được dữ liệu");
-        console.error(e);
+        toast.error("Failed to fetch data");
+        console.log(extractApiError(e));
       } finally {
         setLoading(false);
       }
     };
+
     fetchAll();
   }, []);
 
-  // Reset page khi filter thay đổi
   useEffect(() => {
     setPage(1);
-  }, [search, activeTag, activeSort]);
+  }, [search, activeTag, activeSort, activeGroup]);
 
   useEffect(() => {
     if (location.state?.selectedTag) {
@@ -74,14 +76,31 @@ function ExplorePage() {
     }
   }, [location.state]);
 
+  // Groups từ tags
+  const groups = useMemo(() => {
+    const uniqueGroups = [...new Set(tags.map((t) => t.groupName))];
+    return ["All", ...uniqueGroups];
+  }, [tags]);
+
+  // Tags theo group đang active
+  const filteredTagsByGroup = useMemo(() => {
+    if (activeGroup === "All") return [];
+    return tags.filter((t) => t.groupName === activeGroup);
+  }, [tags, activeGroup]);
+
   const filteredAndSorted = useMemo(() => {
     return blogs
       .filter((blog) => {
         const matchTag = activeTag === "All" || blog.tags.includes(activeTag);
+        const matchGroup =
+          activeGroup === "All" ||
+          blog.tags.some((tag) =>
+            tags.find((t) => t.tag === tag && t.groupName === activeGroup),
+          );
         const matchSearch =
           blog.title.toLowerCase().includes(search.toLowerCase()) ||
           (blog.summary ?? "").toLowerCase().includes(search.toLowerCase());
-        return matchTag && matchSearch;
+        return matchTag && matchSearch && matchGroup;
       })
       .sort((a, b) => {
         if (activeSort === "Latest")
@@ -89,7 +108,7 @@ function ExplorePage() {
         if (activeSort === "Most Viewed") return b.viewCount - a.viewCount;
         return 0;
       });
-  }, [blogs, activeTag, search, activeSort]);
+  }, [blogs, activeTag, activeGroup, search, activeSort, tags]);
 
   const totalPages = Math.ceil(filteredAndSorted.length / PAGE_SIZE);
   const paginated = filteredAndSorted.slice(
@@ -97,6 +116,18 @@ function ExplorePage() {
     page * PAGE_SIZE,
   );
 
+  const handleGroupClick = (group: string) => {
+    setActiveGroup(group);
+    setActiveTag("All"); // reset tag khi đổi group
+  };
+
+  const handleTagClick = (tag: string) => {
+    setActiveTag(tag === activeTag ? "All" : tag);
+  };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
   return (
     <div
       style={{
@@ -105,6 +136,8 @@ function ExplorePage() {
         minHeight: "100vh",
       }}
     >
+
+
       {/* Header */}
       <div
         className="py-12 px-6"
@@ -136,33 +169,74 @@ function ExplorePage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search blogs, authors, topics..."
-              className="brutal-input pl-12"
-              style={{ background: "white" }}
+              className="brutal-input"
+              style={{ background: "white", paddingLeft: "40px" }}
             />
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Tag Pills */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {["All", ...tags.map((t) => t.tag)].map((tag) => (
+        {/* ── Group Pills ── */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {groups.map((group) => (
             <button
-              key={tag}
-              onClick={() => setActiveTag(tag)}
+              key={group}
+              onClick={() => handleGroupClick(group)}
               className="px-4 py-2 text-xs font-black uppercase tracking-widest transition-all"
               style={{
                 fontFamily: "var(--font-display)",
                 border: "2px solid #0d0d0d",
-                background: activeTag === tag ? "#0d0d0d" : "white",
-                color: activeTag === tag ? "white" : "#0d0d0d",
-                boxShadow: activeTag === tag ? "3px 3px 0 #d32f2f" : "none",
+                background: activeGroup === group ? "#d32f2f" : "white",
+                color: activeGroup === group ? "white" : "#0d0d0d",
+                boxShadow: activeGroup === group ? "3px 3px 0 #0d0d0d" : "none",
               }}
             >
-              {tag}
+              {group}
             </button>
           ))}
         </div>
+
+        {/* ── Tag Pills (chỉ hiện khi chọn group) ── */}
+        {activeGroup !== "All" && filteredTagsByGroup.length > 0 && (
+          <div
+            className="flex flex-wrap gap-2 mb-6 p-4"
+            style={{
+              background: "white",
+              border: "2px solid #0d0d0d",
+              borderTop: "none",
+            }}
+          >
+            <button
+              onClick={() => setActiveTag("All")}
+              className="px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all"
+              style={{
+                fontFamily: "var(--font-display)",
+                border: "2px solid #0d0d0d",
+                background: activeTag === "All" ? "#0d0d0d" : "#f2fbfc",
+                color: activeTag === "All" ? "white" : "#0d0d0d",
+              }}
+            >
+              All in {activeGroup}
+            </button>
+            {filteredTagsByGroup.map((t) => (
+              <button
+                key={t.tag}
+                onClick={() => handleTagClick(t.tag)}
+                className="px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all"
+                style={{
+                  fontFamily: "var(--font-display)",
+                  border: "2px solid #0d0d0d",
+                  background: activeTag === t.tag ? "#0d0d0d" : "#f2fbfc",
+                  color: activeTag === t.tag ? "white" : "#0d0d0d",
+                  boxShadow: activeTag === t.tag ? "2px 2px 0 #d32f2f" : "none",
+                }}
+              >
+                {t.tag}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Sort Bar */}
         <div
@@ -201,17 +275,7 @@ function ExplorePage() {
         <div className="grid lg:grid-cols-[1fr_280px] gap-8">
           {/* Blog Grid */}
           <div>
-            {loading ? (
-              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-white animate-pulse"
-                    style={{ border: "3px solid #0d0d0d", height: "320px" }}
-                  />
-                ))}
-              </div>
-            ) : paginated.length > 0 ? (
+            {paginated.length > 0 ? (
               <>
                 <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
                   {paginated.map((blog) => (
@@ -233,7 +297,6 @@ function ExplorePage() {
                         e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
                       }}
                     >
-                      {/* Cover Image */}
                       <div
                         className="relative overflow-hidden"
                         style={{ height: "180px" }}
@@ -243,7 +306,6 @@ function ExplorePage() {
                           alt={blog.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
-                        {/* Tags */}
                         <div className="absolute top-3 left-3 flex gap-1 flex-wrap">
                           {blog.tags.slice(0, 2).map((tag) => (
                             <span
@@ -259,7 +321,6 @@ function ExplorePage() {
                             </span>
                           ))}
                         </div>
-                        {/* View count */}
                         <div
                           className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 text-xs font-bold"
                           style={{
@@ -271,8 +332,6 @@ function ExplorePage() {
                           {blog.viewCount}
                         </div>
                       </div>
-
-                      {/* Content */}
                       <div className="p-4">
                         <h3
                           className="font-black text-base leading-tight mb-2 line-clamp-2"
@@ -289,8 +348,6 @@ function ExplorePage() {
                         >
                           {blog.summary ?? "No summary available."}
                         </p>
-
-                        {/* Author + Date */}
                         <div
                           className="flex items-center justify-between pt-3"
                           style={{ borderTop: "2px solid #0d0d0d" }}
@@ -379,22 +436,24 @@ function ExplorePage() {
                 )}
               </>
             ) : (
-              <div
-                className="text-center py-20 bg-white"
-                style={{
-                  border: "3px solid #0d0d0d",
-                  boxShadow: "4px 4px 0 #0d0d0d",
-                }}
-              >
-                <p className="text-6xl mb-4">📝</p>
-                <h3
-                  className="font-black text-xl mb-2"
-                  style={{ fontFamily: "var(--font-display)" }}
+              !loading && (
+                <div
+                  className="text-center py-20 bg-white"
+                  style={{
+                    border: "3px solid #0d0d0d",
+                    boxShadow: "4px 4px 0 #0d0d0d",
+                  }}
                 >
-                  No stories found
-                </h3>
-                <p style={{ color: "#888" }}>Try a different search or tag</p>
-              </div>
+                  <p className="text-6xl mb-4">📝</p>
+                  <h3
+                    className="font-black text-xl mb-2"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    No stories found
+                  </h3>
+                  <p style={{ color: "#888" }}>Try a different search or tag</p>
+                </div>
+              )
             )}
           </div>
 
@@ -422,14 +481,15 @@ function ExplorePage() {
                   <TrendingUp size={14} /> Trending Topics
                 </h3>
               </div>
-              {trending.map((t, i) => (
+              {groupTrending.map((t, i) => (
                 <div
-                  key={t.topic}
+                  key={t.tag}
                   className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-[#ebf4f5] transition-colors"
                   style={{
                     borderBottom:
-                      i < trending.length - 1 ? "1px solid #eee" : "none",
+                      i < groupTrending.length - 1 ? "1px solid #eee" : "none",
                   }}
+                  onClick={() => handleGroupClick(t.tag)}
                 >
                   <div className="flex items-center gap-3">
                     <span
@@ -439,23 +499,23 @@ function ExplorePage() {
                         fontFamily: "var(--font-display)",
                       }}
                     >
-                      {t.num}
+                      {i + 1}
                     </span>
                     <span
                       className="text-sm font-bold"
                       style={{ fontFamily: "var(--font-display)" }}
                     >
-                      {t.topic}
+                      {t.tag}
                     </span>
                   </div>
                   <span className="text-xs" style={{ color: "#888" }}>
-                    {t.posts}
+                    {t.count} {t.count === 1 ? "post" : "posts"}
                   </span>
                 </div>
               ))}
             </div>
 
-            {/* Popular Tags từ backend */}
+            {/* Popular Tags */}
             <div
               className="bg-white p-5"
               style={{
@@ -473,7 +533,13 @@ function ExplorePage() {
                 {tags.slice(0, 10).map((t) => (
                   <span
                     key={t.tag}
-                    onClick={() => setActiveTag(t.tag)}
+                    onClick={() => {
+                      const group = tags.find(
+                        (tag) => tag.tag === t.tag,
+                      )?.groupName;
+                      if (group) setActiveGroup(group);
+                      setActiveTag(t.tag);
+                    }}
                     className="brutal-tag cursor-pointer transition-all hover:bg-[#0d0d0d] hover:text-white"
                   >
                     {t.tag}

@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient"
-import { LoginRequest, RegisterRequest, AuthResponse, LoginResponse, ApiResponse } from "@/types/auth.types"
+import { LoginRequest, RegisterRequest, AuthResponse, LoginResponse, ApiResponse, User, ChangePasswordRequest } from "@/types/auth.types"
 
 export const authApi = {
   login: (data: LoginRequest) =>
@@ -15,5 +15,6 @@ export const authApi = {
     window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/github`,
   logout: () => 
     axiosClient.post("/auth/logout"),
-
+  changePassword: (data: ChangePasswordRequest) => 
+    axiosClient.put<ApiResponse<User>>("/auth/me/change-password", data)
 }

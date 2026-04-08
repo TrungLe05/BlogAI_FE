@@ -8,13 +8,27 @@ import {
   Bell,
   Check,
   ExternalLink,
-  Eye
+  Eye,
+  Trash,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Link, useNavigate } from "react-router-dom";
 import useAuthStore from "@/stores/authStore";
 import { userApi } from "@/api/userApi";
 import blogApi from "@/api/blogApi";
 import { BlogResponse } from "@/types/blog.types";
+import { toast } from "sonner";
+import { validationUpdateMe } from "@/utils/userValidation";
 
 const USER = {
   name: "Sarah Chen",
@@ -178,11 +192,18 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
     }
   };
 
-
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarPreview(URL.createObjectURL(file));
+
+    const errors = validationUpdateMe({ avatarUrl: file });
+    if (errors.length > 0) {
+      errors.forEach((e) => {
+        toast.error(e.message);
+        return;
+      });
+    }
     try {
       const { data } = await userApi.updateMe({ avatarUrl: file });
       setUser(data.result);
@@ -193,6 +214,25 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
 
   const fmtNum = (n: number) =>
     n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
+
+  // Thêm state
+  const [deletingBlogId, setDeletingBlogId] = useState<string | null>(null);
+
+  const handleDeleteBlog = async () => {
+    if (!deletingBlogId) return;
+    try {
+      await blogApi.deleteBlog(deletingBlogId);
+      setMyPublishBlog((prev) =>
+        prev.filter((b) => b.blogId !== deletingBlogId),
+      );
+      setMyDraftBlog((prev) => prev.filter((b) => b.blogId !== deletingBlogId));
+      toast.success("Blog deleted successfully");
+    } catch (e) {
+      toast.error("Failed to delete blog");
+    } finally {
+      setDeletingBlogId(null);
+    }
+  };
 
   // ── RENDER ─────────────────────────────────────────
   return (
@@ -339,7 +379,8 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
                     fontFamily: "var(--font-display)",
                     background: activeTab === t ? "#0d0d0d" : "transparent",
                     color: activeTab === t ? "white" : "#5b403d",
-                    borderRight: t === "published" ? "3px solid #0d0d0d" : "none",
+                    borderRight:
+                      t === "published" ? "3px solid #0d0d0d" : "none",
                   }}
                 >
                   {t}
@@ -374,7 +415,7 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
                       e.currentTarget.style.transform = "translate(0,0)";
                       e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
                     }}
-                    onClick={() => navigate(`/blog/${post.blogId}`)}
+                    // onClick={() => navigate(`/blog/${post.blogId}`)}
                   >
                     <div
                       className="shrink-0 overflow-hidden"
@@ -408,6 +449,42 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
                             ))}
                           </div>
                           <div className="flex gap-2">
+                            <AlertDialog>
+                              <AlertDialogTrigger>
+                                <button
+                                  title="Delete"
+                                  className="p-2 hover:bg-[#d32f2f] hover:text-white transition-colors cursor-pointer"
+                                  style={{ border: "3px solid #0d0d0d" }}
+                                  onClick={() => setDeletingBlogId(post.blogId)}
+                                >
+                                  <Trash size={12} />
+                                </button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Delete this blog?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. The blog and
+                                    all its content will be permanently deleted.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel
+                                    onClick={() => setDeletingBlogId(null)}
+                                  >
+                                    Cancel
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={handleDeleteBlog}
+                                    className="bg-destructive text-white hover:bg-destructive/90"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                             <Link
                               to={`/blog/${post.blogId}`}
                               onClick={(e) => e.stopPropagation()}
@@ -431,6 +508,15 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
                         >
                           {post.title}
                         </h3>
+                        <h5
+                          className="font-thin text-sm leading-tight mb-2"
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            color: "rgb(102, 102, 102)",
+                          }}
+                        >
+                          {post.summary}
+                        </h5>
                       </div>
                       <div
                         className="flex flex-wrap items-center gap-4 pt-3 mt-2"
@@ -525,6 +611,44 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
                             ))}
                           </div>
                           <div className="flex gap-2">
+                            <AlertDialog>
+                              <AlertDialogTrigger>
+                                <button
+                                  title="Delete"
+                                  className="p-2 hover:bg-[#d32f2f] hover:text-white transition-colors cursor-pointer"
+                                  style={{ border: "3px solid #0d0d0d" }}
+                                  onClick={() =>
+                                    setDeletingBlogId(draft.blogId)
+                                  }
+                                >
+                                  <Trash size={12} />
+                                </button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Delete this blog?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. The blog and
+                                    all its content will be permanently deleted.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel
+                                    onClick={() => setDeletingBlogId(null)}
+                                  >
+                                    Cancel
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={handleDeleteBlog}
+                                    className="bg-destructive text-white hover:bg-destructive/90"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                             <button
                               title="Edit"
                               className="p-2 hover:bg-[#0d0d0d] hover:text-white transition-colors cursor-pointer"
@@ -547,6 +671,15 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
                         >
                           {draft.title}
                         </h3>
+                        <h5
+                          className="font-thin text-sm leading-tight mb-2"
+                          style={{
+                            fontFamily: "var(--font-display)",
+                            color: "rgb(102, 102, 102)",
+                          }}
+                        >
+                          {draft.summary}
+                        </h5>
                       </div>
                       <div
                         className="flex flex-wrap items-center gap-4 pt-3 mt-2"
@@ -592,8 +725,6 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
 
           {/* ── RIGHT — Quick Actions + Edit + Settings ── */}
           <div className="space-y-6" id="dash-edit-panel">
-          
-
             {/* Profile Settings Form */}
             <div
               className="bg-white p-6"
@@ -722,8 +853,6 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
                 <BrutalToggle defaultOn label="Comments" />
                 <BrutalToggle label="Weekly Digest" />
               </div>
-
-              
             </div>
           </div>
         </div>

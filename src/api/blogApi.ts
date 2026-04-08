@@ -5,6 +5,7 @@ import {
   CreateBlogRequest,
   TagResponse,
 } from "@/types/blog.types";
+import axios from "axios";
 
 const blogApi = {
   getAllBlog: () => axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs"),
@@ -102,10 +103,12 @@ const blogApi = {
   generateSummary: (content: string) =>
     axiosClient.post<ApiResponse<string>>("/ai/generate-summary", { content }),
   toggleLike: (blogId: string) =>
-  axiosClient.post<ApiResponse<BlogResponse>>(`/blogs/${blogId}/like`),
+    axiosClient.post<ApiResponse<BlogResponse>>(`/blogs/${blogId}/like`),
 
-incrementView: (blogId: string) =>
-  axiosClient.post<ApiResponse<number>>(`/blogs/${blogId}/view`),
+  incrementView: (blogId: string) =>
+    axiosClient.post<ApiResponse<number>>(`/blogs/${blogId}/view`),
+  get4BlogViewest: () =>
+    axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs/4-viewest"),
 };
 
 export default blogApi;
