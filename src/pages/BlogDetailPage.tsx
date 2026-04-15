@@ -1,6 +1,8 @@
 import blogApi from "@/api/blogApi";
+import followApi from "@/api/followApi";
 import useAuthStore from "@/stores/authStore";
 import { BlogResponse } from "@/types/blog.types";
+import { extractApiError } from "@/utils/apiError";
 import {
   ArrowLeft,
   Clock,
@@ -13,26 +15,36 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 function BlogDetailPage() {
   const { blogId } = useParams<{ blogId: string }>();
   const [blogDetail, setBlogDetail] = useState<BlogResponse | null>(null);
   const [blogRelated, setBlogRelated] = useState<BlogResponse[] | null>(null);
   const [isLiking, setIsLiking] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
+  const [followOverride, setFollowOverride] = useState<boolean | null>(null); // ✅ thay isFollowing
+  const [isBlogLoading, setIsBlogLoading] = useState(true);
+
   const navigate = useNavigate();
   const { user } = useAuthStore();
 
-  const handleClickTag = (tag: string) => {
-    navigate("/explore", { state: { selectedTag: tag } });
-  };
+  const isAuthor = blogDetail?.author.email === user?.email;
+
+  // ─── Effects ───────────────────────────────────────────
+
+  // Reset override khi chuyển blog
+  useEffect(() => {
+    setFollowOverride(null);
+  }, [blogId]);
 
   // Fetch blog detail + increment view
   useEffect(() => {
     if (!blogId) return;
-
     let cancelled = false;
 
     const load = async () => {
+      setIsBlogLoading(true);
       try {
         const { data } = await blogApi.getBlogDetailById(blogId);
         if (cancelled) return;
@@ -45,15 +57,21 @@ function BlogDetailPage() {
         );
       } catch (e) {
         console.error(e);
+      } finally {
+        if (!cancelled) setIsBlogLoading(false);
       }
     };
 
     load();
-
     return () => {
       cancelled = true;
     };
   }, [blogId]);
+
+  const isFollowing =
+    followOverride !== null
+      ? followOverride
+      : (blogDetail?.author?.following ?? false);
 
   // Fetch related blogs
   useEffect(() => {
@@ -64,7 +82,12 @@ function BlogDetailPage() {
       .catch(console.error);
   }, [blogDetail?.blogId]);
 
-  // Toggle like
+  // ─── Handlers ──────────────────────────────────────────
+
+  const handleClickTag = (tag: string) => {
+    navigate("/explore", { state: { selectedTag: tag } });
+  };
+
   const handleToggleLike = async () => {
     if (!blogId || isLiking) return;
     setIsLiking(true);
@@ -86,11 +109,33 @@ function BlogDetailPage() {
     }
   };
 
+  const handleFollowAuthor = async () => {
+    if (!blogDetail?.author?.id || isFollowLoading || isBlogLoading) return;
+
+    setIsFollowLoading(true);
+    try {
+      if (isFollowing) {
+        await followApi.unfollow(blogDetail.author.id);
+        setFollowOverride(false);
+        toast.success("Unfollowed successfully");
+      } else {
+        await followApi.follow(blogDetail.author.id);
+        setFollowOverride(true);
+        toast.success("Followed! They'll be notified.");
+      }
+    } catch (e) {
+      toast.error(extractApiError(e));
+      setFollowOverride(isFollowing ? true : false);
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
+
+  // ─── Derived data ───────────────────────────────────────
+
   const filterBlogRelated = (blogRelated ?? [])
     .sort((a, b) => b.viewCount - a.viewCount)
     .slice(0, 3);
-
-  const isAuthor = blogDetail?.author.email === user?.email;
 
   return (
     <div
@@ -312,10 +357,7 @@ function BlogDetailPage() {
                 }}
               >
                 <img
-                  src={
-                    blogDetail?.author.avatarUrl ||
-                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
-                  }
+                  src={blogDetail?.author.avatarUrl || "..."}
                   alt="author"
                   className="w-16 h-16 shrink-0"
                   style={{ border: "3px solid #0d0d0d" }}
@@ -340,10 +382,26 @@ function BlogDetailPage() {
                     {blogDetail?.author.email}
                   </p>
                   <button
-                    className="brutal-btn-red mt-3"
-                    style={{ padding: "8px 16px", fontSize: "0.75rem" }}
+                    className="mt-3 flex items-center gap-2 px-4 py-2 font-black text-xs uppercase tracking-widest transition-all"
+                    disabled={isFollowLoading || isBlogLoading}
+                    onClick={handleFollowAuthor}
+                    style={{
+                      fontFamily: "var(--font-display)",
+                      border: "3px solid #0d0d0d",
+                      background: isFollowing ? "white" : "#d32f2f",
+                      color: isFollowing ? "#0d0d0d" : "white",
+                      boxShadow: "3px 3px 0 #0d0d0d",
+                      opacity: isFollowLoading ? 0.6 : 1,
+                      cursor: isFollowLoading ? "not-allowed" : "pointer",
+                    }}
                   >
-                    Follow Author
+                    {isBlogLoading
+                      ? "..."
+                      : isFollowLoading
+                        ? "..."
+                        : isFollowing
+                          ? "Following ✓"
+                          : "Follow Author"}
                   </button>
                 </div>
               </div>

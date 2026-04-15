@@ -31,74 +31,10 @@ import { AvatarDropdown } from "@/components/dashboard/AvatarDropdown";
 import { toast } from "sonner";
 import { extractApiError } from "@/utils/apiError";
 import { validateCreateBlog, validateUpdateBlog } from "@/utils/blogValidation";
+import { NotificationBell } from "@/components/common/NotificationBell";
 
 type ActiveView = "write" | "stats" | "profile" | "settings";
 
-// // ── AI Title Generator (PRESERVED — no changes) ───────────────────
-// function extractKeywords(text: string): string[] {
-//   const stopWords = new Set([
-//     "the",
-//     "a",
-//     "an",
-//     "and",
-//     "or",
-//     "but",
-//     "in",
-//     "on",
-//     "at",
-//     "to",
-//     "for",
-//     "is",
-//     "are",
-//     "was",
-//     "were",
-//     "be",
-//     "been",
-//     "have",
-//     "has",
-//     "had",
-//     "do",
-//     "does",
-//     "did",
-//     "will",
-//     "would",
-//     "could",
-//     "should",
-//     "may",
-//     "might",
-//     "of",
-//     "that",
-//     "this",
-//     "with",
-//     "from",
-//     "by",
-//     "about",
-//     "as",
-//     "it",
-//     "its",
-//     "i",
-//     "you",
-//     "we",
-//     "they",
-//     "my",
-//     "your",
-//     "our",
-//     "their",
-//   ]);
-//   const words = text
-//     .toLowerCase()
-//     .replace(/[^a-z0-9\s]/g, "")
-//     .split(/\s+/)
-//     .filter((w) => w.length > 3 && !stopWords.has(w));
-//   const freq: Record<string, number> = {};
-//   words.forEach((w) => {
-//     freq[w] = (freq[w] || 0) + 1;
-//   });
-//   return Object.entries(freq)
-//     .sort((a, b) => b[1] - a[1])
-//     .slice(0, 5)
-//     .map(([w]) => w);
-// }
 
 async function generateTitlesFromAI(content: string): Promise<string[]> {
   const { data } = await blogApi.generateTitles(content);
@@ -488,6 +424,7 @@ type WriteViewProps = {
   coverImageUrl: string;
   coverImageFile: File | null;
   setCoverImageFile: (f: File | null) => void;
+  onRemoveCover: () => void;
   tags: string[];
   setTags: (t: string[]) => void;
   onSaveDraft: () => void;
@@ -504,6 +441,7 @@ function WriteView({
   setContent,
   coverImageUrl,
   setCoverImageFile,
+  onRemoveCover,
   tags,
   setTags,
   onSaveDraft,
@@ -525,7 +463,7 @@ function WriteView({
 
   // ── API calls (PRESERVED) ─────────────────────────
   useEffect(() => {
-    if (coverImageUrl) setCoverImagePreview(coverImageUrl);
+    setCoverImagePreview(coverImageUrl || null);
   }, [coverImageUrl]);
 
   const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -539,6 +477,7 @@ function WriteView({
   const handleRemoveCover = () => {
     setCoverImagePreview(null);
     setCoverImageFile(null);
+    onRemoveCover();
   };
 
   const removeTag = (t: string) => setTags(tags.filter((tag) => tag !== t));
@@ -973,6 +912,11 @@ function DashboardPage() {
 
   useAuthStore();
 
+  const handleRemoveCover = () => {
+    setCoverImageFile(null);
+    setCoverImageUrl("");
+  };
+
   // ── Save Draft (PRESERVED) ────────────────────────
   const handleSaveDraft = async () => {
     const errors = editingBlogId
@@ -1236,25 +1180,8 @@ function DashboardPage() {
           </button>
 
           {/* Notification icon */}
-          <button
-            title="Notifications"
-            className="relative w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] transition-colors cursor-pointer"
-            style={{ border: "3px solid #0d0d0d" }}
-          >
-            <Bell size={16} />
-            <span
-              className="absolute -top-1.5 -right-1.5 w-4 h-4 flex items-center justify-center text-white"
-              style={{
-                fontSize: "9px",
-                fontWeight: 900,
-                background: "#d32f2f",
-                fontFamily: "var(--font-display)",
-                border: "2px solid white",
-              }}
-            >
-              3
-            </span>
-          </button>
+          <NotificationBell />
+
 
           {/* Avatar Dropdown */}
           <AvatarDropdown
@@ -1309,6 +1236,7 @@ function DashboardPage() {
               coverImageUrl={coverImageUrl}
               coverImageFile={coverImageFile}
               setCoverImageFile={setCoverImageFile}
+              onRemoveCover={handleRemoveCover}
               tags={tagsSelection}
               setTags={setTagsSelection}
               onSaveDraft={handleSaveDraft}

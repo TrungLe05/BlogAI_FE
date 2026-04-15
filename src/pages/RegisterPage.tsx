@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, CheckCircle } from "lucide-react";
 import { authApi } from "@/api/authApi";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 const stats = [
   { value: "10K+", label: "Active Writers" },
@@ -30,67 +30,63 @@ function RegisterPage() {
   const navigate = useNavigate();
 
   const validate = (): boolean => {
-  if (!form.name.trim()) {
-    toast.error("Vui lòng nhập họ tên");
-    return false;
-  }
+    if (!form.name.trim()) {
+      toast.error("Vui lòng nhập họ tên");
+      return false;
+    }
 
-  if (!form.email.trim()) {
-    toast.error("Vui lòng nhập email");
-    return false;
-  }
+    if (!form.email.trim()) {
+      toast.error("Vui lòng nhập email");
+      return false;
+    }
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(form.email)) {
-    toast.error("Email không hợp lệ");
-    return false;
-  }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Email không hợp lệ");
+      return false;
+    }
 
-  if (!form.password) {
-    toast.error("Vui lòng nhập mật khẩu");
-    return false;
-  }
+    if (!form.password) {
+      toast.error("Vui lòng nhập mật khẩu");
+      return false;
+    }
 
-  if (form.password.length < 8) {
-    toast.error("Mật khẩu phải có ít nhất 8 ký tự");
-    return false;
-  }
+    if (form.password.length < 8) {
+      toast.error("Mật khẩu phải có ít nhất 8 ký tự");
+      return false;
+    }
 
-  if (!form.confirm) {
-    toast.error("Vui lòng xác nhận mật khẩu");
-    return false;
-  }
+    if (!form.confirm) {
+      toast.error("Vui lòng xác nhận mật khẩu");
+      return false;
+    }
 
-  if (form.password !== form.confirm) {
-    toast.error("Mật khẩu xác nhận không khớp");
-    return false;
-  }
+    if (form.password !== form.confirm) {
+      toast.error("Mật khẩu xác nhận không khớp");
+      return false;
+    }
 
-  return true;
-};
-
+    return true;
+  };
 
   // const setAuth = useAuthStore((state) => state.setAuth)
   const handleSubmit = async (e: React.FormEvent) => {
-    
     e.preventDefault();
-    if(!validate()) return;
+    if (!validate()) return;
     try {
-      const {data} = await authApi.register({
+      const { data } = await authApi.register({
         fullName: form.name,
         email: form.email,
         passwordHash: form.password,
       });
-      if(data){
-         toast.success("Đăng ký thành công!")
-         navigate("/login")
+      if (data) {
+        toast.success("Đăng ký thành công!");
+        navigate("/login");
       }
-      
     } catch (e) {
-      toast.error("Đã có lỗi xảy ra")
+      toast.error("Đã có lỗi xảy ra");
       console.log("Error: ", e);
     }
-
   };
 
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
@@ -277,6 +273,7 @@ function RegisterPage() {
                 e.currentTarget.style.transform = "translate(0,0)";
                 e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
               }}
+              onClick={authApi.loginWithGithub}
             >
               <svg width="18" height="18" viewBox="0 0 24 24">
                 <path d="M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256 0-1.123.404-2.336 1.078-3.144-.292-.741-.247-2.314.09-2.965.898-.112 2.111.36 2.83 1.01.853-.269 1.752-.404 2.853-.404 1.1 0 1.999.135 2.807.382.696-.629 1.932-1.1 2.83-.988.315.606.36 2.179.067 2.942.72.854 1.101 2 1.101 3.167 0 2.763-2.089 4.852-5.098 5.234.763.494 1.28 1.572 1.28 2.807v2.336c0 .674.561 1.056 1.235.786 4.066-1.55 7.255-5.615 7.255-10.646C23.5 6.188 18.334 1 11.978 1 5.62 1 .5 6.188.5 12.545c0 4.986 3.167 9.12 7.435 10.669.606.225 1.19-.18 1.19-.786V20.63a2.9 2.9 0 0 1-1.078.224c-1.483 0-2.359-.808-2.987-2.313-.247-.607-.517-.966-1.034-1.033-.27-.023-.359-.135-.359-.27 0-.27.45-.471.898-.471.652 0 1.213.404 1.797 1.235.45.651.921.943 1.483.943.561 0 .92-.202 1.437-.719.382-.381.674-.718.944-.943"></path>

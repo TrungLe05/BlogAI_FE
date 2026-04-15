@@ -1,25 +1,22 @@
+import { User } from "./auth.types";
+
 export interface BlogResponse {
   blogId: string;
   title: string;
   content: string;
   summary?: string;
   coverImageUrl?: string; 
-  author: Author;
+  author: User;
   blogStatus: "PUBLISHED" | "DRAFT" | "SCHEDULED"; 
   viewCount: number;
   tags: string[];
   createdAt?: string;
   updatedAt?: string;
-  likeCount: number;        // ✅ thêm
+  likeCount: number;      
   likedByCurrentUser: boolean; 
 }
 
-export interface Author {
-  email: string;
-  fullName: string;
-  avatarUrl: string;
-  role: "USER" | "ADMIN";
-}
+
 
 export interface CreateBlogRequest {
   title: string;

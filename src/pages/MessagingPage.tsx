@@ -1,22 +1,25 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Search,
   Send,
-  MoreVertical,
-  BellOff,
-  EyeOff,
-  Trash2,
   ArrowLeft,
   MessageCircle,
   CheckCheck,
   Check,
 } from "lucide-react";
 import useAuthStore from "@/stores/authStore";
-import { messageApi } from "@/api/messageApi";
-import { Message, Conversation } from "@/types/message.types";
+import { MessageResponse } from "@/types/message.types";
+import conversationApi from "@/api/conversationApi";
+import { ConversationResponse } from "@/types/conversation.types";
+import { toast } from "sonner";
+import { extractApiError } from "@/utils/apiError";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import useWebSocketStore from "@/stores/websocketStore";
+import messageApi from "@/api/messageApi";
 
-// ── Typing dots animation ──────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────────
+
 function TypingDots() {
   return (
     <div className="flex items-end gap-1 px-4 py-3" style={{ width: 60 }}>
@@ -25,7 +28,7 @@ function TypingDots() {
           key={i}
           className="block w-2 h-2 rounded-full bg-gray-400"
           style={{
-            animation: `typingBounce 1.2s ease-in-out infinite`,
+            animation: "typingBounce 1.2s ease-in-out infinite",
             animationDelay: `${i * 0.2}s`,
           }}
         />
@@ -34,406 +37,260 @@ function TypingDots() {
   );
 }
 
-// ── Mock conversations (fallback khi chưa có API) ──────────────────
-const MOCK_CONVERSATIONS: Conversation[] = [
-  {
-    user: {
-      id: "u1",
-      fullName: "Nguyễn Văn An",
-      email: "vanan@example.com",
-      avatarUrl: "https://i.pravatar.cc/150?img=1",
-    },
-    lastMessage: {
-      id: "m1",
-      senderId: "u1",
-      receiverId: "me",
-      content: "Bạn đọc bài mình viết chưa?",
-      createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-      seen: true,
-    },
-    unreadCount: 0,
-    muteSetting: { notification: false, seenReceipt: true },
-  },
-  {
-    user: {
-      id: "u2",
-      fullName: "Trần Thị Bình",
-      email: "thibinh@example.com",
-      avatarUrl: "https://i.pravatar.cc/150?img=2",
-    },
-    lastMessage: {
-      id: "m2",
-      senderId: "u2",
-      receiverId: "me",
-      content: "Cho mình hỏi về React hooks nhé!",
-      createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-      seen: false,
-    },
-    unreadCount: 3,
-    muteSetting: { notification: false, seenReceipt: true },
-  },
-  {
-    user: {
-      id: "u3",
-      fullName: "Lê Minh Đức",
-      email: "minhduc@example.com",
-      avatarUrl: "https://i.pravatar.cc/150?img=3",
-    },
-    lastMessage: {
-      id: "m3",
-      senderId: "me",
-      receiverId: "u3",
-      content: "Cảm ơn bạn nhiều!",
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-      seen: true,
-    },
-    unreadCount: 0,
-    muteSetting: { notification: false, seenReceipt: true },
-  },
-];
-
-const MOCK_MESSAGES_MAP: Record<string, Message[]> = {
-  u1: [
-    {
-      id: "a1",
-      senderId: "u1",
-      receiverId: "me",
-      content: "Hey! Mình vừa publish bài mới rồi 🎉",
-      createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-      seen: true,
-    },
-    {
-      id: "a2",
-      senderId: "me",
-      receiverId: "u1",
-      content: "Thật á, mình sẽ đọc ngay!",
-      createdAt: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
-      seen: true,
-    },
-    {
-      id: "a3",
-      senderId: "u1",
-      receiverId: "me",
-      content: "Bạn đọc bài mình viết chưa?",
-      createdAt: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-      seen: true,
-    },
-  ],
-  u2: [
-    {
-      id: "b1",
-      senderId: "u2",
-      receiverId: "me",
-      content: "Cho mình hỏi về React hooks nhé!",
-      createdAt: new Date(Date.now() - 1000 * 60 * 32).toISOString(),
-      seen: false,
-    },
-    {
-      id: "b2",
-      senderId: "u2",
-      receiverId: "me",
-      content: "Cụ thể là useCallback với useMemo khác nhau thế nào?",
-      createdAt: new Date(Date.now() - 1000 * 60 * 31).toISOString(),
-      seen: false,
-    },
-    {
-      id: "b3",
-      senderId: "u2",
-      receiverId: "me",
-      content: "Mình đang bị confuse quá 😅",
-      createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-      seen: false,
-    },
-  ],
-  u3: [
-    {
-      id: "c1",
-      senderId: "me",
-      receiverId: "u3",
-      content: "Bài bạn viết về TypeScript rất hay!",
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-      seen: true,
-    },
-    {
-      id: "c2",
-      senderId: "u3",
-      receiverId: "me",
-      content: "Cảm ơn bạn! Mình sẽ viết thêm 😊",
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2.5).toISOString(),
-      seen: true,
-    },
-    {
-      id: "c3",
-      senderId: "me",
-      receiverId: "u3",
-      content: "Cảm ơn bạn nhiều!",
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-      seen: true,
-    },
-  ],
-};
-
-// ── Helpers ────────────────────────────────────────────────────────
 function formatTime(iso: string): string {
-  const d = new Date(iso);
-  const now = new Date();
-  const diffMs = now.getTime() - d.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
-  return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" });
+  const diff = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return new Date(iso).toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+  });
 }
 
-// ── Conversation Options Dropdown ──────────────────────────────────
-function ConvOptions({
-  muteSetting,
-  onMuteNotification,
-  onMuteSeen,
-  onDelete,
-}: {
-  muteSetting: Conversation["muteSetting"];
-  onMuteNotification: () => void;
-  onMuteSeen: () => void;
-  onDelete: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+// ── Component ──────────────────────────────────────────────────────────────────
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node))
-        setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const items = [
-    {
-      icon: <BellOff size={13} />,
-      label: muteSetting?.notification
-        ? "Bật thông báo"
-        : "Tắt thông báo",
-      onClick: onMuteNotification,
-    },
-    {
-      icon: <EyeOff size={13} />,
-      label: muteSetting?.seenReceipt
-        ? "Tắt hiển thị đã xem"
-        : "Bật hiển thị đã xem",
-      onClick: onMuteSeen,
-    },
-    {
-      icon: <Trash2 size={13} />,
-      label: "Xóa cuộc trò chuyện",
-      onClick: onDelete,
-      danger: true,
-    },
-  ];
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="w-8 h-8 flex items-center justify-center transition-colors hover:bg-gray-100"
-        style={{ border: "2px solid #0d0d0d" }}
-        title="Options"
-      >
-        <MoreVertical size={16} />
-      </button>
-      {open && (
-        <div
-          className="absolute right-0 top-full mt-1 w-52 bg-white z-[100]"
-          style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
-        >
-          {items.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => {
-                item.onClick();
-                setOpen(false);
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
-                fontSize: "0.78rem",
-                color: item.danger ? "#d32f2f" : "#0d0d0d",
-                borderBottom: "1px solid rgba(0,0,0,0.06)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = item.danger ? "#d32f2f" : "#0d0d0d";
-                e.currentTarget.style.color = "white";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.color = item.danger ? "#d32f2f" : "#0d0d0d";
-              }}
-            >
-              {item.icon}
-              {item.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Main MessagingPage ─────────────────────────────────────────────
 export default function MessagingPage() {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // state
-  const [conversations, setConversations] = useState<Conversation[]>(MOCK_CONVERSATIONS);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedConv, setSelectedConv] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<ConversationResponse[]>(
+    [],
+  );
+  const [selectedConv, setSelectedConv] = useState<ConversationResponse | null>(
+    null,
+  );
+  const [messages, setMessages] = useState<MessageResponse[]>([]);
   const [inputText, setInputText] = useState("");
   const [isOtherTyping, setIsOtherTyping] = useState(false);
-  const [typingTimeout, setTypingTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const selectedConvRef = useRef<ConversationResponse | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
-  // Filtered conversations by search
-  const filteredConvs = conversations.filter((c) => {
-    const q = searchQuery.toLowerCase();
-    return (
-      c.user.fullName.toLowerCase().includes(q) ||
-      c.user.email.toLowerCase().includes(q)
-    );
-  });
+  const {
+    chatMessageQueue,
+    shiftChatMessage,
+    sendTyping,
+    setCurrentConversationId,
+  } = useWebSocketStore();
 
-  // Scroll to bottom when new messages arrive
+  // Sync ref với state để dùng trong closure WS
+  useEffect(() => {
+    selectedConvRef.current = selectedConv;
+  }, [selectedConv]);
+
+  // Cleanup currentConversationId khi unmount
+  useEffect(() => () => setCurrentConversationId(null), []);
+
+  // Scroll to bottom khi có tin nhắn mới
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isOtherTyping]);
 
-  // Select a conversation → load messages + mark as read
-  const handleSelectConv = useCallback(
-    async (conv: Conversation) => {
-      setSelectedConv(conv);
-      setIsOtherTyping(false);
+  // ── Load conversations ────────────────────────────────────────────────────────
 
-      // Mark as read optimistically
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.user.id === conv.user.id ? { ...c, unreadCount: 0 } : c
-        )
-      );
-
-      // Load messages (try API, fall back to mock)
+  useEffect(() => {
+    const load = async () => {
+      setIsLoading(true);
       try {
-        const { data } = await messageApi.getMessages(conv.user.id);
-        setMessages(data.result);
-        await messageApi.markAsRead(conv.user.id);
-      } catch {
-        setMessages(MOCK_MESSAGES_MAP[conv.user.id] ?? []);
+        const { data } = await conversationApi.getAllConversation();
+        setConversations(data.result);
+      } catch (e) {
+        toast.error(extractApiError(e));
+      } finally {
+        setIsLoading(false);
       }
-
-      // Simulate other user typing after 2s (demo)
-      setTimeout(() => {
-        setIsOtherTyping(true);
-        setTimeout(() => setIsOtherTyping(false), 3000);
-      }, 4000);
-
-      inputRef.current?.focus();
-    },
-    []
-  );
-
-  // Send message
-  const handleSend = async () => {
-    if (!inputText.trim() || !selectedConv) return;
-    const newMsg: Message = {
-      id: `local-${Date.now()}`,
-      senderId: user?.id ?? "me",
-      receiverId: selectedConv.user.id,
-      content: inputText.trim(),
-      createdAt: new Date().toISOString(),
-      seen: false,
     };
-    setMessages((prev) => [...prev, newMsg]);
+    load();
+  }, []);
+
+  // ── Auto-focus conversation từ notification ───────────────────────────────────
+
+  useEffect(() => {
+    const focusId = location.state?.focusConversationId as string | undefined;
+    if (!focusId || conversations.length === 0) return;
+
+    const target = conversations.find((c) => c.id === focusId);
+    if (target) {
+      handleSelectConv(target);
+      // Xoá state khỏi history để không re-focus khi back/forward
+      window.history.replaceState({}, "");
+    }
+  }, [location.state, conversations]);
+
+  // ── Select conversation ───────────────────────────────────────────────────────
+
+  const handleSelectConv = useCallback(async (conv: ConversationResponse) => {
+    setCurrentConversationId(conv.id);
+    setSelectedConv(conv);
+    setIsOtherTyping(false);
+    setMessages([]);
     setConversations((prev) =>
-      prev.map((c) =>
-        c.user.id === selectedConv.user.id ? { ...c, lastMessage: newMsg } : c
-      )
+      prev.map((c) => (c.id === conv.id ? { ...c, unreadCount: 0 } : c)),
     );
+    try {
+      const { data } = await messageApi.getMessages(conv.id);
+      setMessages(data.result);
+      await messageApi.markAsRead(conv.id);
+    } catch (e) {
+      toast.error(extractApiError(e));
+    }
+    inputRef.current?.focus();
+  }, []);
+
+  // ── WebSocket queue processor ─────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (chatMessageQueue.length === 0) return;
+
+    const payload = chatMessageQueue[0];
+    const currentConv = selectedConvRef.current;
+
+    if (payload.type === "NEW_MESSAGE") {
+      if (payload.conversationId === currentConv?.id) {
+        const newMsg: MessageResponse = {
+          id: payload.messageId!,
+          conversationId: payload.conversationId,
+          senderId: payload.senderId!,
+          senderName: payload.senderName!,
+          senderAvatar: payload.senderAvatar!,
+          content: payload.content!,
+          type: (payload.messageType ?? "TEXT") as "TEXT" | "IMAGE" | "FILE",
+          isRead: false,
+          createdAt: payload.createdAt ?? new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, newMsg]);
+        messageApi.markAsRead(payload.conversationId);
+      } else {
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === payload.conversationId
+              ? {
+                  ...c,
+                  unreadCount: c.unreadCount + 1,
+                  lastMessage: payload.content ?? null,
+                  lastMessageAt: payload.createdAt ?? null,
+                  lastMessageSenderId: payload.senderId ?? null,
+                }
+              : c,
+          ),
+        );
+      }
+    }
+
+    if (
+      payload.type === "TYPING" &&
+      payload.conversationId === currentConv?.id
+    ) {
+      setIsOtherTyping(true);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = setTimeout(
+        () => setIsOtherTyping(false),
+        3000,
+      );
+    }
+
+    if (
+      payload.type === "STOP_TYPING" &&
+      payload.conversationId === currentConv?.id
+    ) {
+      setIsOtherTyping(false);
+    }
+
+    if (payload.type === "READ" && payload.conversationId === currentConv?.id) {
+      setMessages((prev) =>
+        prev.map((m) => (m.senderId === user?.id ? { ...m, isRead: true } : m)),
+      );
+    }
+
+    shiftChatMessage();
+  }, [chatMessageQueue]);
+
+  // ── Send message ──────────────────────────────────────────────────────────────
+
+  const handleSend = async () => {
+    if (!inputText.trim() || !selectedConv || isSending) return;
+
+    const content = inputText.trim();
     setInputText("");
+    setIsSending(true);
+    sendTyping(selectedConv.id, selectedConv.otherUser.id, false);
+
+    const optimistic: MessageResponse = {
+      id: `optimistic-${Date.now()}`,
+      conversationId: selectedConv.id,
+      senderId: user?.id ?? "",
+      senderName: user?.fullName ?? "",
+      senderAvatar: user?.avatarUrl ?? "",
+      content,
+      type: "TEXT",
+      isRead: false,
+      createdAt: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, optimistic]);
 
     try {
-      await messageApi.sendMessage(selectedConv.user.id, newMsg.content);
+      const { data } = await messageApi.sendMessage(selectedConv.id, content);
+      setMessages((prev) =>
+        prev.map((m) => (m.id === optimistic.id ? data.result : m)),
+      );
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === selectedConv.id
+            ? {
+                ...c,
+                lastMessage: content,
+                lastMessageAt: data.result.createdAt,
+                lastMessageSenderId: user?.id ?? null,
+              }
+            : c,
+        ),
+      );
     } catch {
-      // message already shown locally
+      setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
+      toast.error("Không thể gửi tin nhắn");
+    } finally {
+      setIsSending(false);
     }
   };
 
-  // Typing indicator — emit on keystroke
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputText(e.target.value);
-    if (typingTimeout) clearTimeout(typingTimeout);
-    // In real app: emit ws event "typing"
-    const t = setTimeout(() => {
-      // emit "stop_typing"
-    }, 1500);
-    setTypingTimeout(t);
+    if (!selectedConv) return;
+    sendTyping(selectedConv.id, selectedConv.otherUser.id, true);
+    if (stopTypingTimeoutRef.current)
+      clearTimeout(stopTypingTimeoutRef.current);
+    stopTypingTimeoutRef.current = setTimeout(() => {
+      sendTyping(selectedConv.id, selectedConv.otherUser.id, false);
+    }, 2000);
   };
 
-  // Conversation options handlers
-  const handleMuteNotification = (convId: string) => {
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.user.id === convId
-          ? {
-              ...c,
-              muteSetting: {
-                ...c.muteSetting!,
-                notification: !c.muteSetting?.notification,
-              },
-            }
-          : c
-      )
-    );
-  };
-  const handleMuteSeen = (convId: string) => {
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.user.id === convId
-          ? {
-              ...c,
-              muteSetting: {
-                ...c.muteSetting!,
-                seenReceipt: !c.muteSetting?.seenReceipt,
-              },
-            }
-          : c
-      )
-    );
-  };
-  const handleDeleteConv = (convId: string) => {
-    if (!window.confirm("Xóa cuộc trò chuyện này?")) return;
-    setConversations((prev) => prev.filter((c) => c.user.id !== convId));
-    if (selectedConv?.user.id === convId) {
-      setSelectedConv(null);
-      setMessages([]);
-    }
-  };
+  // ── Derived state ─────────────────────────────────────────────────────────────
 
-  // Last message in chat → check seen
-  const lastMsg = messages[messages.length - 1];
-  const isLastMsgMine = lastMsg?.senderId === user?.id;
-  const showSeen =
-    isLastMsgMine &&
-    lastMsg?.seen &&
-    selectedConv?.muteSetting?.seenReceipt !== false;
+  const filteredConvs = conversations.filter((c) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      c.otherUser.fullName.toLowerCase().includes(q) ||
+      c.otherUser.email.toLowerCase().includes(q)
+    );
+  });
+
+  // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
     <>
-      {/* Typing indicator keyframe */}
+      {isLoading && <LoadingSpinner />}
       <style>{`
         @keyframes typingBounce {
           0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
@@ -450,7 +307,7 @@ export default function MessagingPage() {
           flexDirection: "column",
         }}
       >
-        {/* ── Top Bar ── */}
+        {/* Top Bar */}
         <div
           className="shrink-0 flex items-center gap-3 px-6 h-14 bg-white"
           style={{ borderBottom: "3px solid #0d0d0d", zIndex: 50 }}
@@ -470,375 +327,433 @@ export default function MessagingPage() {
           </span>
         </div>
 
-        {/* ── Body ── */}
+        {/* Body */}
         <div className="flex flex-1 overflow-hidden">
-          {/* ── Left: Conversations ── */}
-          <div
-            className="w-72 shrink-0 flex flex-col bg-white"
-            style={{ borderRight: "3px solid #0d0d0d" }}
-          >
-            {/* Search */}
-            <div className="p-3" style={{ borderBottom: "2px solid #0d0d0d" }}>
-              <div className="relative">
-                <Search
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2"
-                  style={{ color: "#999" }}
-                />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Tìm theo tên hoặc email..."
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-white outline-none"
-                  style={{
-                    border: "2px solid #0d0d0d",
-                    fontFamily: "var(--font-sans)",
-                    color: "#0d0d0d",
-                  }}
-                />
-              </div>
-            </div>
+          {/* Left: Conversation List */}
+          <ConversationList
+            conversations={filteredConvs}
+            selectedConv={selectedConv}
+            searchQuery={searchQuery}
+            userId={user?.id}
+            onSelect={handleSelectConv}
+            onSearch={setSearchQuery}
+          />
 
-            {/* List */}
-            <div className="flex-1 overflow-y-auto">
-              {filteredConvs.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full gap-2 px-4 text-center">
-                  <Search size={28} style={{ color: "#ccc" }} />
-                  <p
-                    className="text-xs font-bold uppercase"
-                    style={{ fontFamily: "var(--font-display)", color: "#aaa" }}
-                  >
-                    {searchQuery
-                      ? "Không tìm thấy người dùng"
-                      : "Chưa có cuộc trò chuyện"}
-                  </p>
-                  <p
-                    className="text-xs"
-                    style={{ color: "#bbb", fontFamily: "var(--font-sans)" }}
-                  >
-                    Chỉ hiển thị người dùng đã follow nhau
-                  </p>
-                </div>
-              ) : (
-                filteredConvs.map((conv) => {
-                  const isActive = selectedConv?.user.id === conv.user.id;
-                  return (
-                    <button
-                      key={conv.user.id}
-                      onClick={() => handleSelectConv(conv)}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors"
-                      style={{
-                        background: isActive ? "#0d0d0d" : "transparent",
-                        borderBottom: "1px solid rgba(0,0,0,0.07)",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive)
-                          e.currentTarget.style.background = "#ebf4f5";
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive)
-                          e.currentTarget.style.background = "transparent";
-                      }}
-                    >
-                      <div className="relative shrink-0">
-                        <img
-                          src={conv.user.avatarUrl}
-                          alt={conv.user.fullName}
-                          className="w-10 h-10 rounded-full object-cover"
-                          style={{
-                            border: `2px solid ${isActive ? "white" : "#0d0d0d"}`,
-                          }}
-                        />
-                        {conv.unreadCount > 0 && (
-                          <span
-                            className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white"
-                            style={{
-                              fontSize: "9px",
-                              fontWeight: 900,
-                              background: "#d32f2f",
-                              fontFamily: "var(--font-display)",
-                            }}
-                          >
-                            {conv.unreadCount > 9 ? "9+" : conv.unreadCount}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-1">
-                          <p
-                            className="text-xs font-black truncate"
-                            style={{
-                              fontFamily: "var(--font-display)",
-                              color: isActive ? "white" : "#0d0d0d",
-                            }}
-                          >
-                            {conv.user.fullName}
-                          </p>
-                          {conv.lastMessage && (
-                            <span
-                              className="text-xs shrink-0"
-                              style={{
-                                color: isActive
-                                  ? "rgba(255,255,255,0.6)"
-                                  : "#aaa",
-                                fontSize: "10px",
-                              }}
-                            >
-                              {formatTime(conv.lastMessage.createdAt)}
-                            </span>
-                          )}
-                        </div>
-                        {conv.lastMessage && (
-                          <p
-                            className="text-xs truncate mt-0.5"
-                            style={{
-                              color: isActive
-                                ? "rgba(255,255,255,0.7)"
-                                : conv.unreadCount > 0
-                                ? "#0d0d0d"
-                                : "#888",
-                              fontWeight: conv.unreadCount > 0 ? 700 : 400,
-                            }}
-                          >
-                            {conv.lastMessage.senderId === user?.id
-                              ? "Bạn: "
-                              : ""}
-                            {conv.lastMessage.content}
-                          </p>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          </div>
-
-          {/* ── Right: Chat Window ── */}
+          {/* Right: Chat Window */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {selectedConv ? (
-              <>
-                {/* Chat header */}
-                <div
-                  className="shrink-0 flex items-center justify-between px-5 py-3 bg-white"
-                  style={{ borderBottom: "3px solid #0d0d0d" }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <img
-                        src={selectedConv.user.avatarUrl}
-                        alt={selectedConv.user.fullName}
-                        className="w-9 h-9 rounded-full object-cover"
-                        style={{ border: "2px solid #0d0d0d" }}
-                      />
-                      <span
-                        className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500"
-                        style={{ border: "2px solid white" }}
-                      />
-                    </div>
-                    <div>
-                      <p
-                        className="text-sm font-black"
-                        style={{
-                          fontFamily: "var(--font-display)",
-                          color: "#0d0d0d",
-                        }}
-                      >
-                        {selectedConv.user.fullName}
-                      </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: "#888", fontFamily: "var(--font-sans)" }}
-                      >
-                        {selectedConv.user.email}
-                      </p>
-                    </div>
-                  </div>
-
-                  <ConvOptions
-                    muteSetting={selectedConv.muteSetting}
-                    onMuteNotification={() =>
-                      handleMuteNotification(selectedConv.user.id)
-                    }
-                    onMuteSeen={() => handleMuteSeen(selectedConv.user.id)}
-                    onDelete={() => handleDeleteConv(selectedConv.user.id)}
-                  />
-                </div>
-
-                {/* Messages */}
-                <div
-                  className="flex-1 overflow-y-auto px-5 py-4"
-                  style={{ background: "#ebf4f5" }}
-                >
-                  {messages.map((msg, idx) => {
-                    const isMine = msg.senderId === user?.id;
-                    const isLastMine =
-                      isMine && idx === messages.length - 1;
-                    return (
-                      <div
-                        key={msg.id}
-                        className={`flex mb-2 ${isMine ? "justify-end" : "justify-start"}`}
-                      >
-                        <div
-                          className="flex flex-col gap-0.5"
-                          style={{ maxWidth: "65%" }}
-                        >
-                          <div
-                            className="px-4 py-2.5 text-sm"
-                            style={{
-                              background: isMine ? "#0d0d0d" : "white",
-                              color: isMine ? "white" : "#0d0d0d",
-                              border: "2px solid #0d0d0d",
-                              boxShadow: isMine
-                                ? "3px 3px 0 #d32f2f"
-                                : "3px 3px 0 #0d0d0d",
-                              fontFamily: "var(--font-sans)",
-                              lineHeight: 1.5,
-                            }}
-                          >
-                            {msg.content}
-                          </div>
-                          <div
-                            className={`flex items-center gap-1 ${isMine ? "justify-end" : "justify-start"}`}
-                          >
-                            <span
-                              className="text-xs"
-                              style={{ color: "#aaa", fontSize: "10px" }}
-                            >
-                              {formatTime(msg.createdAt)}
-                            </span>
-                            {isLastMine && showSeen && (
-                              <span
-                                className="flex items-center gap-0.5 text-xs"
-                                style={{
-                                  color: "#d32f2f",
-                                  fontSize: "10px",
-                                  fontWeight: 700,
-                                  fontFamily: "var(--font-display)",
-                                }}
-                              >
-                                <CheckCheck size={11} /> Seen
-                              </span>
-                            )}
-                            {isLastMine && !lastMsg?.seen && (
-                              <span
-                                className="flex items-center gap-0.5 text-xs"
-                                style={{
-                                  color: "#aaa",
-                                  fontSize: "10px",
-                                }}
-                              >
-                                <Check size={11} /> Sent
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-
-                  {/* Typing indicator */}
-                  {isOtherTyping && (
-                    <div className="flex justify-start mb-2">
-                      <div
-                        style={{
-                          background: "white",
-                          border: "2px solid #0d0d0d",
-                          boxShadow: "3px 3px 0 #0d0d0d",
-                        }}
-                      >
-                        <TypingDots />
-                      </div>
-                    </div>
-                  )}
-
-                  <div ref={messagesEndRef} />
-                </div>
-
-                {/* Input */}
-                <div
-                  className="shrink-0 flex items-center gap-3 px-5 py-3 bg-white"
-                  style={{ borderTop: "3px solid #0d0d0d" }}
-                >
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    value={inputText}
-                    onChange={handleInputChange}
-                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                    placeholder="Nhập tin nhắn... (Enter để gửi)"
-                    className="flex-1 px-4 py-2.5 text-sm outline-none"
-                    style={{
-                      border: "2px solid #0d0d0d",
-                      fontFamily: "var(--font-sans)",
-                      background: "#ebf4f5",
-                    }}
-                  />
-                  <button
-                    onClick={handleSend}
-                    disabled={!inputText.trim()}
-                    className="flex items-center gap-2 px-4 py-2.5 text-xs font-black uppercase transition-all"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      background: inputText.trim() ? "#d32f2f" : "#ccc",
-                      color: "white",
-                      border: "2px solid #0d0d0d",
-                      boxShadow: inputText.trim() ? "3px 3px 0 #0d0d0d" : "none",
-                      cursor: inputText.trim() ? "pointer" : "not-allowed",
-                      transition: "all 0.15s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (inputText.trim()) {
-                        e.currentTarget.style.transform = "translate(-2px,-2px)";
-                        e.currentTarget.style.boxShadow = "5px 5px 0 #0d0d0d";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "translate(0,0)";
-                      e.currentTarget.style.boxShadow = inputText.trim()
-                        ? "3px 3px 0 #0d0d0d"
-                        : "none";
-                    }}
-                  >
-                    <Send size={13} /> Send
-                  </button>
-                </div>
-              </>
+              <ChatWindow
+                conv={selectedConv}
+                messages={messages}
+                inputText={inputText}
+                isOtherTyping={isOtherTyping}
+                isSending={isSending}
+                userId={user?.id}
+                inputRef={inputRef}
+                messagesEndRef={messagesEndRef}
+                onInputChange={handleInputChange}
+                onSend={handleSend}
+              />
             ) : (
-              /* Empty State */
-              <div className="flex flex-col items-center justify-center flex-1 gap-4">
-                <div
-                  className="w-20 h-20 flex items-center justify-center bg-white"
-                  style={{
-                    border: "3px solid #0d0d0d",
-                    boxShadow: "6px 6px 0 #0d0d0d",
-                  }}
-                >
-                  <MessageCircle size={36} style={{ color: "#d32f2f" }} />
-                </div>
-                <div className="text-center">
-                  <p
-                    className="text-lg font-black uppercase tracking-widest mb-1"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      color: "#0d0d0d",
-                    }}
-                  >
-                    Chọn cuộc trò chuyện
-                  </p>
-                  <p
-                    className="text-sm"
-                    style={{ color: "#888", fontFamily: "var(--font-sans)" }}
-                  >
-                    Chỉ người dùng đã follow nhau mới có thể nhắn tin
-                  </p>
-                </div>
-              </div>
+              <EmptyState />
             )}
           </div>
         </div>
       </div>
     </>
+  );
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function ConversationList({
+  conversations,
+  selectedConv,
+  searchQuery,
+  userId,
+  onSelect,
+  onSearch,
+}: {
+  conversations: ConversationResponse[];
+  selectedConv: ConversationResponse | null;
+  searchQuery: string;
+  userId?: string;
+  onSelect: (c: ConversationResponse) => void;
+  onSearch: (q: string) => void;
+}) {
+  return (
+    <div
+      className="w-72 shrink-0 flex flex-col bg-white"
+      style={{ borderRight: "3px solid #0d0d0d" }}
+    >
+      {/* Search */}
+      <div className="p-3" style={{ borderBottom: "2px solid #0d0d0d" }}>
+        <div className="relative">
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2"
+            style={{ color: "#999" }}
+          />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearch(e.target.value)}
+            placeholder="Tìm theo tên hoặc email..."
+            className="w-full pl-9 pr-3 py-2 text-xs bg-white outline-none"
+            style={{
+              border: "2px solid #0d0d0d",
+              fontFamily: "var(--font-sans)",
+              color: "#0d0d0d",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* List */}
+      <div className="flex-1 overflow-y-auto">
+        {conversations.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-2 px-4 text-center">
+            <Search size={28} style={{ color: "#ccc" }} />
+            <p
+              className="text-xs font-bold uppercase"
+              style={{ fontFamily: "var(--font-display)", color: "#aaa" }}
+            >
+              {searchQuery
+                ? "Không tìm thấy người dùng"
+                : "Chưa có cuộc trò chuyện"}
+            </p>
+            <p
+              className="text-xs"
+              style={{ color: "#bbb", fontFamily: "var(--font-sans)" }}
+            >
+              Chỉ hiển thị người dùng đã follow nhau
+            </p>
+          </div>
+        ) : (
+          conversations.map((conv) => (
+            <ConversationItem
+              key={conv.otherUser.id}
+              conv={conv}
+              isActive={selectedConv?.otherUser.id === conv.otherUser.id}
+              userId={userId}
+              onSelect={onSelect}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ConversationItem({
+  conv,
+  isActive,
+  userId,
+  onSelect,
+}: {
+  conv: ConversationResponse;
+  isActive: boolean;
+  userId?: string;
+  onSelect: (c: ConversationResponse) => void;
+}) {
+  return (
+    <button
+      onClick={() => onSelect(conv)}
+      className="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors"
+      style={{
+        background: isActive ? "#0d0d0d" : "transparent",
+        borderBottom: "1px solid rgba(0,0,0,0.07)",
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) e.currentTarget.style.background = "#ebf4f5";
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) e.currentTarget.style.background = "transparent";
+      }}
+    >
+      <div className="relative shrink-0">
+        <img
+          src={conv.otherUser.avatarUrl}
+          alt={conv.otherUser.fullName}
+          className="w-10 h-10 rounded-full object-cover"
+          style={{ border: `2px solid ${isActive ? "white" : "#0d0d0d"}` }}
+        />
+        {conv.unreadCount > 0 && (
+          <span
+            className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white"
+            style={{
+              fontSize: "9px",
+              fontWeight: 900,
+              background: "#d32f2f",
+              fontFamily: "var(--font-display)",
+            }}
+          >
+            {conv.unreadCount > 9 ? "9+" : conv.unreadCount}
+          </span>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-1">
+          <p
+            className="text-xs font-black truncate"
+            style={{
+              fontFamily: "var(--font-display)",
+              color: isActive ? "white" : "#0d0d0d",
+            }}
+          >
+            {conv.otherUser.fullName}
+          </p>
+          {conv.lastMessageAt && (
+            <span
+              className="text-xs shrink-0"
+              style={{
+                color: isActive ? "rgba(255,255,255,0.6)" : "#aaa",
+                fontSize: "10px",
+              }}
+            >
+              {formatTime(conv.lastMessageAt)}
+            </span>
+          )}
+        </div>
+        {conv.lastMessage && (
+          <p
+            className="text-xs truncate mt-0.5"
+            style={{
+              color: isActive
+                ? "rgba(255,255,255,0.7)"
+                : conv.unreadCount > 0
+                  ? "#0d0d0d"
+                  : "#888",
+              fontWeight: conv.unreadCount > 0 ? 700 : 400,
+            }}
+          >
+            {conv.lastMessageSenderId === userId ? "Bạn: " : ""}
+            {conv.lastMessage}
+          </p>
+        )}
+      </div>
+    </button>
+  );
+}
+
+function ChatWindow({
+  conv,
+  messages,
+  inputText,
+  isOtherTyping,
+  isSending,
+  userId,
+  inputRef,
+  messagesEndRef,
+  onInputChange,
+  onSend,
+}: {
+  conv: ConversationResponse;
+  messages: MessageResponse[];
+  inputText: string;
+  isOtherTyping: boolean;
+  isSending: boolean;
+  userId?: string;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  messagesEndRef?: React.RefObject<HTMLDivElement>;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSend: () => void;
+}) {
+  return (
+    <>
+      {/* Chat Header */}
+      <div
+        className="shrink-0 flex items-center px-5 py-3 bg-white"
+        style={{ borderBottom: "3px solid #0d0d0d" }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <img
+              src={conv.otherUser.avatarUrl}
+              alt={conv.otherUser.fullName}
+              className="w-9 h-9 rounded-full object-cover"
+              style={{ border: "2px solid #0d0d0d" }}
+            />
+            <span
+              className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500"
+              style={{ border: "2px solid white" }}
+            />
+          </div>
+          <div>
+            <p
+              className="text-sm font-black"
+              style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+            >
+              {conv.otherUser.fullName}
+            </p>
+            <p
+              className="text-xs"
+              style={{ color: "#888", fontFamily: "var(--font-sans)" }}
+            >
+              {conv.otherUser.email}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div
+        className="flex-1 overflow-y-auto px-5 py-4"
+        style={{ background: "#ebf4f5" }}
+      >
+        {messages.map((msg, idx) => {
+          const isMine = msg.senderId === userId;
+          const isLastMine = isMine && idx === messages.length - 1;
+          return (
+            <div
+              key={msg.id}
+              className={`flex mb-2 ${isMine ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className="flex flex-col gap-0.5"
+                style={{ maxWidth: "65%" }}
+              >
+                <div
+                  className="px-4 py-2.5 text-sm"
+                  style={{
+                    background: isMine ? "#0d0d0d" : "white",
+                    color: isMine ? "white" : "#0d0d0d",
+                    border: "2px solid #0d0d0d",
+                    boxShadow: isMine
+                      ? "3px 3px 0 #d32f2f"
+                      : "3px 3px 0 #0d0d0d",
+                    fontFamily: "var(--font-sans)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  {msg.content}
+                </div>
+                <div
+                  className={`flex items-center gap-1 ${isMine ? "justify-end" : "justify-start"}`}
+                >
+                  <span
+                    className="text-xs"
+                    style={{ color: "#aaa", fontSize: "10px" }}
+                  >
+                    {formatTime(msg.createdAt)}
+                  </span>
+                  {isLastMine &&
+                    (msg.isRead ? (
+                      <span
+                        className="flex items-center gap-0.5 text-xs"
+                        style={{
+                          color: "#d32f2f",
+                          fontSize: "10px",
+                          fontWeight: 700,
+                          fontFamily: "var(--font-display)",
+                        }}
+                      >
+                        <CheckCheck size={11} /> Seen
+                      </span>
+                    ) : (
+                      <span
+                        className="flex items-center gap-0.5 text-xs"
+                        style={{ color: "#aaa", fontSize: "10px" }}
+                      >
+                        <Check size={11} /> Sent
+                      </span>
+                    ))}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        {isOtherTyping && (
+          <div className="flex justify-start mb-2">
+            <div
+              style={{
+                background: "white",
+                border: "2px solid #0d0d0d",
+                boxShadow: "3px 3px 0 #0d0d0d",
+              }}
+            >
+              <TypingDots />
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input */}
+      <div
+        className="shrink-0 flex items-center gap-3 px-5 py-3 bg-white"
+        style={{ borderTop: "3px solid #0d0d0d" }}
+      >
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputText}
+          onChange={onInputChange}
+          onKeyDown={(e) => e.key === "Enter" && onSend()}
+          placeholder="Nhập tin nhắn... (Enter để gửi)"
+          className="flex-1 px-4 py-2.5 text-sm outline-none"
+          style={{
+            border: "2px solid #0d0d0d",
+            fontFamily: "var(--font-sans)",
+            background: "#ebf4f5",
+          }}
+        />
+        <button
+          onClick={onSend}
+          disabled={!inputText.trim() || isSending}
+          className="flex items-center gap-2 px-4 py-2.5 text-xs font-black uppercase transition-all"
+          style={{
+            fontFamily: "var(--font-display)",
+            background: inputText.trim() ? "#d32f2f" : "#ccc",
+            color: "white",
+            border: "2px solid #0d0d0d",
+            boxShadow: inputText.trim() ? "3px 3px 0 #0d0d0d" : "none",
+            cursor: inputText.trim() ? "pointer" : "not-allowed",
+          }}
+          onMouseEnter={(e) => {
+            if (inputText.trim()) {
+              e.currentTarget.style.transform = "translate(-2px,-2px)";
+              e.currentTarget.style.boxShadow = "5px 5px 0 #0d0d0d";
+            }
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translate(0,0)";
+            e.currentTarget.style.boxShadow = inputText.trim()
+              ? "3px 3px 0 #0d0d0d"
+              : "none";
+          }}
+        >
+          <Send size={13} /> Send
+        </button>
+      </div>
+    </>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center flex-1 gap-4">
+      <div
+        className="w-20 h-20 flex items-center justify-center bg-white"
+        style={{ border: "3px solid #0d0d0d", boxShadow: "6px 6px 0 #0d0d0d" }}
+      >
+        <MessageCircle size={36} style={{ color: "#d32f2f" }} />
+      </div>
+      <div className="text-center">
+        <p
+          className="text-lg font-black uppercase tracking-widest mb-1"
+          style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+        >
+          Chọn cuộc trò chuyện
+        </p>
+        <p
+          className="text-sm"
+          style={{ color: "#888", fontFamily: "var(--font-sans)" }}
+        >
+          Chỉ người dùng đã follow nhau mới có thể nhắn tin
+        </p>
+      </div>
+    </div>
   );
 }

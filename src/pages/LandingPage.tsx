@@ -8,7 +8,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { BlogResponse, TagResponse } from "@/types/blog.types";
+import { BlogResponse } from "@/types/blog.types";
 import blogApi from "@/api/blogApi";
 import { extractApiError } from "@/utils/apiError";
 import { toast } from "sonner";
@@ -16,16 +16,6 @@ import tagApi from "@/api/tagApi";
 import { TagStatsResponse } from "@/types/tag.types";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
-const categories = [
-  "Tech",
-  "Lifestyle",
-  "Business",
-  "Personal",
-  "Design",
-  "Travel",
-  "Science",
-  "Culture",
-];
 
 const benefits = [
   {
@@ -412,7 +402,7 @@ function LandingPage() {
           Explore by Topic
         </h2>
         <div className="flex flex-wrap gap-3 justify-center">
-          {tags.map((tag) => (
+          {tags?.map((tag) => (
             <button
               key={tag.tag}
               className="brutal-tag text-sm"
