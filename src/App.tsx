@@ -12,6 +12,7 @@ import OAuth2Callback from "./pages/Oauth2Callback";
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import { Toaster } from "sonner";
 import MessagingPage from "./pages/MessagingPage";
+import UserDetailPage from "./pages/UserDetailPage";
 export default function App() {
   return (
     <>
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/stats" element={<StatisticsPage />} />
             <Route path="/messages" element={<MessagingPage />} />
+            <Route path="/user/:userId" element={<UserDetailPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

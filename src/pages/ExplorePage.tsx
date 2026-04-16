@@ -352,7 +352,11 @@ function ExplorePage() {
                           className="flex items-center justify-between pt-3"
                           style={{ borderTop: "2px solid #0d0d0d" }}
                         >
-                          <div className="flex items-center gap-2">
+                          <Link
+                            to={`/user/${blog.author.id}`}
+                            className="flex items-center gap-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <img
                               src={
                                 blog.author.avatarUrl ||
@@ -363,12 +367,12 @@ function ExplorePage() {
                               style={{ border: "2px solid #0d0d0d" }}
                             />
                             <span
-                              className="text-xs font-bold truncate max-w-25"
+                              className="text-xs font-bold truncate max-w-25 hover:text-[#d32f2f] transition-colors"
                               style={{ fontFamily: "var(--font-display)" }}
                             >
                               {blog.author.fullName}
                             </span>
-                          </div>
+                          </Link>
                           <div
                             className="flex items-center gap-1 text-xs"
                             style={{ color: "#888" }}

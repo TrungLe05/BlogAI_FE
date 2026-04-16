@@ -8,6 +8,8 @@ import {
 import axios from "axios";
 
 const blogApi = {
+  getBlogsByUserId: (userId: string) =>
+    axiosClient.get<ApiResponse<BlogResponse[]>>(`/blogs/author/${userId}/publish`),
   getAllBlog: () => axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs"),
   getAllTag: () => axiosClient.get<ApiResponse<TagResponse[]>>("/tags"),
   getAllBlogByAuthor: () =>

@@ -196,22 +196,25 @@ function BlogDetailPage() {
               }}
             >
               <div className="flex items-center gap-3">
-                <img
-                  src={
-                    blogDetail?.author.avatarUrl ||
-                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
-                  }
-                  alt="author"
-                  className="w-12 h-12"
-                  style={{ border: "2px solid #0d0d0d" }}
-                />
+                <Link to={`/user/${blogDetail?.author.id}`}>
+                  <img
+                    src={
+                      blogDetail?.author.avatarUrl ||
+                      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+                    }
+                    alt="author"
+                    className="w-12 h-12"
+                    style={{ border: "2px solid #0d0d0d" }}
+                  />
+                </Link>
                 <div>
-                  <p
-                    className="font-black text-sm"
+                  <Link
+                    to={`/user/${blogDetail?.author.id}`}
+                    className="font-black text-sm hover:text-[#d32f2f] transition-colors block"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     {blogDetail?.author.fullName}
-                  </p>
+                  </Link>
                   <p className="text-xs" style={{ color: "#888" }}>
                     {blogDetail?.createdAt}
                   </p>
@@ -359,20 +362,22 @@ function BlogDetailPage() {
                 <img
                   src={blogDetail?.author.avatarUrl || "..."}
                   alt="author"
-                  className="w-16 h-16 shrink-0"
+                  className="w-16 h-16 shrink-0 cursor-pointer"
                   style={{ border: "3px solid #0d0d0d" }}
+                  onClick={() => navigate(`/user/${blogDetail?.author.id}`)}
                 />
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <p
-                      className="font-black"
+                    <Link
+                      to={`/user/${blogDetail?.author.id}`}
+                      className="font-black hover:text-[#d32f2f] transition-colors"
                       style={{
                         fontFamily: "var(--font-display)",
                         fontSize: "1.1rem",
                       }}
                     >
                       {blogDetail?.author.fullName}
-                    </p>
+                    </Link>
                     <User size={14} style={{ color: "#d32f2f" }} />
                   </div>
                   <p
