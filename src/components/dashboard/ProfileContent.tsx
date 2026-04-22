@@ -963,12 +963,16 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
                         style={{ border: "2px solid #0d0d0d" }}
                       />
                       <div className="flex-1 min-w-0">
-                        <p
+                        <Link
+                          to={`/user/${u.id}`}
+                        >
+                          <p
                           className="font-black text-sm truncate"
                           style={{ fontFamily: "var(--font-display)" }}
                         >
                           {u.fullName}
                         </p>
+                        </Link>
                         <p
                           className="text-xs truncate"
                           style={{ color: "#888" }}

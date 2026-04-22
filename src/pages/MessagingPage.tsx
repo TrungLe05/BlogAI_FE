@@ -473,7 +473,7 @@ function ConversationItem({
     >
       <div className="relative shrink-0">
         <img
-          src={conv.otherUser.avatarUrl}
+          src={conv.otherUser.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.otherUser.fullName)}&background=d32f2f&color=fff`}
           alt={conv.otherUser.fullName}
           className="w-10 h-10 rounded-full object-cover"
           style={{ border: `2px solid ${isActive ? "white" : "#0d0d0d"}` }}
@@ -569,7 +569,7 @@ function ChatWindow({
         <div className="flex items-center gap-3">
           <div className="relative">
             <img
-              src={conv.otherUser.avatarUrl}
+              src={conv.otherUser.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(conv.otherUser.fullName)}&background=d32f2f&color=fff`}
               alt={conv.otherUser.fullName}
               className="w-9 h-9 rounded-full object-cover"
               style={{ border: "2px solid #0d0d0d" }}

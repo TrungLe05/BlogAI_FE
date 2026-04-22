@@ -5,11 +5,8 @@ import {
   CreateBlogRequest,
   TagResponse,
 } from "@/types/blog.types";
-import axios from "axios";
 
 const blogApi = {
-  getBlogsByUserId: (userId: string) =>
-    axiosClient.get<ApiResponse<BlogResponse[]>>(`/blogs/author/${userId}/publish`),
   getAllBlog: () => axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs"),
   getAllTag: () => axiosClient.get<ApiResponse<TagResponse[]>>("/tags"),
   getAllBlogByAuthor: () =>
@@ -18,6 +15,8 @@ const blogApi = {
     axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs/draft"),
   getAllBlogPublishByAuthor: () =>
     axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs/publish"),
+  getAllBlogPublishByUserId: (userId: string) =>
+    axiosClient.get<ApiResponse<BlogResponse[]>>(`/blogs/user/${userId}`),
   getBlogDetailById: (blogId: string) =>
     axiosClient.get<ApiResponse<BlogResponse>>(`/blogs/${blogId}`),
   createBlog: (data: CreateBlogRequest) =>

@@ -360,7 +360,7 @@ function BlogDetailPage() {
                 }}
               >
                 <img
-                  src={blogDetail?.author.avatarUrl || "..."}
+                  src={blogDetail?.author.avatarUrl || "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop"}
                   alt="author"
                   className="w-16 h-16 shrink-0 cursor-pointer"
                   style={{ border: "3px solid #0d0d0d" }}

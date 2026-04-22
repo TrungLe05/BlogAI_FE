@@ -20,9 +20,6 @@ import { BlogResponse } from "@/types/blog.types";
 import { extractApiError } from "@/utils/apiError";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
-const FALLBACK_COVER =
-  "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop";
-
 function UserDetailPage() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
@@ -35,7 +32,6 @@ function UserDetailPage() {
   const [followOverride, setFollowOverride] = useState<boolean | null>(null);
 
   const isOwnProfile = profileUser?.id === currentUser?.id;
-
   const isFollowing =
     followOverride !== null
       ? followOverride
@@ -50,12 +46,10 @@ function UserDetailPage() {
     const load = async () => {
       setIsLoading(true);
       try {
-        const [userRes, blogsRes] = await Promise.all([
-          userApi.getUserById(userId),
-          blogApi.getBlogsByUserId(userId),
-        ]);
-        setProfileUser(userRes.data.result);
-        setBlogs(blogsRes.data.result.filter(Boolean));
+        const { data } = await blogApi.getAllBlogPublishByUserId(userId);
+
+        setBlogs(data.result.filter(Boolean));
+        setProfileUser(data.result[0].author);
       } catch (e) {
         toast.error("Failed to load user profile.");
         console.error(e);
@@ -74,9 +68,21 @@ function UserDetailPage() {
     setIsFollowLoading(true);
     try {
       if (isFollowing) {
-        await followApi.unfollow(profileUser.id);
-        setFollowOverride(false);
-        toast.success("Unfollowed successfully");
+        toast("Confirm", {
+          description: "Are you sure you want to unfollow this user ?",
+          action: {
+            label: "Confirm",
+            onClick: async () => {
+              await followApi.unfollow(profileUser.id);
+              setFollowOverride(false);
+              toast.success("Unfollowed successfully");
+            },
+          },
+          cancel: {
+            label: "Cancel",
+            onClick: () => {},
+          },
+        });
       } else {
         await followApi.follow(profileUser.id);
         setFollowOverride(true);
@@ -125,7 +131,7 @@ function UserDetailPage() {
                 src={
                   profileUser?.avatarUrl ||
                   `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                    profileUser?.fullName ?? "U"
+                    profileUser?.fullName ?? "U",
                   )}&background=d32f2f&color=fff&size=96`
                 }
                 alt={profileUser?.fullName}
@@ -170,11 +176,20 @@ function UserDetailPage() {
 
                 {/* Stats row */}
                 <div className="flex flex-wrap items-center gap-0">
-                  <StatChip icon={<FileText size={13} />} label={`${blogs.length} Posts`} />
+                  <StatChip
+                    icon={<FileText size={13} />}
+                    label={`${blogs.length} Posts`}
+                  />
                   <span className="text-white/30 mx-3 text-xs">|</span>
-                  <StatChip icon={<Eye size={13} />} label={`${formatNum(totalViews)} Views`} />
+                  <StatChip
+                    icon={<Eye size={13} />}
+                    label={`${formatNum(totalViews)} Views`}
+                  />
                   <span className="text-white/30 mx-3 text-xs">|</span>
-                  <StatChip icon={<Heart size={13} />} label={`${formatNum(totalLikes)} Likes`} />
+                  <StatChip
+                    icon={<Heart size={13} />}
+                    label={`${formatNum(totalLikes)} Likes`}
+                  />
                 </div>
               </div>
             </div>
@@ -214,8 +229,8 @@ function UserDetailPage() {
                   {isFollowLoading
                     ? "..."
                     : isFollowing
-                    ? "Following ✓"
-                    : "Follow"}
+                      ? "Following ✓"
+                      : "Follow"}
                 </button>
               </div>
             )}
@@ -290,7 +305,9 @@ function UserDetailPage() {
               {blogs.length}
             </span>
           </div>
-          <div style={{ height: "4px", background: "#d32f2f", width: "80px" }} />
+          <div
+            style={{ height: "4px", background: "#d32f2f", width: "80px" }}
+          />
         </div>
 
         {/* Blog Grid */}
@@ -315,9 +332,15 @@ function UserDetailPage() {
                 }}
               >
                 {/* Cover image */}
-                <div className="relative overflow-hidden" style={{ height: "180px" }}>
+                <div
+                  className="relative overflow-hidden"
+                  style={{ height: "180px" }}
+                >
                   <img
-                    src={blog.coverImageUrl ?? FALLBACK_COVER}
+                    src={
+                      blog.coverImageUrl ??
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(blog.author.fullName)}&background=d32f2f&color=fff`
+                    }
                     alt={blog.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -374,7 +397,9 @@ function UserDetailPage() {
                     {/* Like count */}
                     <div
                       className="flex items-center gap-1 text-xs font-bold"
-                      style={{ color: blog.likedByCurrentUser ? "#d32f2f" : "#555" }}
+                      style={{
+                        color: blog.likedByCurrentUser ? "#d32f2f" : "#555",
+                      }}
                     >
                       <Heart
                         size={12}
@@ -400,7 +425,10 @@ function UserDetailPage() {
         ) : (
           <div
             className="text-center py-20 bg-white"
-            style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
+            style={{
+              border: "3px solid #0d0d0d",
+              boxShadow: "4px 4px 0 #0d0d0d",
+            }}
           >
             <p className="text-6xl mb-4">📝</p>
             <h3
@@ -423,13 +451,7 @@ function UserDetailPage() {
 
 // ─── Helper components ────────────────────────────────────
 
-function StatChip({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) {
+function StatChip({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <span
       className="inline-flex items-center gap-1.5 text-xs font-bold"

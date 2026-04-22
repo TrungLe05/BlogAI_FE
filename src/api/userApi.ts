@@ -3,7 +3,7 @@ import { ApiResponse, updateUserRequest, User } from "@/types/auth.types";
 
 export const userApi = {
   getUserById: (id: string) =>
-    axiosClient.get<ApiResponse<User>>(`/auth/users/${id}`),
+    axiosClient.get<ApiResponse<User>>(`/users/${id}`),
   getMe: () => axiosClient.get<ApiResponse<User>>("/auth/me"),
   updateMe: (data: updateUserRequest) => {
     const formData = new FormData();
