@@ -12,12 +12,20 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       const res = await authApi.login({ email, password });
       console.log(res.data);
+
+      if (res.data.result.require2FA) {
+        localStorage.setItem("temp-token", res.data.result.tempToken);
+        navigate("/auth/2fa-verify-otp-code");
+        return;
+      }
+
       localStorage.setItem("refreshToken", res.data.result.refreshToken);
       setAuth(res.data.result.token, null);
 
@@ -336,8 +344,10 @@ function LoginPage() {
           </div>
         </div>
       </div>
+      
     </div>
   );
 }
+
 
 export default LoginPage;

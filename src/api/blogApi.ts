@@ -1,10 +1,8 @@
-import { ApiResponse } from "@/types/auth.types";
+import { ApiResponse } from "@/types/response/authResponse.type";
 import axiosClient from "./axiosClient";
-import {
-  BlogResponse,
-  CreateBlogRequest,
-  TagResponse,
-} from "@/types/blog.types";
+import { BlogResponse, TagResponse } from "@/types/response/blogResponse.types";
+import { CreateBlogRequest } from "@/types/request/blogRequest.types";
+
 
 const blogApi = {
   getAllBlog: () => axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs"),

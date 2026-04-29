@@ -1,4 +1,4 @@
-import { ApiResponse, User } from "@/types/auth.types";
+import { ApiResponse, User } from "@/types/response/authResponse.type";
 import axiosClient from "./axiosClient";
 
 const followApi = {

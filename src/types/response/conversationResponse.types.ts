@@ -1,4 +1,4 @@
-import { User } from "./auth.types";
+import { User } from "./authResponse.type"; 
 
 // types/conversation.types.ts
 export interface ConversationResponse {

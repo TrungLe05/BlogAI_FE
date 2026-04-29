@@ -18,7 +18,6 @@ import {
   Wand2,
   UserCircle,
   MessageCircle,
-  Bell,
   Search,
 } from "lucide-react";
 import { ProfileContent } from "@/components/dashboard/ProfileContent";
@@ -26,15 +25,25 @@ import { StatsContent } from "@/components/dashboard/StatsContent";
 import useAuthStore from "@/stores/authStore";
 import blogApi from "@/api/blogApi";
 import { RichEditor } from "@/components/dashboard/RichEditor";
-import { TagResponse } from "@/types/blog.types";
+import { TagResponse } from "@/types/response/blogResponse.types";
 import { AvatarDropdown } from "@/components/dashboard/AvatarDropdown";
 import { toast } from "sonner";
 import { extractApiError } from "@/utils/apiError";
 import { validateCreateBlog, validateUpdateBlog } from "@/utils/blogValidation";
 import { NotificationBell } from "@/components/common/NotificationBell";
+import { SettingsContent } from "@/components/dashboard/SettingsContent";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { authApi } from "@/api/authApi";
 
 type ActiveView = "write" | "stats" | "profile" | "settings";
-
 
 async function generateTitlesFromAI(content: string): Promise<string[]> {
   const { data } = await blogApi.generateTitles(content);
@@ -909,6 +918,24 @@ function DashboardPage() {
   const [isPublishSaving, setIsPublishSaving] = useState(false);
 
   const [_isLoadingBlog, setIsLoadingBlog] = useState(false);
+  const [show2FADialog, setShow2FADialog] = useState(false);
+
+  useEffect(() => {
+    const fetch2FAStatus = async () => {
+      try {
+        const alreadySeen = localStorage.getItem("2fa-dialog-seen");
+        if(alreadySeen === "true") return;
+
+        const { data } = await authApi.get2FAStatus();
+        console.log("enable 2FA status: ", data.result);
+        setShow2FADialog(!data.result);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetch2FAStatus();
+  }, []);
 
   useAuthStore();
 
@@ -1182,7 +1209,6 @@ function DashboardPage() {
           {/* Notification icon */}
           <NotificationBell />
 
-
           {/* Avatar Dropdown */}
           <AvatarDropdown
             onSettingsClick={() => handleActiveView("settings")}
@@ -1249,10 +1275,58 @@ function DashboardPage() {
           {activeView === "profile" && (
             <ProfileContent onEditBlog={handleEditBlog} />
           )}
+          {activeView === "settings" && <SettingsContent />}
         </div>
       </div>
+      <Enable2FADialog
+        open={show2FADialog}
+        onClose={() => {
+          setShow2FADialog(false);
+        }}
+        handleEnable2FA={() => {
+          setActiveView("settings");
+          setShow2FADialog(false);
+        }}
+      />
     </div>
   );
 }
 
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  handleEnable2FA: () => void;
+};
+
+function Enable2FADialog({ open, onClose, handleEnable2FA }: Props) {
+  const handleClose = () => {
+    localStorage.setItem("2fa-dialog-seen", "true");
+    onClose();
+  };
+
+  const handleEnable = () => {
+    localStorage.setItem("2fa-dialog-seen", "true");
+    handleEnable2FA();
+  };
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Bật bảo mật 2 lớp</DialogTitle>
+          <DialogDescription>
+            Tài khoản của bạn chưa bật xác thực 2 bước (2FA). Điều này giúp bảo
+            vệ tài khoản tốt hơn.
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="flex justify-end gap-2">
+          <Button variant="outline" onClick={handleClose}>
+            Để sau
+          </Button>
+          <Button onClick={handleEnable}>Bật ngay</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 export default DashboardPage;

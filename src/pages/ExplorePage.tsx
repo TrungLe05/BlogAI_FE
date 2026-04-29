@@ -7,15 +7,13 @@ import {
   ChevronRight,
   Eye,
   TrendingUp,
-  Loader2,
 } from "lucide-react";
 import blogApi from "@/api/blogApi";
 import { toast } from "sonner";
-import { BlogResponse, TagResponse } from "@/types/blog.types";
-import { TagStatsResponse } from "@/types/tag.types";
 import tagApi from "@/api/tagApi";
 import { extractApiError } from "@/utils/apiError";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { BlogResponse, TagResponse, TagStatsResponse } from "@/types/response/blogResponse.types";
 
 const SORTS = ["Latest", "Most Viewed"];
 const FALLBACK_COVER =

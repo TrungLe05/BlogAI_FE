@@ -1,9 +1,9 @@
+import { ApiResponse, User } from "@/types/response/authResponse.type";
 import axiosClient from "./axiosClient";
-import { ApiResponse, updateUserRequest, User } from "@/types/auth.types";
+import { updateUserRequest } from "@/types/request/authRequest.types";
 
 export const userApi = {
-  getUserById: (id: string) =>
-    axiosClient.get<ApiResponse<User>>(`/users/${id}`),
+  
   getMe: () => axiosClient.get<ApiResponse<User>>("/auth/me"),
   updateMe: (data: updateUserRequest) => {
     const formData = new FormData();

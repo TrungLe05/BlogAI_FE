@@ -1,9 +1,9 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
-  Camera, MapPin, Globe, Edit3, Share2, Users, FileText,
-  Heart, Mail, Lock, Bell, Trash2, Check, ExternalLink,
-  BookOpen, Eye
+  Camera, MapPin, Globe, Edit3, Share2, FileText,
+  Heart, Lock, Trash2, Check, ExternalLink,
+  BookOpen, Eye, Settings, BarChart2, Zap, ArrowRight
 } from "lucide-react";
 
 /* ── Mock Data ────────────────────────────────────────────── */
@@ -92,40 +92,7 @@ function StatBox({ value, label }: { value: string; label: string }) {
   );
 }
 
-/* ── notification toggle ──────────────────────────────────── */
-function BrutalToggle({ defaultOn = false, label }: { defaultOn?: boolean; label: string }) {
-  const [on, setOn] = useState(defaultOn);
-  return (
-    <div className="flex items-center justify-between py-3" style={{ borderBottom: "1px solid #e5e5e5" }}>
-      <span className="text-sm font-medium" style={{ color: "#333" }}>{label}</span>
-      <button
-        onClick={() => setOn(!on)}
-        className="flex items-center"
-        style={{
-          width: "48px",
-          height: "24px",
-          background: on ? "#d32f2f" : "#e5e5e5",
-          border: "3px solid #0d0d0d",
-          borderRadius: 0,
-          position: "relative",
-          transition: "background 0.2s",
-        }}
-      >
-        <span
-          style={{
-            position: "absolute",
-            left: on ? "22px" : "2px",
-            width: "14px",
-            height: "14px",
-            background: "white",
-            border: "2px solid #0d0d0d",
-            transition: "left 0.2s",
-          }}
-        />
-      </button>
-    </div>
-  );
-}
+
 
 /* ── Profile Page ─────────────────────────────────────────── */
 function ProfilePage() {
@@ -166,11 +133,11 @@ function ProfilePage() {
         <div className="absolute top-0 right-0 w-32 h-32" style={{ background: "#d32f2f", opacity: 0.15 }} />
         <div className="absolute bottom-0 left-0 w-20 h-20" style={{ background: "#d32f2f", opacity: 0.1 }} />
 
-        <div className="max-w-[1360px] mx-auto px-6 py-10 relative z-10">
+        <div className="max-w-340 mx-auto px-6 py-10 relative z-10">
           <div className="flex flex-col lg:flex-row items-start lg:items-end gap-6">
 
             {/* Avatar */}
-            <div className="relative flex-shrink-0">
+            <div className="relative shrink-0">
               <img
                 src={avatarPreview}
                 alt={USER.name}
@@ -228,7 +195,7 @@ function ProfilePage() {
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col gap-3 flex-shrink-0">
+            <div className="flex flex-col gap-3 shrink-0">
               <button
                 className="brutal-btn-red"
                 style={{ padding: "10px 20px" }}
@@ -247,7 +214,7 @@ function ProfilePage() {
       </div>
 
       {/* ── Main Content ─────────────────────────────────── */}
-      <div className="max-w-[1360px] mx-auto px-6 py-8">
+      <div className="max-w-340 mx-auto px-6 py-8">
         <div className="grid lg:grid-cols-[1fr_360px] gap-8 items-start">
 
           {/* LEFT — Posts ──────────────────────────────────── */}
@@ -304,7 +271,7 @@ function ProfilePage() {
                     }}
                   >
                     {/* Thumbnail */}
-                    <div className="flex-shrink-0 overflow-hidden" style={{ width: "140px" }}>
+                    <div className="shrink-0 overflow-hidden" style={{ width: "140px" }}>
                       <img
                         src={post.imageUrl}
                         alt={post.title}
@@ -399,7 +366,7 @@ function ProfilePage() {
                           Last edited {draft.lastEdited} · {draft.wordCount} words
                         </p>
                       </div>
-                      <div className="flex gap-2 flex-shrink-0 ml-4">
+                      <div className="flex gap-2 shrink-0 ml-4">
                         <Link to="/dashboard">
                           <button className="brutal-btn-primary text-xs" style={{ padding: "8px 14px" }}>
                             <Edit3 size={12} /> Continue
@@ -440,7 +407,7 @@ function ProfilePage() {
             )}
           </div>
 
-          {/* RIGHT — Edit Panel & Settings ─────────────────── */}
+          {/* RIGHT — Edit Panel & Static Sidebar ────────────── */}
           <div className="space-y-6" id="edit-profile-panel">
 
             {/* Edit Profile Form */}
@@ -513,115 +480,170 @@ function ProfilePage() {
               </div>
             </div>
 
-            {/* Account Settings */}
+            {/* ── Settings CTA ── */}
             <div
-              className="bg-white p-6"
-              style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
+              style={{
+                background: "#af101a",
+                border: "3px solid #0d0d0d",
+                boxShadow: "4px 4px 0 #0d0d0d",
+                padding: "20px",
+              }}
             >
-              <h2
-                className="font-black text-lg mb-5 flex items-center gap-2"
-                style={{ fontFamily: "var(--font-display)", borderBottom: "3px solid #0d0d0d", paddingBottom: "12px" }}
-              >
-                <Lock size={18} style={{ color: "#d32f2f" }} /> Account Settings
-              </h2>
-
-              <div className="space-y-3 mb-5">
-                {[
-                  { icon: <Mail size={14} />, label: "Change Email", sub: USER.email },
-                  { icon: <Lock size={14} />, label: "Change Password", sub: "Last changed 3 months ago" },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    className="w-full flex items-center justify-between p-3 text-left hover:bg-[#ebf4f5] transition-colors"
-                    style={{ border: "2px solid #0d0d0d" }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-7 h-7 flex items-center justify-center"
-                        style={{ background: "#0d0d0d", color: "white" }}
-                      >
-                        {item.icon}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold" style={{ fontFamily: "var(--font-display)" }}>{item.label}</p>
-                        <p className="text-xs" style={{ color: "#888" }}>{item.sub}</p>
-                      </div>
-                    </div>
-                    <span className="text-xs font-black" style={{ color: "#d32f2f", fontFamily: "var(--font-display)" }}>
-                      →
-                    </span>
-                  </button>
-                ))}
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+                <div style={{ background: "rgba(255,255,255,0.2)", border: "2px solid rgba(255,255,255,0.4)", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Settings size={16} color="white" />
+                </div>
+                <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "0.9rem", color: "#fff", margin: 0 }}>Account Settings</p>
               </div>
-
-              {/* Notifications */}
-              <div
-                className="mb-5 p-4"
-                style={{ background: "#ebf4f5", border: "2px solid #0d0d0d" }}
-              >
-                <p
-                  className="text-xs font-black uppercase tracking-widest mb-3 flex items-center gap-2"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  <Bell size={13} /> Notifications
-                </p>
-                <BrutalToggle defaultOn label="New followers" />
-                <BrutalToggle defaultOn label="Post likes" />
-                <BrutalToggle defaultOn label="Comments on posts" />
-                <BrutalToggle label="Weekly digest email" />
-              </div>
-
-              {/* Danger Zone */}
-              <div className="p-4" style={{ border: "3px solid #d32f2f" }}>
-                <p
-                  className="text-xs font-black uppercase tracking-widest mb-3"
-                  style={{ fontFamily: "var(--font-display)", color: "#d32f2f" }}
-                >
-                  ⚠ Danger Zone
-                </p>
-                <p className="text-xs mb-3" style={{ color: "#666" }}>
-                  Deleting your account is permanent. All posts and data will be lost.
-                </p>
+              <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.78rem", color: "rgba(255,255,255,0.75)", marginBottom: "14px" }}>
+                Manage password, notifications, appearance &amp; security.
+              </p>
+              <Link to="/settings">
                 <button
-                  className="flex items-center gap-2 text-sm font-black"
                   style={{
-                    color: "#d32f2f",
-                    border: "3px solid #d32f2f",
-                    padding: "8px 16px",
-                    background: "white",
+                    width: "100%",
+                    padding: "10px 16px",
                     fontFamily: "var(--font-display)",
+                    fontWeight: 900,
+                    fontSize: "0.78rem",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "#af101a",
+                    background: "#ffffff",
+                    border: "3px solid #0d0d0d",
+                    boxShadow: "3px 3px 0 #0d0d0d",
                     cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
                   }}
                 >
-                  <Trash2 size={14} />
-                   
+                  <ArrowRight size={14} /> Go to Settings
                 </button>
+              </Link>
+            </div>
+
+            {/* ── Writing Stats Card ── */}
+            <div
+              style={{
+                background: "#ffffff",
+                border: "3px solid #0d0d0d",
+                boxShadow: "4px 4px 0 #0d0d0d",
+                overflow: "hidden",
+              }}
+            >
+              <div style={{ background: "#0d0d0d", padding: "12px 16px", borderBottom: "3px solid #0d0d0d" }}>
+                <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
+                  <BarChart2 size={12} /> Writing Statistics
+                </p>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "2px solid #e7f0f1" }}>
+                {[
+                  { label: "Total Posts", value: String(MY_POSTS.length), icon: <FileText size={14} /> },
+                  { label: "Total Views", value: fmtNum(MY_POSTS.reduce((s, p) => s + p.views, 0)), icon: <Eye size={14} /> },
+                  { label: "Total Likes", value: fmtNum(MY_POSTS.reduce((s, p) => s + p.likes, 0)), icon: <Heart size={14} /> },
+                  { label: "Comments", value: String(MY_POSTS.reduce((s, p) => s + p.comments, 0)), icon: <BookOpen size={14} /> },
+                ].map((stat, i) => (
+                  <div
+                    key={stat.label}
+                    style={{
+                      padding: "14px 16px",
+                      borderRight: i % 2 === 0 ? "2px solid #e7f0f1" : "none",
+                      borderBottom: i < 2 ? "2px solid #e7f0f1" : "none",
+                    }}
+                  >
+                    <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5b403d", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: "4px" }}>
+                      {stat.icon} {stat.label}
+                    </p>
+                    <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "1.3rem", color: "#0d0d0d", margin: 0 }}>
+                      {stat.value}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Quick Links */}
+            {/* ── Quick Actions ── */}
             <div
-              className="p-5 bg-[#0d0d0d]"
-              style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #d32f2f" }}
+              style={{
+                background: "#0d0d0d",
+                border: "3px solid #0d0d0d",
+                boxShadow: "4px 4px 0 #af101a",
+                padding: "20px",
+              }}
             >
-              <p
-                className="text-xs font-black uppercase tracking-widest mb-4 text-white"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", margin: "0 0 14px 0" }}>
                 Quick Actions
               </p>
-              <div className="flex flex-col gap-2">
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <Link to="/dashboard">
-                  <button className="brutal-btn-red w-full justify-center text-sm" style={{ padding: "10px" }}>
-                    <FileText size={15} /> Write New Post
+                  <button className="brutal-btn-red w-full justify-center text-sm" style={{ padding: "10px 14px", width: "100%" }}>
+                    <FileText size={14} /> Write New Post
                   </button>
                 </Link>
                 <Link to="/stats">
-                  <button className="brutal-btn-secondary w-full justify-center text-sm" style={{ padding: "10px", background: "white" }}>
-                    <Users size={15} /> View Statistics
+                  <button className="brutal-btn-secondary w-full justify-center text-sm" style={{ padding: "10px 14px", background: "white", width: "100%" }}>
+                    <BarChart2 size={14} /> View Analytics
+                  </button>
+                </Link>
+                <Link to="/explore">
+                  <button
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      fontFamily: "var(--font-display)",
+                      fontWeight: 700,
+                      fontSize: "0.8rem",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "rgba(255,255,255,0.7)",
+                      background: "transparent",
+                      border: "2px solid rgba(255,255,255,0.2)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "6px",
+                    }}
+                  >
+                    <Zap size={14} /> Explore Stories
                   </button>
                 </Link>
               </div>
+            </div>
+
+            {/* ── Danger Zone ── */}
+            <div
+              style={{
+                padding: "16px",
+                border: "3px solid #af101a",
+                background: "#fff",
+              }}
+            >
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#af101a", margin: "0 0 8px 0" }}>⚠ Danger Zone</p>
+              <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.78rem", color: "#5b403d", margin: "0 0 12px 0" }}>
+                Deleting your account is permanent and irreversible.
+              </p>
+              <button
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "8px 16px",
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 700,
+                  fontSize: "0.78rem",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#af101a",
+                  background: "#fff",
+                  border: "3px solid #af101a",
+                  cursor: "pointer",
+                }}
+              >
+                <Trash2 size={13} /> Delete Account
+              </button>
             </div>
           </div>
         </div>

@@ -1,7 +1,6 @@
-import { ApiResponse } from "@/types/auth.types";
+import { ApiResponse } from "@/types/response/authResponse.type";
 import axiosClient from "./axiosClient";
-import { ConversationResponse } from "@/types/conversation.types";
-
+import { ConversationResponse } from "@/types/response/conversationResponse.types";
 const conversationApi = {
     getAllConversation: () => 
         axiosClient.get<ApiResponse<ConversationResponse[]>>("/conversations"),

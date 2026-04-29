@@ -11,12 +11,11 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { userApi } from "@/api/userApi";
 import blogApi from "@/api/blogApi";
 import followApi from "@/api/followApi";
 import useAuthStore from "@/stores/authStore";
-import { User } from "@/types/auth.types";
-import { BlogResponse } from "@/types/blog.types";
+import { User } from "@/types/response/authResponse.type"; 
+import { BlogResponse } from "@/types/response/blogResponse.types"; 
 import { extractApiError } from "@/utils/apiError";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 

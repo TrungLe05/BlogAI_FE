@@ -1,6 +1,7 @@
+import { ApiResponse } from "@/types/response/authResponse.type";
 import axiosClient from "./axiosClient";
-import { ApiResponse } from "@/types/auth.types";
-import { MessageResponse } from "@/types/message.types";
+import { MessageResponse } from "@/types/response/messageResponse.types";
+
 
 const messageApi = {
     getMessages: (conversationId: string) =>

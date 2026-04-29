@@ -1,4 +1,4 @@
-import { User } from "./auth.types";
+import { User } from "./authResponse.type";
 
 export interface BlogResponse {
   blogId: string;
@@ -16,17 +16,12 @@ export interface BlogResponse {
   likedByCurrentUser: boolean; 
 }
 
-
-
-export interface CreateBlogRequest {
-  title: string;
-  content: string;
-  summary: string;
-  coverImageUrl: File;
-  tags: string[]
-}
-
 export interface TagResponse{
   tag: string
   groupName: string
+}
+
+export interface TagStatsResponse{
+    tag:string;
+    count: number
 }

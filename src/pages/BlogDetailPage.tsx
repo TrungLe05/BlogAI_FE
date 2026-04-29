@@ -1,7 +1,7 @@
 import blogApi from "@/api/blogApi";
 import followApi from "@/api/followApi";
 import useAuthStore from "@/stores/authStore";
-import { BlogResponse } from "@/types/blog.types";
+import { BlogResponse } from "@/types/response/blogResponse.types";
 import { extractApiError } from "@/utils/apiError";
 import {
   ArrowLeft,
