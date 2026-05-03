@@ -554,8 +554,8 @@ function ChatWindow({
   isOtherTyping: boolean;
   isSending: boolean;
   userId?: string;
-  inputRef?: React.RefObject<HTMLInputElement>;
-  messagesEndRef?: React.RefObject<HTMLDivElement>;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
+  messagesEndRef?: React.RefObject<HTMLDivElement | null>;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSend: () => void;
 }) {
