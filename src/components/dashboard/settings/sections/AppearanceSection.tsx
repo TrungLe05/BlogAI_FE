@@ -1,6 +1,4 @@
 import { Check, Laptop, Moon, Sun } from "lucide-react";
-import { SaveButton } from "../components";
-import { toast } from "sonner";
 import { useTheme } from "@/hooks/useTheme";
 
 // ── AppearanceSection ──────────────────────────────────────────────
