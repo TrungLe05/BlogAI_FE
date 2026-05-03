@@ -1,9 +1,10 @@
+import { User } from "@/types/response/authResponse.type";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface AuthState {
   accessToken: string | null;
-  user: { id: string; email: string; fullName: string, avatarUrl: string } | null;
+  user: User | null;
   _hasHydrated: boolean;
   setAuth: (token: string, user: AuthState["user"]) => void;
   setHasHydrated: (state: boolean) => void;

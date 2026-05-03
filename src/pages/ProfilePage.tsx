@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Camera, MapPin, Globe, Edit3, Share2, FileText,
-  Heart, Lock, Trash2, Check, ExternalLink,
+  Heart, Trash2, Check, ExternalLink,
   BookOpen, Eye, Settings, BarChart2, Zap, ArrowRight
 } from "lucide-react";
 

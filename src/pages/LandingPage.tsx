@@ -8,13 +8,12 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { BlogResponse } from "@/types/blog.types";
 import blogApi from "@/api/blogApi";
 import { extractApiError } from "@/utils/apiError";
 import { toast } from "sonner";
 import tagApi from "@/api/tagApi";
-import { TagStatsResponse } from "@/types/tag.types";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { BlogResponse, TagStatsResponse } from "@/types/response/blogResponse.types";
 
 
 const benefits = [

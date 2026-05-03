@@ -584,7 +584,7 @@ function StatisticsPage() {
               Write consistently and your stats will keep climbing.
             </p>
           </div>
-          <div className="flex gap-3 flex-shrink-0">
+          <div className="flex gap-3 flex-0">
             <Link to="/dashboard">
               <button className="brutal-btn-red" style={{ padding: "12px 24px" }}>
                 Write New Post →

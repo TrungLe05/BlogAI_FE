@@ -9,14 +9,14 @@ import {
   Check,
 } from "lucide-react";
 import useAuthStore from "@/stores/authStore";
-import { MessageResponse } from "@/types/message.types";
 import conversationApi from "@/api/conversationApi";
-import { ConversationResponse } from "@/types/conversation.types";
 import { toast } from "sonner";
 import { extractApiError } from "@/utils/apiError";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import useWebSocketStore from "@/stores/websocketStore";
 import messageApi from "@/api/messageApi";
+import { ConversationResponse } from "@/types/response/conversationResponse.types";
+import { MessageResponse } from "@/types/response/messageResponse.types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 

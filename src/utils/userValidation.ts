@@ -1,4 +1,4 @@
-import { ChangePasswordRequest } from "@/types/auth.types";
+import { ChangePasswordRequest } from "@/types/request/authRequest.types";
 import { ValidationError } from "./errorFormat";
 
 export function validationUpdateMe(data: {

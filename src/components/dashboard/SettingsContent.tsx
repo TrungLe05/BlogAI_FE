@@ -25,8 +25,8 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { authApi } from "@/api/authApi";
 import { extractApiError } from "@/utils/apiError";
+import { authApi } from "@/api/authApi";
 
 /* ── Types ── */
 type SettingsSection =
@@ -581,9 +581,6 @@ function NotificationsSection() {
 const LANGUAGES: { code: Language; label: string; flag: string }[] = [
   { code: "en", label: "English", flag: "🇺🇸" },
   { code: "vi", label: "Tiếng Việt", flag: "🇻🇳" },
-  { code: "ja", label: "日本語", flag: "🇯🇵" },
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "de", label: "Deutsch", flag: "🇩🇪" },
 ];
 
 function LanguageSection() {
@@ -1901,7 +1898,7 @@ export function SettingsContent() {
   const sec = SECTION_TITLES[active];
 
   return (
-    <div
+    <div className="dark:bg-black"
       style={{
         display: "flex",
         height: "100%",

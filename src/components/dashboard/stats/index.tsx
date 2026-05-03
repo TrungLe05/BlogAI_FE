@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Eye, Heart, Users, FileText, BarChart2 } from "lucide-react";
-import StatCard from "./stats/components/StatCard";
-import BrutalBarChart from "./stats/components/BrutalBarChart";
-import TopPostsTable from "./stats/components/TopPostsTable";
-import ActivityFeed from "./stats/components/ActivityFeed";
-import TopCategories from "./stats/components/TopCategories";
-import TrafficSources from "./stats/components/TrafficSources";
 
+import StatCard from "./components/StatCard";
+import BrutalBarChart from "./components/BrutalBarChart";
+import TopPostsTable from "./components/TopPostsTable";
+import ActivityFeed from "./components/ActivityFeed";
+import TrafficSources from "./components/TrafficSources";
+import TopCategories from "./components/TopCategories";
 
 type DateRange = "7d" | "30d" | "90d" | "all";
 
@@ -39,11 +39,7 @@ export function StatsContent() {
           <div>
             <h1
               className="font-black text-white text-4xl mb-2"
-              style={{
-                fontFamily: "var(--font-display)",
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
-              }}
+              style={{ fontFamily: "var(--font-display)", lineHeight: 1.1, letterSpacing: "-0.02em" }}
             >
               Your <span style={{ color: "#d32f2f" }}>Stats</span>
             </h1>
@@ -79,10 +75,7 @@ export function StatsContent() {
         </div>
 
         {/* Bar Chart */}
-        <div
-          className="bg-white p-6"
-          style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
-        >
+        <div className="bg-white p-6" style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}>
           <div className="flex items-center justify-between mb-6">
             <h2
               className="font-black text-sm uppercase tracking-[0.1em] flex items-center gap-2"

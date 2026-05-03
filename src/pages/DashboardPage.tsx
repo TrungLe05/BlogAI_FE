@@ -20,8 +20,8 @@ import {
   MessageCircle,
   Search,
 } from "lucide-react";
-import { ProfileContent } from "@/components/dashboard/ProfileContent";
-import { StatsContent } from "@/components/dashboard/StatsContent";
+import { ProfileContent } from "@/components/dashboard/profile";
+import { StatsContent } from "@/components/dashboard/stats";
 import useAuthStore from "@/stores/authStore";
 import blogApi from "@/api/blogApi";
 import { RichEditor } from "@/components/dashboard/RichEditor";
@@ -31,7 +31,6 @@ import { toast } from "sonner";
 import { extractApiError } from "@/utils/apiError";
 import { validateCreateBlog, validateUpdateBlog } from "@/utils/blogValidation";
 import { NotificationBell } from "@/components/common/NotificationBell";
-import { SettingsContent } from "@/components/dashboard/SettingsContent";
 import {
   Dialog,
   DialogContent,
@@ -42,9 +41,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/api/authApi";
+import { SettingsContent } from "@/components/dashboard/settings";
 
 type ActiveView = "write" | "stats" | "profile" | "settings";
 
+// ─────────────────────────────────────────────────────────────────
+// AI PANELS (unchanged)
+// ─────────────────────────────────────────────────────────────────
 async function generateTitlesFromAI(content: string): Promise<string[]> {
   const { data } = await blogApi.generateTitles(content);
   return data.result;
@@ -61,7 +64,6 @@ function AISummaryPanel({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const hasContent = content.trim().split(/\s+/).filter(Boolean).length >= 10;
-
   const handleGenerate = async () => {
     if (!hasContent) return;
     setIsLoading(true);
@@ -69,12 +71,11 @@ function AISummaryPanel({
       const { data } = await blogApi.generateSummary(content);
       onSummaryChange(data.result);
     } catch (e) {
-      console.error("Generate summary failed:", e);
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div
       className="mb-8"
@@ -166,7 +167,7 @@ function AISummaryPanel({
     </div>
   );
 }
-// ── AI Title Panel (Stitch design refinements) ────────────────────
+
 function AITitlePanel({
   content,
   onApply,
@@ -180,7 +181,6 @@ function AITitlePanel({
   const [applied, setApplied] = useState<string | null>(null);
   const [dots, setDots] = useState("");
   const hasContent = content.trim().split(/\s+/).filter(Boolean).length >= 10;
-
   const handleGenerate = async () => {
     if (!hasContent) return;
     setIsLoading(true);
@@ -196,7 +196,7 @@ function AITitlePanel({
       const titles = await generateTitlesFromAI(content);
       setSuggestions(titles);
     } catch (e) {
-      console.error("Generate titles failed:", e);
+      console.error(e);
     } finally {
       clearInterval(di);
       setIsLoading(false);
@@ -207,7 +207,6 @@ function AITitlePanel({
     onApply(t);
     setApplied(t);
   };
-
   return (
     <div
       className="mb-8"
@@ -217,7 +216,6 @@ function AITitlePanel({
         background: "white",
       }}
     >
-      {/* Header */}
       <div
         className="flex items-center justify-between px-6 py-4 cursor-pointer select-none"
         style={{
@@ -266,10 +264,6 @@ function AITitlePanel({
               background: hasContent && !isLoading ? "#d32f2f" : "#555",
               color: "white",
               border: "3px solid white",
-              boxShadow:
-                hasContent && !isLoading
-                  ? "3px 3px 0 rgba(255,255,255,0.3)"
-                  : "none",
               cursor: hasContent && !isLoading ? "pointer" : "not-allowed",
               opacity: !hasContent ? 0.5 : 1,
             }}
@@ -311,7 +305,6 @@ function AITitlePanel({
           )}
         </div>
       </div>
-      {/* Suggestions */}
       {isOpen && (
         <div className="p-5">
           {isLoading ? (
@@ -422,7 +415,9 @@ function AITitlePanel({
   );
 }
 
-// ── WriteView Props (PRESERVED) ───────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// WRITE VIEW (unchanged logic)
+// ─────────────────────────────────────────────────────────────────
 type WriteViewProps = {
   title: string;
   setTitle: (v: string) => void;
@@ -442,7 +437,6 @@ type WriteViewProps = {
   isPublishSaving: boolean;
 };
 
-// ── Write View ────────────────────────────────────────────────────
 function WriteView({
   title,
   setTitle,
@@ -469,12 +463,9 @@ function WriteView({
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const wordCount = content.split(/\s+/).filter(Boolean).length;
-
-  // ── API calls (PRESERVED) ─────────────────────────
   useEffect(() => {
     setCoverImagePreview(coverImageUrl || null);
   }, [coverImageUrl]);
-
   const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) {
@@ -482,27 +473,18 @@ function WriteView({
       setCoverImageFile(f);
     }
   };
-
   const handleRemoveCover = () => {
     setCoverImagePreview(null);
     setCoverImageFile(null);
     onRemoveCover();
   };
-
   const removeTag = (t: string) => setTags(tags.filter((tag) => tag !== t));
-
-  const getTagsData = async () => {
-    try {
-      const { data } = await blogApi.getAllTag();
-      setTagsData(data.result);
-    } catch (e) {
-      console.log("Tags Data Error: ", e);
-    }
-  };
   useEffect(() => {
-    getTagsData();
+    blogApi
+      .getAllTag()
+      .then(({ data }) => setTagsData(data.result))
+      .catch(console.error);
   }, []);
-
   const groupedTags = tagsData?.reduce(
     (acc, item) => {
       if (!acc[item.groupName]) acc[item.groupName] = [];
@@ -514,7 +496,6 @@ function WriteView({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Tab Bar */}
       <div
         className="flex bg-white shrink-0"
         style={{ borderBottom: "3px solid #0d0d0d" }}
@@ -531,12 +512,11 @@ function WriteView({
               borderRight: "3px solid #0d0d0d",
             }}
           >
-            {tab === "write" && (
+            {tab === "write" ? (
               <span className="flex items-center gap-2">
                 <PenLine size={14} /> Write
               </span>
-            )}
-            {tab === "preview" && (
+            ) : (
               <span className="flex items-center gap-2">
                 <Eye size={14} /> Preview
               </span>
@@ -544,18 +524,15 @@ function WriteView({
           </button>
         ))}
       </div>
-
       <div className="flex-1 overflow-auto" style={{ background: "#f2fbfc" }}>
-        {/* ── Write Tab ── */}
         {activeTab === "write" && (
           <div className="max-w-250 mx-auto p-8">
             <AITitlePanel content={content} onApply={setTitle} />
-            <AISummaryPanel // ✅ thêm
+            <AISummaryPanel
               content={content}
               summary={summary}
               onSummaryChange={setSummary}
             />
-            {/* Tag Selection */}
             <div className="max-w-full mx-auto pb-6">
               <div
                 className="bg-white p-8"
@@ -573,7 +550,6 @@ function WriteView({
                 >
                   Post Tags
                 </h2>
-
                 <div className="mb-5">
                   <label
                     className="block mb-2 text-xs font-black uppercase tracking-[0.15em]"
@@ -585,7 +561,6 @@ function WriteView({
                     <Tag size={12} className="inline mr-1.5" />
                     Tags (max 5)
                   </label>
-
                   <div className="flex gap-3 mb-3">
                     <select
                       className="flex-1 px-4 py-3 text-sm outline-none"
@@ -602,13 +577,12 @@ function WriteView({
                     >
                       <option value="">Select group...</option>
                       {groupedTags &&
-                        Object.keys(groupedTags).map((group) => (
-                          <option key={group} value={group}>
-                            {group}
+                        Object.keys(groupedTags).map((g) => (
+                          <option key={g} value={g}>
+                            {g}
                           </option>
                         ))}
                     </select>
-
                     <select
                       className="flex-1 px-4 py-3 text-sm outline-none"
                       style={{
@@ -621,9 +595,8 @@ function WriteView({
                       onChange={(e) => {
                         const tag = e.target.value;
                         if (!tag) return;
-                        if (!tags.includes(tag) && tags.length < 5) {
+                        if (!tags.includes(tag) && tags.length < 5)
                           setTags([...tags, tag]);
-                        }
                         setSelectedTagInGroup("");
                       }}
                     >
@@ -639,8 +612,6 @@ function WriteView({
                       ))}
                     </select>
                   </div>
-
-                  {/* Selected tags */}
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag) => (
                       <span
@@ -677,8 +648,6 @@ function WriteView({
                 </div>
               </div>
             </div>
-
-            {/* Cover Image */}
             {!coverImagePreview ? (
               <div
                 className="mb-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white transition-colors"
@@ -744,10 +713,7 @@ function WriteView({
                 </button>
               </div>
             )}
-
             <RichEditor content={content} onChange={setContent} />
-
-            {/* Footer controls */}
             <div className="mt-4 flex justify-between items-center">
               <p
                 className="text-xs font-bold"
@@ -760,7 +726,6 @@ function WriteView({
                   </span>
                 )}
               </p>
-
               <div className="flex gap-4">
                 <button
                   className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
@@ -805,15 +770,13 @@ function WriteView({
                     e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
                   }}
                 >
-                  <Save size={14} />{" "}
+                  <Save size={14} />
                   {isPublishSaving ? "Publishing..." : "Publish"}
                 </button>
               </div>
             </div>
           </div>
         )}
-
-        {/* ── Preview Tab ── */}
         {activeTab === "preview" && (
           <div className="max-w-200 mx-auto p-8">
             <div
@@ -863,36 +826,47 @@ function WriteView({
   );
 }
 
-// ── Sidebar Item ──────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// COLLAPSIBLE SIDEBAR ITEM
+// ─────────────────────────────────────────────────────────────────
 function SideItem({
   icon,
   label,
   active,
   onClick,
+  expanded,
 }: {
   icon: React.ReactNode;
   label: string;
   active: boolean;
   onClick: () => void;
+  expanded: boolean;
 }) {
   return (
     <button
       onClick={onClick}
-      title={label}
-      className="flex flex-col items-center justify-center w-full py-4 gap-1.5 transition-all cursor-pointer"
+      title={!expanded ? label : undefined}
+      className="flex items-center w-full transition-all cursor-pointer"
       style={{
+        gap: expanded ? 12 : 0,
+        padding: expanded ? "13px 18px" : "16px 0",
+        justifyContent: expanded ? "flex-start" : "center",
         background: active ? "#d32f2f" : "transparent",
         color: active ? "white" : "#5b403d",
-        borderBottom: "3px solid rgba(0,0,0,0.06)",
+        borderBottom: "2px solid rgba(0,0,0,0.06)",
+        overflow: "hidden",
+        whiteSpace: "nowrap",
       }}
     >
-      {icon}
+      <span style={{ flexShrink: 0 }}>{icon}</span>
       <span
-        className="text-xs font-black uppercase tracking-[0.15em]"
+        className="font-black uppercase tracking-[0.12em] transition-all"
         style={{
           fontFamily: "var(--font-display)",
-          lineHeight: 1,
-          fontSize: "0.6rem",
+          fontSize: "0.7rem",
+          opacity: expanded ? 1 : 0,
+          maxWidth: expanded ? 120 : 0,
+          transition: "opacity 0.2s, max-width 0.25s",
         }}
       >
         {label}
@@ -901,13 +875,14 @@ function SideItem({
   );
 }
 
-// ── Dashboard Page (API logic PRESERVED) ──────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// DASHBOARD PAGE
+// ─────────────────────────────────────────────────────────────────
 function DashboardPage() {
   const [activeView, setActiveView] = useState<ActiveView>("write");
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const navigate = useNavigate();
   const [summary, setSummary] = useState("");
-
-  // ── Blog state (PRESERVED) ──
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState("");
@@ -916,24 +891,21 @@ function DashboardPage() {
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
   const [isDraftSaving, setIsDraftSaving] = useState(false);
   const [isPublishSaving, setIsPublishSaving] = useState(false);
-
   const [_isLoadingBlog, setIsLoadingBlog] = useState(false);
   const [show2FADialog, setShow2FADialog] = useState(false);
 
   useEffect(() => {
     const fetch2FAStatus = async () => {
       try {
-        const alreadySeen = localStorage.getItem("2fa-dialog-seen");
-        if(alreadySeen === "true") return;
-
+        const { user } = useAuthStore.getState();
+        const key = `2fa-dialog-seen-${user?.id}`;
+        if (localStorage.getItem(key) === "true") return;
         const { data } = await authApi.get2FAStatus();
-        console.log("enable 2FA status: ", data.result);
-        setShow2FADialog(!data.result);
+        if (!data.result) setShow2FADialog(true);
       } catch (err) {
         console.error(err);
       }
     };
-
     fetch2FAStatus();
   }, []);
 
@@ -944,7 +916,6 @@ function DashboardPage() {
     setCoverImageUrl("");
   };
 
-  // ── Save Draft (PRESERVED) ────────────────────────
   const handleSaveDraft = async () => {
     const errors = editingBlogId
       ? validateUpdateBlog({
@@ -960,12 +931,10 @@ function DashboardPage() {
           tags: tagsSelection,
           coverImage: coverImageFile,
         });
-
     if (errors.length > 0) {
       errors.forEach((e) => toast.error(e.message));
       return;
     }
-
     setIsDraftSaving(true);
     try {
       if (editingBlogId) {
@@ -994,7 +963,6 @@ function DashboardPage() {
         setSummary("");
       }
     } catch (e) {
-      // ✅ Backend lỗi → throw thẳng message lên toast
       toast.error(extractApiError(e));
     } finally {
       setIsDraftSaving(false);
@@ -1016,12 +984,10 @@ function DashboardPage() {
           tags: tagsSelection,
           coverImage: coverImageFile,
         });
-
     if (errors.length > 0) {
       errors.forEach((e) => toast.error(e.message));
       return;
     }
-
     toast("Are you sure you want to publish this blog?", {
       description: "Once published, it will no longer be possible to edit it",
       action: {
@@ -1030,7 +996,6 @@ function DashboardPage() {
           setIsPublishSaving(true);
           try {
             if (editingBlogId) {
-              // ✅ Đang edit draft → update content trước → publish
               await blogApi.updateDraft(editingBlogId, {
                 title,
                 summary,
@@ -1040,7 +1005,6 @@ function DashboardPage() {
               });
               await blogApi.publishBlog(editingBlogId);
             } else {
-              // ✅ Tạo mới → save và publish luôn
               await blogApi.saveAndPublishBlog({
                 title,
                 summary,
@@ -1068,7 +1032,6 @@ function DashboardPage() {
     });
   };
 
-  // ── Edit blog từ ProfileContent (PRESERVED) ───────
   const handleEditBlog = async (blogId: string) => {
     setIsLoadingBlog(true);
     try {
@@ -1083,10 +1046,31 @@ function DashboardPage() {
       setActiveView("write");
       setSummary(blog.summary ?? "");
     } catch (e) {
-      console.error("Failed to load blog:", e);
+      console.error(e);
     } finally {
       setIsLoadingBlog(false);
     }
+  };
+
+  const handleActiveView = (view: ActiveView) => {
+    if (editingBlogId && view === "write") {
+      toast("Discard current edits?", {
+        description: "You are currently editing a post.",
+        action: {
+          label: "Confirm",
+          onClick: () => {
+            setTitle("");
+            setContent("");
+            setCoverImageUrl("");
+            setCoverImageFile(null);
+            setTagsSelection([]);
+            setEditingBlogId(null);
+          },
+        },
+        cancel: { label: "Cancel", onClick: () => {} },
+      });
+    }
+    setActiveView(view);
   };
 
   const sideItems: {
@@ -1095,41 +1079,12 @@ function DashboardPage() {
     view?: ActiveView;
     href?: string;
   }[] = [
-    { icon: <LayoutDashboard size={20} />, label: "Home", href: "/" },
-    { icon: <PenLine size={20} />, label: "Write", view: "write" },
-    { icon: <BarChart size={20} />, label: "Stats", view: "stats" },
-    { icon: <UserCircle size={20} />, label: "Profile", view: "profile" },
-    { icon: <Settings size={20} />, label: "Settings", view: "settings" },
+    { icon: <LayoutDashboard size={18} />, label: "Home", href: "/" },
+    { icon: <PenLine size={18} />, label: "Write", view: "write" },
+    { icon: <BarChart size={18} />, label: "Stats", view: "stats" },
+    { icon: <UserCircle size={18} />, label: "Profile", view: "profile" },
+    { icon: <Settings size={18} />, label: "Settings", view: "settings" },
   ];
-
-  const handleActiveView = (view: ActiveView) => {
-    if (editingBlogId && view === "write") {
-      toast(
-        "Are you sure you want to discard the blog post you're currently editing and create a new one?",
-        {
-          description:
-            "You are currently editing this post. If you wish to confirm or delete the post, please select confirm ",
-          action: {
-            label: "Confirm",
-
-            onClick: () => {
-              setTitle("");
-              setContent("");
-              setCoverImageUrl("");
-              setCoverImageFile(null);
-              setTagsSelection([]);
-              setEditingBlogId(null);
-            },
-          },
-          cancel: {
-            label: "cancel",
-            onClick: () => {},
-          },
-        },
-      );
-    }
-    setActiveView(view);
-  };
 
   return (
     <div
@@ -1141,7 +1096,7 @@ function DashboardPage() {
         flexDirection: "column",
       }}
     >
-      {/* ▬▬ TOP BAR ▬▬ */}
+      {/* TOP BAR */}
       <div
         className="shrink-0 flex items-center justify-between px-8 h-14 bg-white"
         style={{ borderBottom: "3px solid #0d0d0d", zIndex: 50 }}
@@ -1155,7 +1110,6 @@ function DashboardPage() {
               Blog<span style={{ color: "#d32f2f" }}>AI</span>
             </span>
           </Link>
-
           {activeView === "write" && (
             <input
               type="text"
@@ -1185,9 +1139,7 @@ function DashboardPage() {
             </span>
           )}
         </div>
-
         <div className="flex items-center gap-3">
-          {/* Search icon */}
           <button
             title="Search"
             className="w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] transition-colors cursor-pointer"
@@ -1195,8 +1147,6 @@ function DashboardPage() {
           >
             <Search size={16} />
           </button>
-
-          {/* Message icon */}
           <button
             onClick={() => navigate("/messages")}
             title="Messages"
@@ -1205,27 +1155,73 @@ function DashboardPage() {
           >
             <MessageCircle size={16} />
           </button>
-
-          {/* Notification icon */}
           <NotificationBell />
-
-          {/* Avatar Dropdown */}
           <AvatarDropdown
             onSettingsClick={() => handleActiveView("settings")}
           />
         </div>
       </div>
 
-      {/* ▬▬ BODY ▬▬ */}
+      {/* BODY */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
+        {/* ── COLLAPSIBLE SIDEBAR ── */}
         <div
-          className="w-20 shrink-0 flex flex-col"
+          onMouseEnter={() => setSidebarExpanded(true)}
+          onMouseLeave={() => setSidebarExpanded(false)}
           style={{
+            width: sidebarExpanded ? 180 : 60,
+            flexShrink: 0,
+            display: "flex",
+            flexDirection: "column",
             borderRight: "3px solid #0d0d0d",
-            background: "#ecf5f6",
+            background: "#0d0d0d",
+            transition: "width 0.25s cubic-bezier(0.4,0,0.2,1)",
+            overflow: "hidden",
+            zIndex: 40,
           }}
         >
+          {/* Logo mark when collapsed */}
+          <div
+            style={{
+              padding: sidebarExpanded ? "14px 18px" : "14px 0",
+              display: "flex",
+              justifyContent: sidebarExpanded ? "flex-start" : "center",
+              alignItems: "center",
+              borderBottom: "2px solid rgba(255,255,255,0.08)",
+              transition: "padding 0.25s",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 900,
+                fontSize: "1rem",
+                color: "white",
+                flexShrink: 0,
+              }}
+            >
+              B<span style={{ color: "#d32f2f" }}>.</span>
+            </span>
+            <span
+              style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 900,
+                fontSize: "0.75rem",
+                color: "rgba(255,255,255,0.5)",
+                opacity: sidebarExpanded ? 1 : 0,
+                maxWidth: sidebarExpanded ? 120 : 0,
+                overflow: "hidden",
+                transition: "opacity 0.2s, max-width 0.25s",
+                paddingLeft: sidebarExpanded ? 6 : 0,
+              }}
+            >
+              log<span style={{ color: "#d32f2f" }}>AI</span>
+            </span>
+          </div>
+
+          {/* Nav items */}
           {sideItems.map((item) =>
             item.href ? (
               <Link to={item.href} key={item.label}>
@@ -1234,6 +1230,7 @@ function DashboardPage() {
                   label={item.label}
                   active={false}
                   onClick={() => {}}
+                  expanded={sidebarExpanded}
                 />
               </Link>
             ) : (
@@ -1243,19 +1240,20 @@ function DashboardPage() {
                 label={item.label}
                 active={activeView === item.view}
                 onClick={() => handleActiveView(item.view!)}
+                expanded={sidebarExpanded}
               />
             ),
           )}
         </div>
 
-        {/* Main Content */}
+        {/* MAIN CONTENT */}
         <div className="flex-1 overflow-hidden flex flex-col">
           {activeView === "write" && (
             <WriteView
               key={editingBlogId ?? "new"}
               title={title}
               setTitle={setTitle}
-              summary={summary} // ✅
+              summary={summary}
               setSummary={setSummary}
               content={content}
               setContent={setContent}
@@ -1278,11 +1276,10 @@ function DashboardPage() {
           {activeView === "settings" && <SettingsContent />}
         </div>
       </div>
+
       <Enable2FADialog
         open={show2FADialog}
-        onClose={() => {
-          setShow2FADialog(false);
-        }}
+        onClose={() => setShow2FADialog(false)}
         handleEnable2FA={() => {
           setActiveView("settings");
           setShow2FADialog(false);
@@ -1292,24 +1289,28 @@ function DashboardPage() {
   );
 }
 
-type Props = {
+// ─────────────────────────────────────────────────────────────────
+// 2FA DIALOG
+// ─────────────────────────────────────────────────────────────────
+type Enable2FAProps = {
   open: boolean;
   onClose: () => void;
   handleEnable2FA: () => void;
 };
 
-function Enable2FADialog({ open, onClose, handleEnable2FA }: Props) {
-  const handleClose = () => {
-    localStorage.setItem("2fa-dialog-seen", "true");
+function Enable2FADialog({ open, onClose, handleEnable2FA }: Enable2FAProps) {
+  const dismiss = () => {
+    const { user } = useAuthStore.getState();
+    localStorage.setItem(`2fa-dialog-seen-${user?.id}`, "true");
     onClose();
   };
-
-  const handleEnable = () => {
-    localStorage.setItem("2fa-dialog-seen", "true");
+  const enable = () => {
+    const { user } = useAuthStore.getState();
+    localStorage.setItem(`2fa-dialog-seen-${user?.id}`, "true");
     handleEnable2FA();
   };
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={dismiss}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Bật bảo mật 2 lớp</DialogTitle>
@@ -1318,15 +1319,15 @@ function Enable2FADialog({ open, onClose, handleEnable2FA }: Props) {
             vệ tài khoản tốt hơn.
           </DialogDescription>
         </DialogHeader>
-
         <DialogFooter className="flex justify-end gap-2">
-          <Button variant="outline" onClick={handleClose}>
+          <Button variant="outline" onClick={dismiss}>
             Để sau
           </Button>
-          <Button onClick={handleEnable}>Bật ngay</Button>
+          <Button onClick={enable}>Bật ngay</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+
 export default DashboardPage;
