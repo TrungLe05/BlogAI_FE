@@ -41,32 +41,23 @@ function LoginPage() {
 
   return (
     <div
-      className="min-h-screen grid lg:grid-cols-2"
-      style={{ background: "#ebf4f5", fontFamily: "var(--font-sans)" }}
+      className="min-h-screen grid lg:grid-cols-2 bg-[#ebf4f5] "
+      style={{ fontFamily: "var(--font-sans)" }}
     >
       {/* Left Panel */}
-      <div
-        className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: "#0d0d0d" }}
-      >
+      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-[#0d0d0d]">
         {/* Decorative brute shapes */}
-        <div
-          className="absolute top-0 right-0 w-40 h-40"
-          style={{ background: "#d32f2f", opacity: 0.8 }}
-        />
-        <div
-          className="absolute bottom-20 left-0 w-24 h-24"
-          style={{ background: "#d32f2f", opacity: 0.5 }}
-        />
+        <div className="absolute top-0 right-0 w-40 h-40 bg-[#d32f2f] opacity-80" />
+        <div className="absolute bottom-20 left-0 w-24 h-24 bg-[#d32f2f] opacity-50" />
 
         {/* Logo */}
         <div className="relative z-10">
           <Link to="/">
             <span
-              className="text-2xl font-black"
-              style={{ fontFamily: "var(--font-display)", color: "white" }}
+              className="text-2xl font-black text-white"
+              style={{ fontFamily: "var(--font-display)" }}
             >
-              Blog<span style={{ color: "#d32f2f" }}>AI</span>
+              Blog<span className="text-[#d32f2f]">AI</span>
             </span>
           </Link>
         </div>
@@ -74,17 +65,16 @@ function LoginPage() {
         {/* Headline */}
         <div className="relative z-10">
           <h2
-            className="font-black mb-6"
+            className="font-black mb-6 text-white"
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "clamp(36px, 4vw, 52px)",
-              color: "white",
               lineHeight: 1.1,
             }}
           >
             Welcome Back,
             <br />
-            <span style={{ color: "#d32f2f" }}>Writer.</span>
+            <span className="text-[#d32f2f]">Writer.</span>
           </h2>
           <p className="text-white/70 text-base leading-relaxed">
             Your audience is waiting. Your stories matter. Log in and keep
@@ -99,10 +89,7 @@ function LoginPage() {
               boxShadow: "6px 6px 0 #d32f2f",
             }}
           >
-            <p
-              className="italic text-sm leading-relaxed mb-4"
-              style={{ color: "#333" }}
-            >
+            <p className="italic text-sm leading-relaxed mb-4 text-[#333]">
               "Since joining BlogAI, my writing has reached readers across 40
               countries. This platform completely changed my career."
             </p>
@@ -115,15 +102,12 @@ function LoginPage() {
               />
               <div>
                 <p
-                  className="text-xs font-black"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#0d0d0d",
-                  }}
+                  className="text-xs font-black text-[#0d0d0d]"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   Sarah Chen
                 </p>
-                <p className="text-xs" style={{ color: "#888" }}>
+                <p className="text-xs text-[#888]">
                   Tech Writer · 12K followers
                 </p>
               </div>
@@ -137,45 +121,36 @@ function LoginPage() {
       </div>
 
       {/* Right Panel - Form */}
-      <div className="flex items-center justify-center p-8 lg:p-12">
+      <div className="flex items-center justify-center p-8 lg:p-12 bg-[#ebf4f5] ">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden mb-8 text-center">
             <Link to="/">
               <span
-                className="text-2xl font-black"
-                style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+                className="text-2xl font-black text-[#0d0d0d] "
+                style={{ fontFamily: "var(--font-display)" }}
               >
-                Blog<span style={{ color: "#d32f2f" }}>AI</span>
+                Blog<span className="text-[#d32f2f]">AI</span>
               </span>
             </Link>
           </div>
 
-          <div
-            className="bg-white p-8"
-            style={{
-              border: "3px solid #0d0d0d",
-              boxShadow: "6px 6px 0 #0d0d0d",
-            }}
-          >
+          <div className="bg-white  p-8 border-[3px] border-[#0d0d0d] shadow-[6px_6px_0_#0d0d0d]">
             <div className="flex items-center gap-3 mb-8">
               <div
-                className="w-10 h-10 flex items-center justify-center"
-                style={{ background: "#d32f2f", border: "2px solid #0d0d0d" }}
+                className="w-10 h-10 flex items-center justify-center bg-[#d32f2f]"
+                style={{ border: "2px solid #0d0d0d" }}
               >
                 <PenLine size={18} color="white" />
               </div>
               <div>
                 <h1
-                  className="font-black text-2xl"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#0d0d0d",
-                  }}
+                  className="font-black text-2xl text-[#0d0d0d] "
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   Sign In
                 </h1>
-                <p className="text-xs" style={{ color: "#888" }}>
+                <p className="text-xs text-[#888]">
                   Continue writing your story
                 </p>
               </div>
@@ -183,23 +158,10 @@ function LoginPage() {
 
             {/* Google Button */}
             <button
-              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm"
+              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm bg-white text-[#0d0d0d]  border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] cursor-pointer"
               style={{
-                border: "3px solid #0d0d0d",
-                boxShadow: "4px 4px 0 #0d0d0d",
                 padding: "12px 24px",
-                background: "white",
                 fontFamily: "var(--font-display)",
-                cursor: "pointer",
-                transition: "transform 0.15s, box-shadow 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translate(-2px,-2px)";
-                e.currentTarget.style.boxShadow = "6px 6px 0 #0d0d0d";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translate(0,0)";
-                e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
               }}
               onClick={authApi.loginWithGoogle}
             >
@@ -225,27 +187,19 @@ function LoginPage() {
             </button>
 
             <button
-              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm"
+              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm bg-white  text-[#0d0d0d]  border-[#0d0d0d]  shadow-[4px_4px_0_#0d0d0d]  transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d]  cursor-pointer"
               style={{
-                border: "3px solid #0d0d0d",
-                boxShadow: "4px 4px 0 #0d0d0d",
                 padding: "12px 24px",
-                background: "white",
                 fontFamily: "var(--font-display)",
-                cursor: "pointer",
-                transition: "transform 0.15s, box-shadow 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translate(-2px,-2px)";
-                e.currentTarget.style.boxShadow = "6px 6px 0 #0d0d0d";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translate(0,0)";
-                e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
               }}
               onClick={authApi.loginWithGithub}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                className="fill-[#0d0d0d] "
+              >
                 <path d="M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256 0-1.123.404-2.336 1.078-3.144-.292-.741-.247-2.314.09-2.965.898-.112 2.111.36 2.83 1.01.853-.269 1.752-.404 2.853-.404 1.1 0 1.999.135 2.807.382.696-.629 1.932-1.1 2.83-.988.315.606.36 2.179.067 2.942.72.854 1.101 2 1.101 3.167 0 2.763-2.089 4.852-5.098 5.234.763.494 1.28 1.572 1.28 2.807v2.336c0 .674.561 1.056 1.235.786 4.066-1.55 7.255-5.615 7.255-10.646C23.5 6.188 18.334 1 11.978 1 5.62 1 .5 6.188.5 12.545c0 4.986 3.167 9.12 7.435 10.669.606.225 1.19-.18 1.19-.786V20.63a2.9 2.9 0 0 1-1.078.224c-1.483 0-2.359-.808-2.987-2.313-.247-.607-.517-.966-1.034-1.033-.27-.023-.359-.135-.359-.27 0-.27.45-.471.898-.471.652 0 1.213.404 1.797 1.235.45.651.921.943 1.483.943.561 0 .92-.202 1.437-.719.382-.381.674-.718.944-.943"></path>
               </svg>
               Continue with Github
@@ -253,24 +207,21 @@ function LoginPage() {
 
             {/* Divider */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex-1 h-0.5 bg-[#0d0d0d]" />
+              <div className="flex-1 h-0.5 bg-[#0d0d0d] " />
               <span
-                className="text-xs font-bold uppercase"
+                className="text-xs font-bold uppercase text-[#0d0d0d] "
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 or
               </span>
-              <div className="flex-1 h-0.5 bg-[#0d0d0d]" />
+              <div className="flex-1 h-0.5 bg-[#0d0d0d] " />
             </div>
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label
-                  className="block mb-2 text-xs font-black uppercase tracking-widest"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#0d0d0d",
-                  }}
+                  className="block mb-2 text-xs font-black uppercase tracking-widest text-[#0d0d0d] dark:text-zinc-200"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   Email Address
                 </label>
@@ -285,11 +236,8 @@ function LoginPage() {
               </div>
               <div className="mb-6">
                 <label
-                  className="block mb-2 text-xs font-black uppercase tracking-widest"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#0d0d0d",
-                  }}
+                  className="block mb-2 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   Password
                 </label>
@@ -304,7 +252,7 @@ function LoginPage() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555]"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -312,11 +260,8 @@ function LoginPage() {
                 </div>
                 <Link
                   to="/forgot-password"
-                  className="block mt-2 text-xs font-bold text-right"
-                  style={{
-                    color: "#d32f2f",
-                    fontFamily: "var(--font-display)",
-                  }}
+                  className="block mt-2 text-xs font-bold text-right text-[#d32f2f]"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   Forgot Password?
                 </Link>
@@ -331,12 +276,12 @@ function LoginPage() {
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm" style={{ color: "#666" }}>
+            <p className="mt-6 text-center text-sm text-[#666] ">
               Don't have an account?{" "}
               <Link
                 to="/register"
-                className="font-black"
-                style={{ color: "#d32f2f", fontFamily: "var(--font-display)" }}
+                className="font-black text-[#d32f2f]"
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 Start Writing →
               </Link>
@@ -344,10 +289,8 @@ function LoginPage() {
           </div>
         </div>
       </div>
-      
     </div>
   );
 }
-
 
 export default LoginPage;

@@ -102,21 +102,15 @@ function UserDetailPage() {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: "#ebf4f5", fontFamily: "var(--font-sans)" }}
-    >
+    <div className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950" style={{ fontFamily: "var(--font-sans)" }}>
       {/* ── Hero Header ── */}
-      <div
-        className="w-full py-12 px-6"
-        style={{ background: "#0d0d0d", borderBottom: "3px solid #d32f2f" }}
-      >
+      <div className="w-full py-12 px-6 bg-[#0d0d0d] border-b-[3px] border-[#d32f2f]">
         <div className="max-w-7xl mx-auto">
           {/* Back link */}
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 mb-8 font-bold text-xs uppercase tracking-widest hover:text-[#d32f2f] transition-colors cursor-pointer"
-            style={{ fontFamily: "var(--font-display)", color: "#999" }}
+            className="inline-flex items-center gap-2 mb-8 font-bold text-xs uppercase tracking-widest text-[#999] hover:text-[#d32f2f] transition-colors cursor-pointer"
+            style={{ fontFamily: "var(--font-display)" }}
           >
             <ArrowLeft size={14} />
             Go Back
@@ -156,20 +150,13 @@ function UserDetailPage() {
                   </h1>
                   {/* Role badge */}
                   <span
-                    className="text-xs font-black uppercase tracking-widest text-white px-2 py-0.5"
-                    style={{
-                      background: "#d32f2f",
-                      border: "2px solid white",
-                      fontFamily: "var(--font-display)",
-                    }}
+                    className="text-xs font-black uppercase tracking-widest text-white px-2 py-0.5 bg-[#d32f2f] border-[2px] border-white"
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
                     {profileUser?.role === "ADMIN" ? "ADMIN" : "AUTHOR"}
                   </span>
                 </div>
-                <p
-                  className="text-sm mb-4"
-                  style={{ color: "#999", fontFamily: "var(--font-sans)" }}
-                >
+                <p className="text-sm mb-4 text-[#999]" style={{ fontFamily: "var(--font-sans)" }}>
                   {profileUser?.email}
                 </p>
 
@@ -199,25 +186,12 @@ function UserDetailPage() {
                 <button
                   onClick={handleFollowToggle}
                   disabled={isFollowLoading}
-                  className="flex items-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-widest transition-all cursor-pointer"
+                  className={`flex items-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-widest transition-all cursor-pointer border-[3px] border-white text-white shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f]
+                    ${isFollowing ? "bg-transparent" : "bg-[#d32f2f]"}`}
                   style={{
                     fontFamily: "var(--font-display)",
-                    border: "3px solid white",
-                    background: isFollowing ? "transparent" : "#d32f2f",
-                    color: "white",
-                    boxShadow: "4px 4px 0 #d32f2f",
                     opacity: isFollowLoading ? 0.6 : 1,
                     cursor: isFollowLoading ? "not-allowed" : "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isFollowLoading) {
-                      e.currentTarget.style.transform = "translate(-2px,-2px)";
-                      e.currentTarget.style.boxShadow = "6px 6px 0 #d32f2f";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translate(0,0)";
-                    e.currentTarget.style.boxShadow = "4px 4px 0 #d32f2f";
                   }}
                 >
                   {isFollowLoading ? (
@@ -238,12 +212,8 @@ function UserDetailPage() {
             {isOwnProfile && (
               <div className="shrink-0 self-start sm:self-center">
                 <span
-                  className="inline-flex items-center gap-2 px-5 py-3 text-sm font-black uppercase tracking-widest text-white"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    border: "3px solid #999",
-                    color: "#999",
-                  }}
+                  className="inline-flex items-center gap-2 px-5 py-3 text-sm font-black uppercase tracking-widest text-[#999] border-[3px] border-[#999]"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   Your Profile
                 </span>
@@ -254,10 +224,7 @@ function UserDetailPage() {
       </div>
 
       {/* ── Stat Summary Bar ── */}
-      <div
-        className="w-full"
-        style={{ background: "#f5f5f5", borderBottom: "3px solid #0d0d0d" }}
-      >
+      <div className="w-full bg-[#f5f5f5] dark:bg-zinc-900 border-b-[3px] border-[#0d0d0d] dark:border-zinc-700">
         <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap gap-6">
           <SummaryPill
             icon={<BarChart2 size={14} />}
@@ -283,30 +250,23 @@ function UserDetailPage() {
         <div className="mb-8">
           <div className="flex items-end gap-4 mb-1">
             <h2
-              className="font-black"
+              className="font-black text-[#0d0d0d] dark:text-white"
               style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                color: "#0d0d0d",
                 lineHeight: 1.1,
               }}
             >
               Published Stories
             </h2>
             <span
-              className="text-xs font-black uppercase tracking-widest text-white px-3 py-1 mb-1"
-              style={{
-                fontFamily: "var(--font-display)",
-                background: "#d32f2f",
-                border: "2px solid #0d0d0d",
-              }}
+              className="text-xs font-black uppercase tracking-widest text-white px-3 py-1 mb-1 bg-[#d32f2f] border-[2px] border-[#0d0d0d]"
+              style={{ fontFamily: "var(--font-display)" }}
             >
               {blogs.length}
             </span>
           </div>
-          <div
-            style={{ height: "4px", background: "#d32f2f", width: "80px" }}
-          />
+          <div className="h-1 bg-[#d32f2f] w-20" />
         </div>
 
         {/* Blog Grid */}
@@ -316,19 +276,7 @@ function UserDetailPage() {
               <Link
                 key={blog.blogId}
                 to={`/blog/${blog.blogId}`}
-                className="bg-white overflow-hidden block group transition-all"
-                style={{
-                  border: "3px solid #0d0d0d",
-                  boxShadow: "4px 4px 0 #0d0d0d",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translate(-2px,-2px)";
-                  e.currentTarget.style.boxShadow = "6px 6px 0 #0d0d0d";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translate(0,0)";
-                  e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
-                }}
+                className="bg-white dark:bg-zinc-800 overflow-hidden block group transition-all border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] dark:hover:shadow-[6px_6px_0_#52525b]"
               >
                 {/* Cover image */}
                 <div
@@ -349,12 +297,8 @@ function UserDetailPage() {
                       {blog.tags.slice(0, 2).map((tag) => (
                         <span
                           key={tag}
-                          className="px-2 py-0.5 text-xs font-black uppercase tracking-widest text-white"
-                          style={{
-                            background: "#d32f2f",
-                            border: "2px solid #0d0d0d",
-                            fontFamily: "var(--font-display)",
-                          }}
+                          className="px-2 py-0.5 text-xs font-black uppercase tracking-widest text-white bg-[#d32f2f] border-[2px] border-[#0d0d0d]"
+                          style={{ fontFamily: "var(--font-display)" }}
                         >
                           {tag}
                         </span>
@@ -362,10 +306,7 @@ function UserDetailPage() {
                     </div>
                   )}
                   {/* View count */}
-                  <div
-                    className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 text-xs font-bold"
-                    style={{ background: "rgba(0,0,0,0.75)", color: "white" }}
-                  >
+                  <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 text-xs font-bold bg-black/75 text-white">
                     <Eye size={11} />
                     {blog.viewCount}
                   </div>
@@ -374,45 +315,30 @@ function UserDetailPage() {
                 {/* Card body */}
                 <div className="p-4">
                   <h3
-                    className="font-black text-base leading-tight mb-2 line-clamp-2"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      color: "#0d0d0d",
-                    }}
+                    className="font-black text-base leading-tight mb-2 line-clamp-2 text-[#0d0d0d] dark:text-white"
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
                     {blog.title}
                   </h3>
-                  <p
-                    className="text-xs mb-3 leading-relaxed line-clamp-2"
-                    style={{ color: "#666" }}
-                  >
+                  <p className="text-xs mb-3 leading-relaxed line-clamp-2 text-[#666] dark:text-zinc-400">
                     {blog.summary ?? "No summary available."}
                   </p>
 
-                  <div
-                    className="flex items-center justify-between pt-3"
-                    style={{ borderTop: "2px solid #0d0d0d" }}
-                  >
+                  <div className="flex items-center justify-between pt-3 border-t-[2px] border-[#0d0d0d] dark:border-zinc-600">
                     {/* Like count */}
                     <div
-                      className="flex items-center gap-1 text-xs font-bold"
-                      style={{
-                        color: blog.likedByCurrentUser ? "#d32f2f" : "#555",
-                      }}
+                      className={`flex items-center gap-1 text-xs font-bold ${blog.likedByCurrentUser ? "text-[#d32f2f]" : "text-[#555] dark:text-zinc-400"}`}
                     >
                       <Heart
                         size={12}
                         fill={blog.likedByCurrentUser ? "#d32f2f" : "none"}
-                        color={blog.likedByCurrentUser ? "#d32f2f" : "#555"}
+                        color={blog.likedByCurrentUser ? "#d32f2f" : "currentColor"}
                       />
                       {blog.likeCount}
                     </div>
 
                     {/* Date */}
-                    <div
-                      className="flex items-center gap-1 text-xs"
-                      style={{ color: "#888" }}
-                    >
+                    <div className="flex items-center gap-1 text-xs text-[#888] dark:text-zinc-500">
                       <Clock size={11} />
                       {blog.createdAt}
                     </div>
@@ -422,21 +348,15 @@ function UserDetailPage() {
             ))}
           </div>
         ) : (
-          <div
-            className="text-center py-20 bg-white"
-            style={{
-              border: "3px solid #0d0d0d",
-              boxShadow: "4px 4px 0 #0d0d0d",
-            }}
-          >
+          <div className="text-center py-20 bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
             <p className="text-6xl mb-4">📝</p>
             <h3
-              className="font-black text-xl mb-2"
+              className="font-black text-xl mb-2 text-[#0d0d0d] dark:text-white"
               style={{ fontFamily: "var(--font-display)" }}
             >
               No stories yet
             </h3>
-            <p style={{ color: "#888" }}>
+            <p className="text-[#888] dark:text-zinc-500">
               {isOwnProfile
                 ? "You haven't published any stories yet."
                 : "This author hasn't published any stories yet."}
@@ -453,8 +373,8 @@ function UserDetailPage() {
 function StatChip({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 text-xs font-bold"
-      style={{ color: "#ccc", fontFamily: "var(--font-display)" }}
+      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#ccc]"
+      style={{ fontFamily: "var(--font-display)" }}
     >
       {icon}
       {label}
@@ -474,25 +394,20 @@ function SummaryPill({
   return (
     <div className="flex items-center gap-2">
       <span
-        className="flex items-center justify-center w-7 h-7"
-        style={{
-          border: "2px solid #0d0d0d",
-          background: "#d32f2f",
-          color: "white",
-        }}
+        className="flex items-center justify-center w-7 h-7 bg-[#d32f2f] text-white border-[2px] border-[#0d0d0d] dark:border-zinc-600"
       >
         {icon}
       </span>
       <div>
         <p
-          className="text-xs uppercase font-black tracking-widest leading-none"
-          style={{ fontFamily: "var(--font-display)", color: "#888" }}
+          className="text-xs uppercase font-black tracking-widest leading-none text-[#888] dark:text-zinc-500"
+          style={{ fontFamily: "var(--font-display)" }}
         >
           {label}
         </p>
         <p
-          className="font-black text-sm leading-tight"
-          style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+          className="font-black text-sm leading-tight text-[#0d0d0d] dark:text-zinc-200"
+          style={{ fontFamily: "var(--font-display)" }}
         >
           {value}
         </p>

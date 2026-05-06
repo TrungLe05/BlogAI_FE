@@ -26,7 +26,7 @@ function ProfileBanner({
   const fileRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="relative" style={{ background: "#0d0d0d", borderBottom: "4px solid #d32f2f" }}>
+    <div className="relative dark:bg-[#111318] bg-[#0d0d0d] border-b-4 border-[#f2fbfc]">
       <div className="absolute top-0 right-0 w-40 h-40" style={{ background: "#d32f2f", opacity: 0.08 }} />
       <div className="px-10 py-10 relative z-10">
         <div className="flex flex-col lg:flex-row items-start lg:items-end gap-8">

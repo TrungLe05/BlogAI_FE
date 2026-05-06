@@ -129,7 +129,7 @@ export function ProfileContent({ onEditBlog }: ProfileContentProps) {
   return (
     <>
       {isLoading && <LoadingSpinner />}
-      <div className="overflow-auto h-full" style={{ background: "#f2fbfc" }}>
+      <div className="overflow-auto h-full dark:bg-[#111318] bg-[#f2fbfc]" >
         <ProfileBanner
           user={user} avatarPreview={avatarPreview} form={form}
           followers={followers} following={following}

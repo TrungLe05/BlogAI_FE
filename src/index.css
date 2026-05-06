@@ -47,6 +47,7 @@
   --brutal-border: 3px solid #0d0d0d;
   --brutal-border-2: 2px solid #0d0d0d;
   --brutal-shadow: 4px 4px 0px 0px #0d0d0d;
+  --dark-brutal-shadow: 4px 4px 0 #52525b;
   --brutal-shadow-lg: 6px 6px 0px 0px #0d0d0d;
   --brutal-shadow-sm: 2px 2px 0px 0px #0d0d0d;
   --brutal-radius: 0px;
@@ -225,6 +226,11 @@ body {
   box-shadow: var(--brutal-shadow-lg);
 }
 
+.dark .brutal-btn-primary {
+  box-shadow: var(--dark-brutal-shadow);
+  border-color: #52525b;
+}
+
 .brutal-btn-primary {
   background: #0d0d0d;
   color: white;
@@ -246,14 +252,27 @@ body {
   gap: 8px;
 }
 
+.dark .brutal-btn-primary:hover {
+  box-shadow: 8px 8px 0 #52525b;
+  transform: translate(-4px, -4px);
+}
+
 .brutal-btn-primary:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: var(--brutal-shadow-lg);
+  transform: translate(-4px, -4px);
+  box-shadow: 8px 8px 0 black;
 }
 
 .brutal-btn-primary:active {
   transform: translate(2px, 2px);
   box-shadow: none;
+}
+
+.dark .brutal-btn-secondary {
+  box-shadow: var(--dark-brutal-shadow);
+  background: #d32f2f;
+  color: white;
+  border-color: #52525b;
+  transition: ease-in-out 0.2s;
 }
 
 .brutal-btn-secondary {
@@ -277,16 +296,29 @@ body {
   gap: 8px;
 }
 
-.brutal-btn-secondary:hover {
+.dark .brutal-btn-secondary:hover {
   background: #0d0d0d;
   color: white;
-  transform: translate(-2px, -2px);
-  box-shadow: var(--brutal-shadow-lg);
+  transform: translate(-4px, -4px);
+  box-shadow: 8px 8px 0 #52525b;
+}
+
+.brutal-btn-secondary:hover {
+  /* background: #0d0d0d; */
+  color: black;
+  transform: translate(-4px, -4px);
+  box-shadow: 8px 8px 0 #0d0d0d;
 }
 
 .brutal-btn-secondary:active {
   transform: translate(2px, 2px);
   box-shadow: none;
+}
+
+.dark .brutal-btn-red {
+  box-shadow: var(--dark-brutal-shadow);
+  border-color: #52525b;
+  transition: ease-in-out 0.2s;
 }
 
 .brutal-btn-red {
@@ -310,9 +342,18 @@ body {
   gap: 8px;
 }
 
+.dark .brutal-btn-red:hover {
+  box-shadow: 8px 8px 0 #52525b;
+  transform: translate(-4px, -4px);
+}
+
 .brutal-btn-red:hover {
   transform: translate(-2px, -2px);
   box-shadow: var(--brutal-shadow-lg);
+}
+
+.dark .brutal-input{
+  color: black;
 }
 
 .brutal-input {
@@ -345,11 +386,27 @@ body {
   transition:
     background 0.15s ease,
     color 0.15s ease;
+  box-shadow: 4px 4px 0 #0d0d0d;
 }
-
-.brutal-tag:hover {
+.dark .brutal-tag {
+  color: white;
+  border-color: #52525b;
+  background-color: #18181b;
+  box-shadow: 4px 4px 0 #52525b;
+  transition: ease-in-out 0.2s;
+}
+.dark .brutal-tag:hover {
   background: #0d0d0d;
   color: white;
+  box-shadow: 8px 8px 0 #52525b;
+  transform: translate(-4px, -4px);
+}
+.brutal-tag:hover {
+  /* background: #0d0d0d; */
+  color: black;
+  box-shadow: 8px 8px 0 #0d0d0d;
+  transform: translate(-4px, -4px);
+  transition: ease-in-out 0.2s;
 }
 
 /* TipTap editor styles */
@@ -521,4 +578,88 @@ body {
   border: none;
   color: inherit;
   padding: 0;
+}
+
+/* ── Dark mode for prose-content (dangerouslySetInnerHTML from RichEditor) ── */
+.dark .prose-content {
+  color: #d4d4d8; /* zinc-300 */
+}
+
+.dark .prose-content h1,
+.dark .prose-content h2,
+.dark .prose-content h3,
+.dark .prose-content h4,
+.dark .prose-content h5,
+.dark .prose-content h6 {
+  color: #f4f4f5; /* zinc-100 */
+}
+
+.dark .prose-content p {
+  color: #d4d4d8; /* zinc-300 */
+}
+
+.dark .prose-content li {
+  color: #d4d4d8;
+}
+
+.dark .prose-content blockquote {
+  color: #a1a1aa; /* zinc-400 */
+  background: #27272a; /* zinc-800 */
+  border-left-color: #d32f2f;
+}
+
+.dark .prose-content hr {
+  border-top-color: #52525b; /* zinc-600 */
+}
+
+.dark .prose-content a {
+  color: #f87171; /* red-400 — sáng hơn để dễ đọc trên nền tối */
+}
+
+.dark .prose-content img {
+  border-color: #52525b; /* zinc-600 */
+}
+
+.dark .prose-content code {
+  background: #27272a; /* zinc-800 */
+  border-color: #3f3f46; /* zinc-700 */
+  color: #f87171; /* red-400 */
+}
+
+.dark .prose-content pre {
+  background: #18181b; /* zinc-900 */
+  color: #e4e4e7; /* zinc-200 */
+  border-left-color: #d32f2f;
+}
+
+.dark .prose-content strong {
+  color: #f4f4f5;
+}
+
+/* ── Dark mode for tiptap editor (write mode) ── */
+.dark .tiptap {
+  color: #d4d4d8;
+}
+
+.dark .tiptap h1,
+.dark .tiptap h2,
+.dark .tiptap h3 {
+  color: #f4f4f5;
+}
+
+.dark .tiptap blockquote {
+  color: #a1a1aa;
+  background: #27272a;
+}
+
+.dark .tiptap hr {
+  border-top-color: #52525b;
+}
+
+.dark .tiptap img {
+  border-color: #52525b;
+}
+
+.dark .tiptap p.is-editor-empty:first-child::before {
+  color: #71717a; /* zinc-500 */
 }

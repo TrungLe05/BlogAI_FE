@@ -68,14 +68,17 @@ export function NotificationBell() {
   };
 
   return (
-    <div ref={ref} className="relative">
-      <button
+    <div
+      ref={ref}
+      className="hover:bg-[#ecf5f6] dark:hover:bg-[#1e2130] border-[3px] transition-colors cursor-pointer border-[#0d0d0d] dark:border-[#2d3148] text-[#151d1e] dark:text-slate-200 relative"
+    >
+      <button 
         title="Notifications"
         onClick={handleOpen}
-        className="relative w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] transition-colors cursor-pointer"
-        style={{ border: "3px solid #0d0d0d" }}
+        className="relative w-8 h-8 flex items-center justify-center transition-colors cursor-pointer"
+        // style={{ border: "3px solid #0d0d0d" }}
       >
-        <Bell size={16} />
+        <Bell size={18} />
         {unreadCount > 0 && (
           <span
             className="absolute -top-1.5 -right-1.5 w-4 h-4 flex items-center justify-center text-white"

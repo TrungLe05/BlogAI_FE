@@ -14,23 +14,38 @@ interface BlogPostsListProps {
 }
 
 function BlogPostsList({
-  activeTab, onTabChange, filterPublishBlog, filterDraftBlog, fmtNum,
-  onMarkDelete, onConfirmDelete, onCancelDelete, onEditBlog,
+  activeTab,
+  onTabChange,
+  filterPublishBlog,
+  filterDraftBlog,
+  fmtNum,
+  onMarkDelete,
+  onConfirmDelete,
+  onCancelDelete,
+  onEditBlog,
 }: BlogPostsListProps) {
   return (
     <div>
       {/* Tab strip */}
-      <div className="flex mb-6 bg-white" style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}>
+      <div className="flex mb-6 bg-white shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] dark:border-zinc-600 border-[3px] border-[#0d0d0d] ">
         {(["published", "drafts"] as const).map((t) => (
           <button
             key={t}
             onClick={() => onTabChange(t)}
             className="flex-1 py-3 text-xs font-black uppercase tracking-[0.15em] transition-colors cursor-pointer"
-            style={{ fontFamily: "var(--font-display)", background: activeTab === t ? "#0d0d0d" : "transparent", color: activeTab === t ? "white" : "#5b403d", borderRight: t === "published" ? "3px solid #0d0d0d" : "none" }}
+            style={{
+              fontFamily: "var(--font-display)",
+              background: activeTab === t ? "#0d0d0d" : "transparent",
+              color: activeTab === t ? "white" : "#5b403d",
+              borderRight: t === "published" ? "3px solid #0d0d0d" : "none",
+            }}
           >
             {t}
             {t === "drafts" && (
-              <span className="ml-2 text-xs px-2 py-0.5 font-black" style={{ background: "#d32f2f", color: "white" }}>
+              <span
+                className="ml-2 text-xs px-2 py-0.5 font-black"
+                style={{ background: "#d32f2f", color: "white" }}
+              >
                 {filterDraftBlog.length}
               </span>
             )}
@@ -42,7 +57,15 @@ function BlogPostsList({
       {activeTab === "published" && (
         <div className="space-y-4">
           {filterPublishBlog.map((post) => (
-            <BlogPostCard key={post.blogId} post={post} type="published" fmtNum={fmtNum} onMarkDelete={onMarkDelete} onConfirmDelete={onConfirmDelete} onCancelDelete={onCancelDelete} />
+            <BlogPostCard
+              key={post.blogId}
+              post={post}
+              type="published"
+              fmtNum={fmtNum}
+              onMarkDelete={onMarkDelete}
+              onConfirmDelete={onConfirmDelete}
+              onCancelDelete={onCancelDelete}
+            />
           ))}
         </div>
       )}
@@ -51,7 +74,16 @@ function BlogPostsList({
       {activeTab === "drafts" && (
         <div className="space-y-4">
           {filterDraftBlog.map((draft) => (
-            <BlogPostCard key={draft.blogId} post={draft} type="draft" fmtNum={fmtNum} onMarkDelete={onMarkDelete} onConfirmDelete={onConfirmDelete} onCancelDelete={onCancelDelete} onEdit={onEditBlog} />
+            <BlogPostCard
+              key={draft.blogId}
+              post={draft}
+              type="draft"
+              fmtNum={fmtNum}
+              onMarkDelete={onMarkDelete}
+              onConfirmDelete={onConfirmDelete}
+              onCancelDelete={onCancelDelete}
+              onEdit={onEditBlog}
+            />
           ))}
         </div>
       )}

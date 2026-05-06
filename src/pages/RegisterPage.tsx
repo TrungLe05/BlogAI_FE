@@ -93,48 +93,41 @@ function RegisterPage() {
 
   return (
     <div
-      className="min-h-screen grid lg:grid-cols-2"
-      style={{ background: "#ebf4f5", fontFamily: "var(--font-sans)" }}
+      className="min-h-screen grid lg:grid-cols-2 bg-[#ebf4f5] "
+      style={{ fontFamily: "var(--font-sans)" }}
     >
       {/* Left Panel */}
-      <div
-        className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: "#ebf4f5", borderRight: "3px solid #0d0d0d" }}
-      >
+      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-[#ebf4f5] border-r-[3px] border-[#0d0d0d]">
         <div
-          className="absolute -top-8 -right-8 w-48 h-48"
-          style={{ background: "#d32f2f", zIndex: 0 }}
+          className="absolute -top-8 -right-8 w-48 h-48 bg-[#d32f2f]"
+          style={{ zIndex: 0 }}
         />
 
         <div className="relative z-10">
           <Link to="/">
             <span
-              className="text-2xl font-black"
-              style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+              className="text-2xl font-black text-[#0d0d0d]"
+              style={{ fontFamily: "var(--font-display)" }}
             >
-              Blog<span style={{ color: "#d32f2f" }}>AI</span>
+              Blog<span className="text-[#d32f2f]">AI</span>
             </span>
           </Link>
         </div>
 
         <div className="relative z-10">
           <h2
-            className="font-black mb-4"
+            className="font-black mb-4 text-[#0d0d0d]"
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "clamp(36px, 4vw, 52px)",
-              color: "#0d0d0d",
               lineHeight: 1.1,
             }}
           >
-            Join <span style={{ color: "#d32f2f" }}>10,000+</span>
+            Join <span className="text-[#d32f2f]">10,000+</span>
             <br />
             Writers.
           </h2>
-          <p
-            className="mb-8 text-base leading-relaxed"
-            style={{ color: "#555" }}
-          >
+          <p className="mb-8 text-base leading-relaxed text-[#555]">
             Start your writing journey today. No credit card. No limits. Just
             stories.
           </p>
@@ -144,24 +137,17 @@ function RegisterPage() {
             {stats.map((s) => (
               <div
                 key={s.label}
-                className="p-4 bg-white text-center"
-                style={{
-                  border: "3px solid #0d0d0d",
-                  boxShadow: "4px 4px 0 #0d0d0d",
-                }}
+                className="p-4 bg-white text-center border-[3px] border-[#0d0d0d] shadow-[4px_4px_0_#0d0d0d]"
               >
                 <p
-                  className="font-black text-2xl"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#d32f2f",
-                  }}
+                  className="font-black text-2xl text-[#d32f2f]"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {s.value}
                 </p>
                 <p
-                  className="text-xs"
-                  style={{ color: "#666", fontFamily: "var(--font-sans)" }}
+                  className="text-xs text-[#666]"
+                  style={{ fontFamily: "var(--font-sans)" }}
                 >
                   {s.label}
                 </p>
@@ -173,65 +159,49 @@ function RegisterPage() {
           <div className="space-y-3">
             {perks.map((p) => (
               <div key={p} className="flex items-center gap-3">
-                <CheckCircle
-                  size={18}
-                  className="shrink-0"
-                  style={{ color: "#d32f2f" }}
-                />
-                <span className="text-sm font-medium" style={{ color: "#333" }}>
-                  {p}
-                </span>
+                <CheckCircle size={18} className="shrink-0 text-[#d32f2f]" />
+                <span className="text-sm font-medium text-[#333]">{p}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="relative z-10 text-xs" style={{ color: "#999" }}>
+        <p className="relative z-10 text-xs text-[#999]">
           © 2025 BlogAI. All rights reserved.
         </p>
       </div>
 
       {/* Right Panel */}
-      <div className="flex items-center justify-center p-8 lg:p-12">
+      <div className="flex items-center justify-center p-8 lg:p-12 bg-[#ebf4f5]">
         <div className="w-full max-w-md">
           <div className="lg:hidden mb-8 text-center">
             <Link to="/">
               <span
-                className="text-2xl font-black"
-                style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+                className="text-2xl font-black text-[#0d0d0d]"
+                style={{ fontFamily: "var(--font-display)" }}
               >
-                Blog<span style={{ color: "#d32f2f" }}>AI</span>
+                Blog<span className="text-[#d32f2f]">AI</span>
               </span>
             </Link>
           </div>
 
-          <div
-            className="bg-white p-8"
-            style={{
-              border: "3px solid #0d0d0d",
-              boxShadow: "6px 6px 0 #0d0d0d",
-            }}
-          >
+          <div className="bg-white p-8 border-[3px] border-[#0d0d0d]  shadow-[6px_6px_0_#0d0d0d]">
             <h1
-              className="font-black text-2xl mb-2"
-              style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+              className="font-black text-2xl mb-2 text-[#0d0d0d]"
+              style={{ fontFamily: "var(--font-display)" }}
             >
               Create Your Account
             </h1>
-            <p className="text-sm mb-6" style={{ color: "#888" }}>
+            <p className="text-sm mb-6 text-[#888]">
               Start writing for free in seconds
             </p>
 
             {/* Google */}
             <button
-              className="w-full flex items-center justify-center gap-3 mb-5 font-bold text-sm"
+              className="w-full flex items-center justify-center gap-3 mb-5 font-bold text-sm bg-white text-[#0d0d0d] border-[3px] border-[#0d0d0d] shadow-[4px_4px_0_#0d0d0d] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] cursor-pointer"
               style={{
-                border: "3px solid #0d0d0d",
-                boxShadow: "4px 4px 0 #0d0d0d",
                 padding: "12px 24px",
-                background: "white",
                 fontFamily: "var(--font-display)",
-                cursor: "pointer",
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24">
@@ -255,27 +225,19 @@ function RegisterPage() {
               Sign up with Google
             </button>
             <button
-              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm"
+              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm bg-white  text-[#0d0d0d] border-[3px] border-[#0d0d0d]  shadow-[4px_4px_0_#0d0d0d] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] cursor-pointer"
               style={{
-                border: "3px solid #0d0d0d",
-                boxShadow: "4px 4px 0 #0d0d0d",
                 padding: "12px 24px",
-                background: "white",
                 fontFamily: "var(--font-display)",
-                cursor: "pointer",
-                transition: "transform 0.15s, box-shadow 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translate(-2px,-2px)";
-                e.currentTarget.style.boxShadow = "6px 6px 0 #0d0d0d";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translate(0,0)";
-                e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
               }}
               onClick={authApi.loginWithGithub}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                className="fill-[#0d0d0d]"
+              >
                 <path d="M10.226 17.284c-2.965-.36-5.054-2.493-5.054-5.256 0-1.123.404-2.336 1.078-3.144-.292-.741-.247-2.314.09-2.965.898-.112 2.111.36 2.83 1.01.853-.269 1.752-.404 2.853-.404 1.1 0 1.999.135 2.807.382.696-.629 1.932-1.1 2.83-.988.315.606.36 2.179.067 2.942.72.854 1.101 2 1.101 3.167 0 2.763-2.089 4.852-5.098 5.234.763.494 1.28 1.572 1.28 2.807v2.336c0 .674.561 1.056 1.235.786 4.066-1.55 7.255-5.615 7.255-10.646C23.5 6.188 18.334 1 11.978 1 5.62 1 .5 6.188.5 12.545c0 4.986 3.167 9.12 7.435 10.669.606.225 1.19-.18 1.19-.786V20.63a2.9 2.9 0 0 1-1.078.224c-1.483 0-2.359-.808-2.987-2.313-.247-.607-.517-.966-1.034-1.033-.27-.023-.359-.135-.359-.27 0-.27.45-.471.898-.471.652 0 1.213.404 1.797 1.235.45.651.921.943 1.483.943.561 0 .92-.202 1.437-.719.382-.381.674-.718.944-.943"></path>
               </svg>
               Sign up with Github
@@ -283,18 +245,18 @@ function RegisterPage() {
             <div className="flex items-center gap-3 mb-5">
               <div className="flex-1 h-0.5 bg-[#0d0d0d]" />
               <span
-                className="text-xs font-bold uppercase"
+                className="text-xs font-bold uppercase text-[#0d0d0d]"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 or
               </span>
-              <div className="flex-1 h-0.5 bg-[#0d0d0d]" />
+              <div className="flex-1 h-0.5 bg-[#0d0d0d] " />
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
-                  className="block mb-1.5 text-xs font-black uppercase tracking-widest"
+                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   Full Name
@@ -309,7 +271,7 @@ function RegisterPage() {
               </div>
               <div>
                 <label
-                  className="block mb-1.5 text-xs font-black uppercase tracking-widest"
+                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   Email Address
@@ -324,7 +286,7 @@ function RegisterPage() {
               </div>
               <div>
                 <label
-                  className="block mb-1.5 text-xs font-black uppercase tracking-widest"
+                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   Password
@@ -335,11 +297,11 @@ function RegisterPage() {
                     value={form.password}
                     onChange={(e) => update("password", e.target.value)}
                     placeholder="Min. 8 characters"
-                    className="brutal-input pr-12"
+                    className="brutal-input pr-12 "
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555]"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -348,7 +310,7 @@ function RegisterPage() {
               </div>
               <div>
                 <label
-                  className="block mb-1.5 text-xs font-black uppercase tracking-widest"
+                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   Confirm Password
@@ -363,7 +325,7 @@ function RegisterPage() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#555]"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
@@ -384,31 +346,26 @@ function RegisterPage() {
               </button>
             </form>
 
-            <p className="mt-4 text-xs text-center" style={{ color: "#999" }}>
+            <p className="mt-4 text-xs text-center text-[#999] ">
               By signing up, you agree to our{" "}
-              <Link
-                to="/terms"
-                className="font-bold underline"
-                style={{ color: "#0d0d0d" }}
-              >
+              <Link to="/terms" className="font-bold underline text-[#0d0d0d] ">
                 Terms
               </Link>{" "}
               and{" "}
               <Link
                 to="/privacy"
-                className="font-bold underline"
-                style={{ color: "#0d0d0d" }}
+                className="font-bold underline text-[#0d0d0d]"
               >
                 Privacy Policy
               </Link>
             </p>
 
-            <p className="mt-4 text-center text-sm" style={{ color: "#666" }}>
+            <p className="mt-4 text-center text-sm text-[#666]">
               Already a writer?{" "}
               <Link
                 to="/login"
-                className="font-black"
-                style={{ color: "#d32f2f", fontFamily: "var(--font-display)" }}
+                className="font-black text-[#d32f2f]"
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 Log in →
               </Link>

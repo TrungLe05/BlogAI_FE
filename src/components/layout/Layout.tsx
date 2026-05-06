@@ -4,11 +4,9 @@ import Footer from "./Footer";
 
 function Layout() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "#ebf4f5" }}>
+    <div className="min-h-screen flex flex-col bg-[#ebf4f5] dark:bg-zinc-900">
       <Header />
-
       <Outlet />
-      {/* <div className="h-100"></div> */}
       <Footer />
     </div>
   );

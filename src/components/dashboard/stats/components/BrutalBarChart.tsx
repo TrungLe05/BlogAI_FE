@@ -14,25 +14,42 @@ interface BrutalBarChartProps {
 
 function BrutalBarChart({ metric }: BrutalBarChartProps) {
   const max = Math.max(...WEEK_BARS.map((b) => b[metric]));
-  const color = metric === "views" ? "#0d0d0d" : "#d32f2f";
+  const color =
+    metric === "views" ? "bg-[#0d0d0d]  dark:bg-[#5c5c5c]" : "bg-[#d32f2f]";
   return (
     <div className="flex items-end justify-between h-36 gap-3">
       {WEEK_BARS.map((bar) => {
         const h = Math.round((bar[metric] / max) * 100);
         return (
-          <div key={bar.day} className="flex flex-col items-center gap-2 flex-1 h-full justify-end">
+          <div
+            key={bar.day}
+            className="flex flex-col items-center gap-2 flex-1 h-full justify-end"
+          >
             <div
-              className="w-full relative group cursor-default transition-all"
-              style={{ height: `${h}%`, background: color, border: "3px solid #0d0d0d", minHeight: "8px" }}
+              className={`w-full relative group cursor-default transition-all ${color} border-[3px] border-[#0d0d0d] dark:border-zinc-600`}
+              style={{ height: `${h}%`, minHeight: "8px" }}
             >
               <div
                 className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap"
-                style={{ background: "#0d0d0d", color: "white", fontFamily: "var(--font-display)", zIndex: 10, border: "2px solid white" }}
+                style={{
+                  background: "#0d0d0d",
+                  color: "white",
+                  fontFamily: "var(--font-display)",
+                  zIndex: 10,
+                  border: "2px solid white",
+                }}
               >
-                {metric === "views" ? (bar.views >= 1000 ? `${(bar.views / 1000).toFixed(1)}K` : bar.views) : bar.likes}
+                {metric === "views"
+                  ? bar.views >= 1000
+                    ? `${(bar.views / 1000).toFixed(1)}K`
+                    : bar.views
+                  : bar.likes}
               </div>
             </div>
-            <span className="text-xs font-black uppercase" style={{ color: "#8f6f6c", fontFamily: "var(--font-display)" }}>
+            <span
+              className="text-xs font-black uppercase text-[#8f6f6c] dark:text-zinc-400"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
               {bar.day}
             </span>
           </div>

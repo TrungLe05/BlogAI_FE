@@ -333,8 +333,8 @@ export function RichEditor({ content, onChange }: RichEditorProps) {
   return (
     <div
       ref={editorWrapperRef}
-      className="relative"
-      style={{ border: "3px solid #0d0d0d", background: "white" }}
+      className="relative border-[3px] border-[#0d0d0d] bg-white dark:shadow-[4px_4px_0_#52525b] dark:border-zinc-600"
+      // style={{ border: "3px solid #0d0d0d", background: "white" }}
     >
       {/* ── Toolbar ngang gốc (luôn render để giữ layout) ── */}
       <div

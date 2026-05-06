@@ -99,64 +99,26 @@ const TwoFactorPage: React.FC = () => {
   const isOtpComplete = otpValue.length === 6;
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#ebf4f5",
-        fontFamily: "var(--font-sans)",
-        padding: 24,
-      }}
-    >
-      <div style={{ width: "100%", maxWidth: 420 }}>
+    <div className="min-h-screen flex items-center justify-center bg-[#ebf4f5] dark:bg-zinc-950 p-6" style={{ fontFamily: "var(--font-sans)" }}>
+      <div className="w-full max-w-md">
         {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <div className="text-center mb-8">
           <span
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
-              fontSize: "1.5rem",
-              color: "#0d0d0d",
-            }}
+            className="font-black text-2xl text-[#0d0d0d] dark:text-white"
+            style={{ fontFamily: "var(--font-display)" }}
           >
-            Blog<span style={{ color: "#d32f2f" }}>AI</span>
+            Blog<span className="text-[#d32f2f]">AI</span>
           </span>
         </div>
 
         {/* Card */}
-        <div
-          style={{
-            background: "#ffffff",
-            border: "3px solid #0d0d0d",
-            boxShadow: "6px 6px 0 #0d0d0d",
-            padding: "36px 32px",
-          }}
-        >
+        <div className="bg-white dark:bg-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[6px_6px_0_#0d0d0d] dark:shadow-[6px_6px_0_#52525b] p-9">
           {/* Header */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 12,
-              marginBottom: 28,
-            }}
-          >
+          <div className="flex flex-col items-center gap-3 mb-7">
             <span
-              style={{
-                width: 52,
-                height: 52,
-                background: error ? "#d32f2f" : "#0d0d0d",
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "3px solid #0d0d0d",
-                boxShadow: `4px 4px 0 ${error ? "#7f0d12" : "#d32f2f"}`,
-                transition: "all 0.2s",
-              }}
+              className={`w-13 h-13 flex items-center justify-center text-white border-[3px] border-[#0d0d0d] dark:border-zinc-600 transition-all
+                ${error ? "bg-[#d32f2f] shadow-[4px_4px_0_#7f0d12]" : "bg-[#0d0d0d] dark:bg-zinc-700 shadow-[4px_4px_0_#d32f2f]"}`}
+              style={{ width: 52, height: 52 }}
             >
               {mode === "recovery" ? (
                 <Key size={22} />
@@ -164,27 +126,14 @@ const TwoFactorPage: React.FC = () => {
                 <ShieldCheck size={24} />
               )}
             </span>
-            <div style={{ textAlign: "center" }}>
+            <div className="text-center">
               <h2
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 900,
-                  fontSize: "1.25rem",
-                  color: "#0d0d0d",
-                  margin: "0 0 4px",
-                  letterSpacing: "-0.01em",
-                }}
+                className="font-black text-xl text-[#0d0d0d] dark:text-white mb-1"
+                style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.01em" }}
               >
                 {mode === "otp" ? "Two-Factor Auth" : "Recovery Code"}
               </h2>
-              <p
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  fontSize: "0.82rem",
-                  color: "#666",
-                  margin: 0,
-                }}
-              >
+              <p className="text-xs text-[#666] dark:text-zinc-400" style={{ fontFamily: "var(--font-sans)" }}>
                 {mode === "otp"
                   ? "Enter the 6-digit code from your authenticator app"
                   : "Enter one of your saved recovery codes"}
@@ -197,14 +146,7 @@ const TwoFactorPage: React.FC = () => {
             <>
               <div
                 onClick={() => hiddenInputRef.current?.focus()}
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  justifyContent: "center",
-                  marginBottom: 10,
-                  cursor: "text",
-                  position: "relative",
-                }}
+                className="flex gap-2 justify-center mb-2.5 cursor-text relative"
               >
                 <input
                   ref={hiddenInputRef}
@@ -216,13 +158,7 @@ const TwoFactorPage: React.FC = () => {
                   onBlur={() => setFocused(false)}
                   inputMode="numeric"
                   autoComplete="one-time-code"
-                  style={{
-                    position: "absolute",
-                    opacity: 0,
-                    pointerEvents: "none",
-                    width: 1,
-                    height: 1,
-                  }}
+                  className="absolute opacity-0 pointer-events-none w-px h-px"
                 />
                 {Array.from({ length: 6 }).map((_, i) => {
                   const isCursor =
@@ -231,36 +167,30 @@ const TwoFactorPage: React.FC = () => {
                   return (
                     <div
                       key={i}
+                      className={`flex items-center justify-center font-black select-none transition-all
+                        ${error
+                          ? "border-[3px] border-[#d32f2f] bg-red-50 dark:bg-red-950/30 text-[#d32f2f]"
+                          : isCursor
+                            ? "border-[3px] border-[#0d0d0d] dark:border-zinc-400 bg-[#f2fbfc] dark:bg-zinc-800 text-[#0d0d0d] dark:text-white shadow-[3px_3px_0_#d32f2f]"
+                            : hasValue
+                              ? "border-[3px] border-[#0d0d0d] dark:border-zinc-500 bg-[#f2fbfc] dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
+                              : "border-[3px] border-[#ccc] dark:border-zinc-600 bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
+                        }`}
                       style={{
                         width: 48,
                         height: 58,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
                         fontSize: "1.5rem",
-                        fontWeight: 900,
                         fontFamily: "var(--font-display)",
-                        color: error ? "#d32f2f" : "#0d0d0d",
-                        background: error
-                          ? "#fff0f0"
-                          : hasValue
-                            ? "#f2fbfc"
-                            : "#ffffff",
-                        border: `3px solid ${error ? "#d32f2f" : isCursor ? "#0d0d0d" : hasValue ? "#0d0d0d" : "#ccc"}`,
-                        boxShadow: isCursor ? "3px 3px 0 #d32f2f" : "none",
-                        transition: "all 0.12s",
-                        userSelect: "none",
                       }}
                     >
                       {hasValue ? (
                         otpValue[i]
                       ) : isCursor ? (
                         <span
+                          className="block bg-[#0d0d0d] dark:bg-white"
                           style={{
                             width: 2,
                             height: 28,
-                            background: "#0d0d0d",
-                            display: "block",
                             animation: "blink 1s step-end infinite",
                           }}
                         />
@@ -273,44 +203,21 @@ const TwoFactorPage: React.FC = () => {
               <style>{`@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}`}</style>
 
               {/* Progress dots */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: 6,
-                  marginBottom: 20,
-                }}
-              >
+              <div className="flex justify-center gap-1.5 mb-5">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <span
                     key={i}
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: "50%",
-                      background:
-                        i < otpValue.length
-                          ? error
-                            ? "#d32f2f"
-                            : "#0d0d0d"
-                          : "#ddd",
-                      transition: "background 0.15s",
-                    }}
+                    className={`w-1.5 h-1.5 rounded-full transition-colors
+                      ${i < otpValue.length
+                        ? error ? "bg-[#d32f2f]" : "bg-[#0d0d0d] dark:bg-white"
+                        : "bg-[#ddd] dark:bg-zinc-600"
+                      }`}
                   />
                 ))}
               </div>
 
               {error && (
-                <p
-                  style={{
-                    textAlign: "center",
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "0.78rem",
-                    color: "#d32f2f",
-                    fontWeight: 600,
-                    margin: "0 0 16px",
-                  }}
-                >
+                <p className="text-center text-xs text-[#d32f2f] font-semibold mb-4">
                   Incorrect code — please try again.
                 </p>
               )}
@@ -319,38 +226,12 @@ const TwoFactorPage: React.FC = () => {
               <button
                 onClick={() => doVerify(otpValue)}
                 disabled={!isOtpComplete || loading}
-                style={{
-                  width: "100%",
-                  padding: 13,
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 900,
-                  fontSize: "0.82rem",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "#ffffff",
-                  background: !isOtpComplete || loading ? "#aaa" : "#0d0d0d",
-                  border: `3px solid ${!isOtpComplete || loading ? "#aaa" : "#0d0d0d"}`,
-                  boxShadow:
-                    isOtpComplete && !loading ? "4px 4px 0 #d32f2f" : "none",
-                  cursor: !isOtpComplete || loading ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  marginBottom: 12,
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  if (isOtpComplete && !loading) {
-                    e.currentTarget.style.transform = "translate(-2px,-2px)";
-                    e.currentTarget.style.boxShadow = "6px 6px 0 #d32f2f";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "none";
-                  e.currentTarget.style.boxShadow =
-                    isOtpComplete && !loading ? "4px 4px 0 #d32f2f" : "none";
-                }}
+                className={`w-full flex items-center justify-center gap-2 py-3 font-black text-xs uppercase tracking-[0.1em] text-white transition-all mb-3
+                  ${isOtpComplete && !loading
+                    ? "bg-[#0d0d0d] dark:bg-zinc-200 dark:text-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-200 shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f] cursor-pointer"
+                    : "bg-[#aaa] dark:bg-zinc-600 border-[3px] border-[#aaa] dark:border-zinc-600 cursor-not-allowed"
+                  }`}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 {loading ? (
                   <>
@@ -366,33 +247,8 @@ const TwoFactorPage: React.FC = () => {
               {/* Switch to recovery */}
               <button
                 onClick={() => switchMode("recovery")}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 700,
-                  fontSize: "0.72rem",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "#666",
-                  background: "transparent",
-                  border: "2px solid #ddd",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                  marginBottom: 10,
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "#0d0d0d";
-                  e.currentTarget.style.color = "#0d0d0d";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#ddd";
-                  e.currentTarget.style.color = "#666";
-                }}
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer mb-2.5"
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 <Key size={13} /> Use a recovery code instead
               </button>
@@ -403,26 +259,11 @@ const TwoFactorPage: React.FC = () => {
           {mode === "recovery" && (
             <>
               {/* Info box */}
-              <div
-                style={{
-                  background: "#fff8f8",
-                  border: "2px solid #d32f2f",
-                  padding: "12px 14px",
-                  marginBottom: 16,
-                }}
-              >
-                <p
-                  style={{
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "0.75rem",
-                    color: "#7f0d12",
-                    margin: 0,
-                    lineHeight: 1.6,
-                  }}
-                >
+              <div className="bg-red-50 dark:bg-red-950/30 border-[2px] border-[#d32f2f] p-3 mb-4">
+                <p className="text-xs text-[#7f0d12] dark:text-red-400 leading-relaxed">
                   Recovery codes were provided when you enabled 2FA. Each code
                   can only be used once. Format:{" "}
-                  <code style={{ fontWeight: 700 }}>XXXX-XXXX-XXXX</code>
+                  <code className="font-bold">XXXX-XXXX-XXXX</code>
                 </p>
               </div>
 
@@ -433,43 +274,15 @@ const TwoFactorPage: React.FC = () => {
                 onChange={(e) => setRecoveryCode(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === "Enter" && doVerify(recoveryCode)}
                 autoFocus
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  fontFamily: "monospace",
-                  fontWeight: 700,
-                  fontSize: "1.1rem",
-                  letterSpacing: "0.1em",
-                  textAlign: "center",
-                  color: error ? "#d32f2f" : "#0d0d0d",
-                  background: error ? "#fff0f0" : "#ffffff",
-                  border: `3px solid ${error ? "#d32f2f" : "#0d0d0d"}`,
-                  borderRadius: 0,
-                  outline: "none",
-                  boxSizing: "border-box",
-                  marginBottom: 16,
-                  transition: "all 0.15s",
-                }}
-                onFocus={(e) => {
-                  if (!error)
-                    e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.boxShadow = "none";
-                }}
+                className={`w-full py-3.5 font-mono font-bold text-lg text-center tracking-[0.1em] outline-none border-[3px] mb-4 transition-all focus:shadow-[4px_4px_0_#0d0d0d] dark:focus:shadow-[4px_4px_0_#52525b]
+                  ${error
+                    ? "border-[#d32f2f] bg-red-50 dark:bg-red-950/30 text-[#d32f2f]"
+                    : "border-[#0d0d0d] dark:border-zinc-600 bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
+                  }`}
               />
 
               {error && (
-                <p
-                  style={{
-                    textAlign: "center",
-                    fontFamily: "var(--font-sans)",
-                    fontSize: "0.78rem",
-                    color: "#d32f2f",
-                    fontWeight: 600,
-                    margin: "0 0 12px",
-                  }}
-                >
+                <p className="text-center text-xs text-[#d32f2f] font-semibold mb-3">
                   Invalid or already used recovery code.
                 </p>
               )}
@@ -478,44 +291,12 @@ const TwoFactorPage: React.FC = () => {
               <button
                 onClick={() => doVerify(recoveryCode)}
                 disabled={!recoveryCode.trim() || loading}
-                style={{
-                  width: "100%",
-                  padding: 13,
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 900,
-                  fontSize: "0.82rem",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  color: "#ffffff",
-                  background:
-                    !recoveryCode.trim() || loading ? "#aaa" : "#0d0d0d",
-                  border: "3px solid #0d0d0d",
-                  boxShadow:
-                    recoveryCode.trim() && !loading
-                      ? "4px 4px 0 #d32f2f"
-                      : "none",
-                  cursor:
-                    !recoveryCode.trim() || loading ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  marginBottom: 12,
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  if (recoveryCode.trim() && !loading) {
-                    e.currentTarget.style.transform = "translate(-2px,-2px)";
-                    e.currentTarget.style.boxShadow = "6px 6px 0 #d32f2f";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "none";
-                  e.currentTarget.style.boxShadow =
-                    recoveryCode.trim() && !loading
-                      ? "4px 4px 0 #d32f2f"
-                      : "none";
-                }}
+                className={`w-full flex items-center justify-center gap-2 py-3 font-black text-xs uppercase tracking-[0.1em] text-white transition-all mb-3
+                  ${recoveryCode.trim() && !loading
+                    ? "bg-[#0d0d0d] dark:bg-zinc-200 dark:text-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-200 shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f] cursor-pointer"
+                    : "bg-[#aaa] dark:bg-zinc-600 border-[3px] border-[#0d0d0d] dark:border-zinc-600 cursor-not-allowed"
+                  }`}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 {loading ? (
                   <>
@@ -531,33 +312,8 @@ const TwoFactorPage: React.FC = () => {
               {/* Switch back to OTP */}
               <button
                 onClick={() => switchMode("otp")}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 700,
-                  fontSize: "0.72rem",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "#666",
-                  background: "transparent",
-                  border: "2px solid #ddd",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 6,
-                  marginBottom: 10,
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "#0d0d0d";
-                  e.currentTarget.style.color = "#0d0d0d";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "#ddd";
-                  e.currentTarget.style.color = "#666";
-                }}
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer mb-2.5"
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 <ShieldCheck size={13} /> Use authenticator app instead
               </button>
@@ -567,46 +323,14 @@ const TwoFactorPage: React.FC = () => {
           {/* Back to login */}
           <button
             onClick={() => navigate("/login")}
-            style={{
-              width: "100%",
-              padding: "10px",
-              fontFamily: "var(--font-display)",
-              fontWeight: 700,
-              fontSize: "0.72rem",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "#666",
-              background: "transparent",
-              border: "2px solid #ddd",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 6,
-              transition: "all 0.15s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "#0d0d0d";
-              e.currentTarget.style.color = "#0d0d0d";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "#ddd";
-              e.currentTarget.style.color = "#666";
-            }}
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer"
+            style={{ fontFamily: "var(--font-display)" }}
           >
             <ArrowLeft size={13} /> Back to Login
           </button>
         </div>
 
-        <p
-          style={{
-            textAlign: "center",
-            fontFamily: "var(--font-sans)",
-            fontSize: "0.72rem",
-            color: "#999",
-            marginTop: 16,
-          }}
-        >
+        <p className="text-center text-xs text-[#999] dark:text-zinc-600 mt-4" style={{ fontFamily: "var(--font-sans)" }}>
           {mode === "otp"
             ? "Code refreshes every 30 seconds · Works with Google Authenticator & Authy"
             : "Each recovery code can only be used once"}

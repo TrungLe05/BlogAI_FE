@@ -60,11 +60,9 @@ export function AccountSection({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <p
+      className="dark:text-white text-[#5b403d] mb-2 text-[0.82rem]"
         style={{
           fontFamily: "var(--font-sans)",
-          fontSize: "0.82rem",
-          color: "#5b403d",
-          marginBottom: 8,
         }}
       >
         Manage your account preferences, security, and display options.

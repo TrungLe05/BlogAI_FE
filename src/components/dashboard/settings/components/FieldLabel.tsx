@@ -1,15 +1,9 @@
 export function FieldLabel({ children }: { children: string }) {
   return (
     <label
+      className="block font-bold text-[0.68rem] tracking-widest text-[#5b403d] dark:text-white mb-[6px] uppercase"
       style={{
-        display: "block",
         fontFamily: "var(--font-display)",
-        fontWeight: 700,
-        fontSize: "0.68rem",
-        letterSpacing: "0.1em",
-        textTransform: "uppercase" as const,
-        color: "#5b403d",
-        marginBottom: 6,
       }}
     >
       {children}

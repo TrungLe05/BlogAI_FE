@@ -127,31 +127,20 @@ function ExplorePage() {
     return <LoadingSpinner />;
   }
   return (
-    <div
-      style={{
-        background: "#ebf4f5",
-        fontFamily: "var(--font-sans)",
-        minHeight: "100vh",
-      }}
-    >
-
+    <div className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950" style={{ fontFamily: "var(--font-sans)" }}>
 
       {/* Header */}
-      <div
-        className="py-12 px-6"
-        style={{ background: "#0d0d0d", borderBottom: "3px solid #d32f2f" }}
-      >
+      <div className="py-12 px-6 bg-[#0d0d0d] border-b-[3px] border-[#d32f2f]">
         <div className="max-w-7xl mx-auto">
           <h1
-            className="font-black mb-4"
+            className="font-black mb-4 text-white"
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "clamp(36px, 5vw, 64px)",
-              color: "white",
               lineHeight: 1.1,
             }}
           >
-            Explore <span style={{ color: "#d32f2f" }}>Stories</span>
+            Explore <span className="text-[#d32f2f]">Stories</span>
           </h1>
           <p className="text-white/60 text-base mb-8">
             Discover blogs from writers around the world.
@@ -159,16 +148,15 @@ function ExplorePage() {
           <div className="relative max-w-2xl">
             <Search
               size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2"
-              style={{ color: "#999" }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-[#999]"
             />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search blogs, authors, topics..."
-              className="brutal-input"
-              style={{ background: "white", paddingLeft: "40px" }}
+              className="brutal-input dark:bg-zinc-800 dark:text-white dark:border-zinc-600"
+              style={{ paddingLeft: "40px" }}
             />
           </div>
         </div>
@@ -181,14 +169,12 @@ function ExplorePage() {
             <button
               key={group}
               onClick={() => handleGroupClick(group)}
-              className="px-4 py-2 text-xs font-black uppercase tracking-widest transition-all"
-              style={{
-                fontFamily: "var(--font-display)",
-                border: "2px solid #0d0d0d",
-                background: activeGroup === group ? "#d32f2f" : "white",
-                color: activeGroup === group ? "white" : "#0d0d0d",
-                boxShadow: activeGroup === group ? "3px 3px 0 #0d0d0d" : "none",
-              }}
+              className={`px-4 py-2 text-xs font-black uppercase tracking-widest transition-all border-[2px] cursor-pointer
+                ${activeGroup === group
+                  ? "bg-[#d32f2f] text-white border-[#d32f2f] shadow-[3px_3px_0_#0d0d0d] dark:shadow-[3px_3px_0_#52525b]"
+                  : "bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-zinc-200 border-[#0d0d0d] dark:border-zinc-600 hover:bg-[#f2fbfc] dark:hover:bg-zinc-700"
+                }`}
+              style={{ fontFamily: "var(--font-display)" }}
             >
               {group}
             </button>
@@ -197,23 +183,15 @@ function ExplorePage() {
 
         {/* ── Tag Pills (chỉ hiện khi chọn group) ── */}
         {activeGroup !== "All" && filteredTagsByGroup.length > 0 && (
-          <div
-            className="flex flex-wrap gap-2 mb-6 p-4"
-            style={{
-              background: "white",
-              border: "2px solid #0d0d0d",
-              borderTop: "none",
-            }}
-          >
+          <div className="flex flex-wrap gap-2 mb-6 p-4 bg-white dark:bg-zinc-800 border-[2px] border-[#0d0d0d] dark:border-zinc-600 border-t-0">
             <button
               onClick={() => setActiveTag("All")}
-              className="px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all"
-              style={{
-                fontFamily: "var(--font-display)",
-                border: "2px solid #0d0d0d",
-                background: activeTag === "All" ? "#0d0d0d" : "#f2fbfc",
-                color: activeTag === "All" ? "white" : "#0d0d0d",
-              }}
+              className={`px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all border-[2px] cursor-pointer
+                ${activeTag === "All"
+                  ? "bg-[#0d0d0d] dark:bg-zinc-200 text-white dark:text-zinc-900 border-[#0d0d0d] dark:border-zinc-200"
+                  : "bg-[#f2fbfc] dark:bg-zinc-700 text-[#0d0d0d] dark:text-zinc-200 border-[#0d0d0d] dark:border-zinc-500"
+                }`}
+              style={{ fontFamily: "var(--font-display)" }}
             >
               All in {activeGroup}
             </button>
@@ -221,14 +199,12 @@ function ExplorePage() {
               <button
                 key={t.tag}
                 onClick={() => handleTagClick(t.tag)}
-                className="px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  border: "2px solid #0d0d0d",
-                  background: activeTag === t.tag ? "#0d0d0d" : "#f2fbfc",
-                  color: activeTag === t.tag ? "white" : "#0d0d0d",
-                  boxShadow: activeTag === t.tag ? "2px 2px 0 #d32f2f" : "none",
-                }}
+                className={`px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all border-[2px] cursor-pointer
+                  ${activeTag === t.tag
+                    ? "bg-[#0d0d0d] dark:bg-zinc-200 text-white dark:text-zinc-900 border-[#0d0d0d] dark:border-zinc-200 shadow-[2px_2px_0_#d32f2f]"
+                    : "bg-[#f2fbfc] dark:bg-zinc-700 text-[#0d0d0d] dark:text-zinc-200 border-[#0d0d0d] dark:border-zinc-500"
+                  }`}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 {t.tag}
               </button>
@@ -237,33 +213,29 @@ function ExplorePage() {
         )}
 
         {/* Sort Bar */}
-        <div
-          className="flex items-center justify-between mb-8 p-3 bg-white"
-          style={{ border: "3px solid #0d0d0d" }}
-        >
+        <div className="flex items-center justify-between mb-8 p-3 bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600">
           <div className="flex gap-0">
             {SORTS.map((sort, i) => (
               <button
                 key={sort}
                 onClick={() => setActiveSort(sort)}
-                className="px-6 py-2 text-sm font-black uppercase tracking-widest transition-colors"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  background: activeSort === sort ? "#0d0d0d" : "transparent",
-                  color: activeSort === sort ? "white" : "#555",
-                  borderRight:
-                    i < SORTS.length - 1 ? "2px solid #0d0d0d" : "none",
-                }}
+                className={`px-6 py-2 text-sm font-black uppercase tracking-widest transition-colors cursor-pointer
+                  ${activeSort === sort
+                    ? "bg-[#0d0d0d] dark:bg-zinc-200 text-white dark:text-zinc-900"
+                    : "bg-transparent text-[#555] dark:text-zinc-400 hover:bg-[#f2fbfc] dark:hover:bg-zinc-700"
+                  }
+                  ${i < SORTS.length - 1 ? "border-r-[2px] border-[#0d0d0d] dark:border-zinc-600" : ""}`}
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 {sort}
               </button>
             ))}
           </div>
           <p
-            className="text-sm"
-            style={{ color: "#888", fontFamily: "var(--font-display)" }}
+            className="text-sm text-[#888] dark:text-zinc-400"
+            style={{ fontFamily: "var(--font-display)" }}
           >
-            <span className="font-black" style={{ color: "#d32f2f" }}>
+            <span className="font-black text-[#d32f2f]">
               {filteredAndSorted.length}
             </span>{" "}
             stories found
@@ -280,20 +252,7 @@ function ExplorePage() {
                     <Link
                       to={`/blog/${blog.blogId}`}
                       key={blog.blogId}
-                      className="bg-white overflow-hidden block group transition-all"
-                      style={{
-                        border: "3px solid #0d0d0d",
-                        boxShadow: "4px 4px 0 #0d0d0d",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform =
-                          "translate(-2px,-2px)";
-                        e.currentTarget.style.boxShadow = "6px 6px 0 #0d0d0d";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translate(0,0)";
-                        e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
-                      }}
+                      className="bg-white dark:bg-zinc-800 overflow-hidden block group transition-all border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] dark:hover:shadow-[6px_6px_0_#52525b]"
                     >
                       <div
                         className="relative overflow-hidden"
@@ -308,48 +267,29 @@ function ExplorePage() {
                           {blog.tags.slice(0, 2).map((tag) => (
                             <span
                               key={tag}
-                              className="px-2 py-1 text-xs font-black uppercase tracking-widest text-white"
-                              style={{
-                                background: "#d32f2f",
-                                border: "2px solid #0d0d0d",
-                                fontFamily: "var(--font-display)",
-                              }}
+                              className="px-2 py-1 text-xs font-black uppercase tracking-widest text-white bg-[#d32f2f] border-[2px] border-[#0d0d0d]"
+                              style={{ fontFamily: "var(--font-display)" }}
                             >
                               {tag}
                             </span>
                           ))}
                         </div>
-                        <div
-                          className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 text-xs font-bold"
-                          style={{
-                            background: "rgba(0,0,0,0.7)",
-                            color: "white",
-                          }}
-                        >
+                        <div className="absolute bottom-3 right-3 flex items-center gap-1 px-2 py-1 text-xs font-bold bg-black/70 text-white">
                           <Eye size={11} />
                           {blog.viewCount}
                         </div>
                       </div>
                       <div className="p-4">
                         <h3
-                          className="font-black text-base leading-tight mb-2 line-clamp-2"
-                          style={{
-                            fontFamily: "var(--font-display)",
-                            color: "#0d0d0d",
-                          }}
+                          className="font-black text-base leading-tight mb-2 line-clamp-2 text-[#0d0d0d] dark:text-white"
+                          style={{ fontFamily: "var(--font-display)" }}
                         >
                           {blog.title}
                         </h3>
-                        <p
-                          className="text-xs mb-3 leading-relaxed line-clamp-2"
-                          style={{ color: "#666" }}
-                        >
+                        <p className="text-xs mb-3 leading-relaxed line-clamp-2 text-[#666] dark:text-zinc-400">
                           {blog.summary ?? "No summary available."}
                         </p>
-                        <div
-                          className="flex items-center justify-between pt-3"
-                          style={{ borderTop: "2px solid #0d0d0d" }}
-                        >
+                        <div className="flex items-center justify-between pt-3 border-t-[2px] border-[#0d0d0d] dark:border-zinc-600">
                           <Link
                             to={`/user/${blog.author.id}`}
                             className="flex items-center gap-2"
@@ -361,20 +301,16 @@ function ExplorePage() {
                                 `https://ui-avatars.com/api/?name=${encodeURIComponent(blog.author.fullName)}&background=d32f2f&color=fff`
                               }
                               alt={blog.author.fullName}
-                              className="w-6 h-6 object-cover"
-                              style={{ border: "2px solid #0d0d0d" }}
+                              className="w-6 h-6 object-cover border-[2px] border-[#0d0d0d] dark:border-zinc-600"
                             />
                             <span
-                              className="text-xs font-bold truncate max-w-25 hover:text-[#d32f2f] transition-colors"
+                              className="text-xs font-bold truncate max-w-25 text-[#0d0d0d] dark:text-zinc-200 hover:text-[#d32f2f] transition-colors"
                               style={{ fontFamily: "var(--font-display)" }}
                             >
                               {blog.author.fullName}
                             </span>
                           </Link>
-                          <div
-                            className="flex items-center gap-1 text-xs"
-                            style={{ color: "#888" }}
-                          >
+                          <div className="flex items-center gap-1 text-xs text-[#888] dark:text-zinc-500">
                             <Clock size={11} />
                             {blog.createdAt}
                           </div>
@@ -390,31 +326,21 @@ function ExplorePage() {
                     <button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="w-10 h-10 flex items-center justify-center disabled:opacity-40"
-                      style={{
-                        border: "3px solid #0d0d0d",
-                        background: "white",
-                        boxShadow: "3px 3px 0 #0d0d0d",
-                      }}
+                      className="w-10 h-10 flex items-center justify-center disabled:opacity-40 bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[3px_3px_0_#0d0d0d] dark:shadow-[3px_3px_0_#52525b] cursor-pointer"
                     >
-                      <ChevronLeft size={16} />
+                      <ChevronLeft size={16} className="text-[#0d0d0d] dark:text-white" />
                     </button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                       (p) => (
                         <button
                           key={p}
                           onClick={() => setPage(p)}
-                          className="w-10 h-10 flex items-center justify-center text-sm font-black"
-                          style={{
-                            fontFamily: "var(--font-display)",
-                            border: "3px solid #0d0d0d",
-                            background: page === p ? "#0d0d0d" : "white",
-                            color: page === p ? "white" : "#0d0d0d",
-                            boxShadow:
-                              page === p
-                                ? "3px 3px 0 #d32f2f"
-                                : "3px 3px 0 #0d0d0d",
-                          }}
+                          className={`w-10 h-10 flex items-center justify-center text-sm font-black cursor-pointer border-[3px]
+                            ${page === p
+                              ? "bg-[#0d0d0d] dark:bg-zinc-200 text-white dark:text-zinc-900 border-[#0d0d0d] dark:border-zinc-200 shadow-[3px_3px_0_#d32f2f]"
+                              : "bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white border-[#0d0d0d] dark:border-zinc-600 shadow-[3px_3px_0_#0d0d0d] dark:shadow-[3px_3px_0_#52525b]"
+                            }`}
+                          style={{ fontFamily: "var(--font-display)" }}
                         >
                           {p}
                         </button>
@@ -425,35 +351,24 @@ function ExplorePage() {
                         setPage((p) => Math.min(totalPages, p + 1))
                       }
                       disabled={page === totalPages}
-                      className="w-10 h-10 flex items-center justify-center disabled:opacity-40"
-                      style={{
-                        border: "3px solid #0d0d0d",
-                        background: "white",
-                        boxShadow: "3px 3px 0 #0d0d0d",
-                      }}
+                      className="w-10 h-10 flex items-center justify-center disabled:opacity-40 bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[3px_3px_0_#0d0d0d] dark:shadow-[3px_3px_0_#52525b] cursor-pointer"
                     >
-                      <ChevronRight size={16} />
+                      <ChevronRight size={16} className="text-[#0d0d0d] dark:text-white" />
                     </button>
                   </div>
                 )}
               </>
             ) : (
               !loading && (
-                <div
-                  className="text-center py-20 bg-white"
-                  style={{
-                    border: "3px solid #0d0d0d",
-                    boxShadow: "4px 4px 0 #0d0d0d",
-                  }}
-                >
+                <div className="text-center py-20 bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
                   <p className="text-6xl mb-4">📝</p>
                   <h3
-                    className="font-black text-xl mb-2"
+                    className="font-black text-xl mb-2 text-[#0d0d0d] dark:text-white"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     No stories found
                   </h3>
-                  <p style={{ color: "#888" }}>Try a different search or tag</p>
+                  <p className="text-[#888] dark:text-zinc-500">Try a different search or tag</p>
                 </div>
               )
             )}
@@ -462,20 +377,8 @@ function ExplorePage() {
           {/* Sidebar */}
           <aside className="hidden lg:block space-y-6">
             {/* Trending Topics */}
-            <div
-              className="bg-white"
-              style={{
-                border: "3px solid #0d0d0d",
-                boxShadow: "4px 4px 0 #0d0d0d",
-              }}
-            >
-              <div
-                className="px-5 py-3"
-                style={{
-                  background: "#0d0d0d",
-                  borderBottom: "3px solid #0d0d0d",
-                }}
-              >
+            <div className="bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
+              <div className="px-5 py-3 bg-[#0d0d0d] border-b-[3px] border-[#0d0d0d]">
                 <h3
                   className="font-black text-sm uppercase tracking-widest text-white flex items-center gap-2"
                   style={{ fontFamily: "var(--font-display)" }}
@@ -486,31 +389,25 @@ function ExplorePage() {
               {groupTrending.map((t, i) => (
                 <div
                   key={t.tag}
-                  className="flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-[#ebf4f5] transition-colors"
-                  style={{
-                    borderBottom:
-                      i < groupTrending.length - 1 ? "1px solid #eee" : "none",
-                  }}
+                  className={`flex items-center justify-between px-5 py-3 cursor-pointer hover:bg-[#ebf4f5] dark:hover:bg-zinc-700 transition-colors
+                    ${i < groupTrending.length - 1 ? "border-b border-[#eee] dark:border-zinc-700" : ""}`}
                   onClick={() => handleGroupClick(t.tag)}
                 >
                   <div className="flex items-center gap-3">
                     <span
-                      className="w-6 h-6 flex items-center justify-center text-xs font-black text-white"
-                      style={{
-                        background: "#d32f2f",
-                        fontFamily: "var(--font-display)",
-                      }}
+                      className="w-6 h-6 flex items-center justify-center text-xs font-black text-white bg-[#d32f2f]"
+                      style={{ fontFamily: "var(--font-display)" }}
                     >
                       {i + 1}
                     </span>
                     <span
-                      className="text-sm font-bold"
+                      className="text-sm font-bold text-[#0d0d0d] dark:text-zinc-200"
                       style={{ fontFamily: "var(--font-display)" }}
                     >
                       {t.tag}
                     </span>
                   </div>
-                  <span className="text-xs" style={{ color: "#888" }}>
+                  <span className="text-xs text-[#888] dark:text-zinc-500">
                     {t.count} {t.count === 1 ? "post" : "posts"}
                   </span>
                 </div>
@@ -518,15 +415,9 @@ function ExplorePage() {
             </div>
 
             {/* Popular Tags */}
-            <div
-              className="bg-white p-5"
-              style={{
-                border: "3px solid #0d0d0d",
-                boxShadow: "4px 4px 0 #0d0d0d",
-              }}
-            >
+            <div className="bg-white dark:bg-zinc-800 p-5 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
               <h3
-                className="font-black text-sm uppercase tracking-widest mb-4"
+                className="font-black text-sm uppercase tracking-widest mb-4 text-[#0d0d0d] dark:text-zinc-200"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 Popular Tags
@@ -542,7 +433,7 @@ function ExplorePage() {
                       if (group) setActiveGroup(group);
                       setActiveTag(t.tag);
                     }}
-                    className="brutal-tag cursor-pointer transition-all hover:bg-[#0d0d0d] hover:text-white"
+                    className="brutal-tag cursor-pointer transition-all hover:bg-[#0d0d0d] hover:text-white dark:border-zinc-500 dark:text-zinc-300 dark:hover:bg-zinc-200 dark:hover:text-zinc-900 dark:hover:border-zinc-200"
                   >
                     {t.tag}
                   </span>

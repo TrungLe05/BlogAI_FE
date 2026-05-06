@@ -13,8 +13,10 @@ import { extractApiError } from "@/utils/apiError";
 import { toast } from "sonner";
 import tagApi from "@/api/tagApi";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
-import { BlogResponse, TagStatsResponse } from "@/types/response/blogResponse.types";
-
+import {
+  BlogResponse,
+  TagStatsResponse,
+} from "@/types/response/blogResponse.types";
 
 const benefits = [
   {
@@ -71,6 +73,13 @@ const testimonials = [
   },
 ];
 
+const AVATARS = [
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face",
+  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face",
+];
+
 function LandingPage() {
   const [blogs, setBlogs] = useState<BlogResponse[]>([]);
   const [tags, setTags] = useState<TagStatsResponse[]>([]);
@@ -96,66 +105,46 @@ function LandingPage() {
     fetchAll();
   }, []);
 
+  if (loading) return <LoadingSpinner />;
+
   const blogViewst = blogs?.[0];
+  const top3Blog = blogs?.slice(1, 4) ?? [];
 
-  const top3Blog = blogs?.slice(1, 4) || [];
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
   return (
     <div
-      className="min-h-screen"
-      style={{ background: "#ebf4f5", fontFamily: "var(--font-sans)" }}
+      className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950"
+      style={{ fontFamily: "var(--font-sans)" }}
     >
-      {/* ── HERO ─────────────────────────────────────────── */}
+      {/* ── HERO ── */}
       <section className="max-w-340 mx-auto px-6 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left */}
+          {/* Left copy */}
           <div>
             <span
-              className="inline-block mb-6 px-3 py-1 text-xs font-bold uppercase tracking-widest"
-              style={{
-                background: "#d32f2f",
-                color: "white",
-                border: "2px solid #0d0d0d",
-                fontFamily: "var(--font-display)",
-              }}
+              className="inline-block mb-6 px-3 py-1 text-xs font-bold uppercase tracking-widest border-2 text-white bg-[#d32f2f] border-[#0d0d0d] dark:border-zinc-600"
+              style={{ fontFamily: "var(--font-display)" }}
             >
               🔥 New Platform for Writers
             </span>
             <h1
-              className="mb-6 font-black leading-none"
+              className="mb-6 font-black text-[#0d0d0d] dark:text-white leading-[1.05]"
               style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "clamp(44px, 6vw, 72px)",
-                color: "#0d0d0d",
-                lineHeight: 1.05,
               }}
             >
               Your Ideas Deserve
               <br />
-              <span style={{ color: "#d32f2f" }}>to Be Read.</span>
+              <span className="text-[#d32f2f]">to Be Read.</span>
             </h1>
-            <p
-              className="mb-8 text-lg leading-relaxed"
-              style={{
-                color: "#555",
-                maxWidth: "480px",
-                fontFamily: "var(--font-sans)",
-              }}
-            >
+            <p className="mb-8 text-lg leading-relaxed text-[#555] dark:text-zinc-300 max-w-120">
               Write freely. Reach thousands. Build your legacy. Join the
               platform where authentic voices break through the noise.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/dashboard">
-                <button
-                  className="brutal-btn-primary text-base"
-                  style={{ padding: "14px 32px", fontSize: "1rem" }}
-                >
-                  <PenLine size={18} />
-                  Start Writing
+                <button className="brutal-btn-primary text-base py-3.5 px-8">
+                  <PenLine size={18} /> Start Writing
                 </button>
               </Link>
               <Link to="/explore">
@@ -163,52 +152,36 @@ function LandingPage() {
                   className="brutal-btn-secondary text-base"
                   style={{ padding: "14px 32px", fontSize: "1rem" }}
                 >
-                  Explore Blogs
-                  <ArrowRight size={18} />
+                  Explore Blogs <ArrowRight size={18} />
                 </button>
               </Link>
             </div>
             <div className="mt-10 flex items-center gap-6">
               <div className="flex -space-x-2">
-                {[
-                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=face",
-                  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-                  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face",
-                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face",
-                ].map((src, i) => (
+                {AVATARS.map((src, i) => (
                   <img
                     key={i}
                     src={src}
                     alt="writer"
-                    className="w-9 h-9 object-cover"
-                    style={{ border: "2px solid #0d0d0d" }}
+                    className="w-9 h-9 object-cover border-2 border-[#0d0d0d] dark:border-zinc-600"
                   />
                 ))}
               </div>
               <p
-                className="text-sm font-bold"
-                style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+                className="text-sm font-bold text-[#0d0d0d] dark:text-zinc-200"
+                style={{ fontFamily: "var(--font-display)" }}
               >
-                <span style={{ color: "#d32f2f" }}>10,000+</span> writers
-                already here
+                <span className="text-[#d32f2f]">10,000+</span> writers already
+                here
               </p>
             </div>
           </div>
 
-          {/* Hero Blog Card */}
+          {/* Hero blog card */}
           <div className="relative">
-            <div
-              className="absolute -top-3 -left-3 w-full h-full"
-              style={{ background: "#0d0d0d", zIndex: 0 }}
-            />
-            <div
-              className="relative z-10 bg-white overflow-hidden group"
-              style={{ border: "3px solid #0d0d0d" }}
-            >
-              <div
-                className="relative overflow-hidden"
-                style={{ height: "260px" }}
-              >
+            <div className="absolute -top-3 -left-3 w-full h-full bg-[#0d0d0d] dark:bg-zinc-700 z-0" />
+            <div className="relative z-10 bg-white dark:bg-zinc-900 overflow-hidden group border-[3px] border-[#0d0d0d] dark:border-zinc-600">
+              <div className="relative overflow-hidden h-[260px]">
                 <img
                   src={
                     blogViewst?.coverImageUrl ||
@@ -217,15 +190,11 @@ function LandingPage() {
                   alt={blogViewst?.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                {blogViewst?.tags?.map((tag, index) => (
+                {blogViewst?.tags?.map((tag, i) => (
                   <span
-                    key={index}
-                    className="absolute top-4 left-4 px-3 py-1 text-xs font-black uppercase tracking-widest text-white"
-                    style={{
-                      background: "#d32f2f",
-                      border: "2px solid #0d0d0d",
-                      fontFamily: "var(--font-display)",
-                    }}
+                    key={i}
+                    className="absolute top-4 left-4 px-3 py-1 text-xs font-black uppercase tracking-widest text-white bg-[#d32f2f] border-2 border-[#0d0d0d]"
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
                     {tag}
                   </span>
@@ -233,47 +202,30 @@ function LandingPage() {
               </div>
               <div className="p-6">
                 <h3
-                  className="mb-3 font-black text-xl"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#0d0d0d",
-                  }}
+                  className="mb-3 font-black text-xl text-[#0d0d0d] dark:text-white"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {blogViewst?.title}
                 </h3>
-                <p
-                  className="mb-4 text-sm leading-relaxed"
-                  style={{ color: "#666" }}
-                >
+                <p className="mb-4 text-sm leading-relaxed text-[#666] dark:text-zinc-400">
                   {blogViewst?.summary}
                 </p>
-                <div
-                  className="flex items-center justify-between"
-                  style={{ borderTop: "2px solid #0d0d0d", paddingTop: "16px" }}
-                >
+                <div className="flex items-center justify-between border-t-2 border-[#0d0d0d] dark:border-zinc-600 pt-4">
                   <div className="flex items-center gap-2">
                     <img
                       src={
                         blogViewst?.author?.avatarUrl ||
-                        `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          blogViewst?.author?.fullName || "User",
-                        )}&background=d32f2f&color=fff`
+                        `https://ui-avatars.com/api/?name=${encodeURIComponent(blogViewst?.author?.fullName || "User")}&background=d32f2f&color=fff`
                       }
                       alt="author"
-                      className="w-8 h-8"
-                      style={{ border: "2px solid #0d0d0d" }}
+                      className="w-8 h-8 border-2 border-[#0d0d0d] dark:border-zinc-600"
                     />
-                    <div>
-                      <p
-                        className="text-xs font-bold"
-                        style={{ fontFamily: "var(--font-display)" }}
-                      >
-                        {blogViewst?.author?.fullName}
-                      </p>
-                      {/* <p className="text-xs" style={{ color: "#888" }}>
-                        8 min read
-                      </p> */}
-                    </div>
+                    <p
+                      className="text-xs font-bold text-[#0d0d0d] dark:text-zinc-200"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      {blogViewst?.author?.fullName}
+                    </p>
                   </div>
                   <Link to={`/blog/${blogViewst?.blogId || ""}`}>
                     <button
@@ -290,24 +242,17 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* ── FEATURED BLOGS ──────────────────────────────── */}
-      <section
-        className="py-16"
-        style={{
-          background: "white",
-          borderTop: "3px solid #0d0d0d",
-          borderBottom: "3px solid #0d0d0d",
-        }}
-      >
+      {/* ── FEATURED BLOGS ── */}
+      <section className="py-16 bg-white dark:bg-zinc-900 border-y-[3px] border-[#0d0d0d] dark:border-zinc-700">
         <div className="max-w-340 mx-auto px-6">
           <div className="flex items-center gap-4 mb-10">
             <h2
-              className="text-3xl font-black"
-              style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+              className="text-3xl font-black text-[#0d0d0d] dark:text-white"
+              style={{ fontFamily: "var(--font-display)" }}
             >
               Featured Stories
             </h2>
-            <div className="flex-1 h-0.75 bg-[#0d0d0d]" />
+            <div className="flex-1 h-0.75 bg-[#0d0d0d] dark:bg-zinc-600" />
             <Link
               to="/explore"
               className="brutal-btn-secondary text-xs"
@@ -321,12 +266,9 @@ function LandingPage() {
               <Link
                 to={`/blog/${blog.blogId}`}
                 key={blog.blogId}
-                className="brutal-card overflow-hidden block"
+                className="bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] overflow-hidden block group transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_0_#0d0d0d] dark:hover:shadow-[8px_8px_0_#52525b]"
               >
-                <div
-                  className="relative overflow-hidden"
-                  style={{ height: "200px" }}
-                >
+                <div className="relative overflow-hidden h-[200px]">
                   <img
                     src={blog?.coverImageUrl}
                     alt={blog?.title}
@@ -335,12 +277,8 @@ function LandingPage() {
                   {blog?.tags?.map((tag) => (
                     <span
                       key={tag}
-                      className="absolute top-3 left-3 px-2 py-1 text-xs font-black uppercase tracking-widest text-white"
-                      style={{
-                        background: "#d32f2f",
-                        border: "2px solid #0d0d0d",
-                        fontFamily: "var(--font-display)",
-                      }}
+                      className="absolute top-3 left-3 px-2 py-1 text-xs font-black uppercase tracking-widest text-white bg-[#d32f2f] border-2 border-[#0d0d0d]"
+                      style={{ fontFamily: "var(--font-display)" }}
                     >
                       {tag}
                     </span>
@@ -348,42 +286,23 @@ function LandingPage() {
                 </div>
                 <div className="p-5">
                   <h3
-                    className="mb-2 font-black text-lg leading-tight"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      color: "#0d0d0d",
-                    }}
+                    className="mb-2 font-black text-lg leading-tight text-[#0d0d0d] dark:text-white"
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
                     {blog?.title}
                   </h3>
-                  {/* <p
-                    className="mb-4 text-sm leading-relaxed"
-                    style={{ color: "#666" }}
-                  >
-                    {blog.excerpt}
-                  </p> */}
-                  <div
-                    className="flex items-center gap-2"
-                    style={{
-                      borderTop: "2px solid #0d0d0d",
-                      paddingTop: "12px",
-                    }}
-                  >
+                  <div className="flex items-center gap-2 border-t-2 border-[#0d0d0d] dark:border-zinc-600 pt-3">
                     <img
                       src={blog?.author?.avatarUrl}
-                      alt={blog?.author?.avatarUrl}
-                      className="w-7 h-7"
-                      style={{ border: "2px solid #0d0d0d" }}
+                      alt={blog?.author?.fullName}
+                      className="w-7 h-7 border-2 border-[#0d0d0d] dark:border-zinc-600"
                     />
                     <span
-                      className="text-xs font-bold"
+                      className="text-xs font-bold text-[#0d0d0d] dark:text-zinc-300"
                       style={{ fontFamily: "var(--font-display)" }}
                     >
                       {blog?.author?.fullName}
                     </span>
-                    {/* <span className="ml-auto text-xs" style={{ color: "#888" }}>
-                      {blog.readTime} min
-                    </span> */}
                   </div>
                 </div>
               </Link>
@@ -392,11 +311,11 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* ── CATEGORIES ──────────────────────────────────── */}
+      {/* ── CATEGORIES ── */}
       <section className="py-16 max-w-340 mx-auto px-6">
         <h2
-          className="text-3xl font-black mb-8 text-center"
-          style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+          className="text-3xl font-black mb-8 text-center text-[#0d0d0d] dark:text-white"
+          style={{ fontFamily: "var(--font-display)" }}
         >
           Explore by Topic
         </h2>
@@ -416,44 +335,32 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* ── WHY PLATFORM ────────────────────────────────── */}
+      {/* ── WHY BLOGAI ── */}
       <section
         id="features"
-        className="py-16"
-        style={{ background: "#0d0d0d", borderTop: "3px solid #0d0d0d" }}
+        className="py-16 bg-[#0d0d0d] dark:bg-zinc-900 border-t-[3px] border-[#0d0d0d] dark:border-zinc-700"
       >
         <div className="max-w-340 mx-auto px-6">
           <h2
-            className="text-3xl font-black mb-12 text-center"
-            style={{ fontFamily: "var(--font-display)", color: "white" }}
+            className="text-3xl font-black mb-12 text-center text-white"
+            style={{ fontFamily: "var(--font-display)" }}
           >
-            Why <span style={{ color: "#d32f2f" }}>BlogAI?</span>
+            Why <span className="text-[#d32f2f]">BlogAI?</span>
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
             {benefits.map((b) => (
               <div
                 key={b.title}
-                className="p-8"
-                style={{
-                  background: "#ebf4f5",
-                  border: "3px solid #d32f2f",
-                  boxShadow: "6px 6px 0 #d32f2f",
-                }}
+                className="p-8 bg-[#ebf4f5] dark:bg-zinc-800 border-[3px] border-[#d32f2f] shadow-[6px_6px_0_#d32f2f]"
               >
                 <div className="mb-4">{b.icon}</div>
                 <h3
-                  className="text-xl font-black mb-3"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#0d0d0d",
-                  }}
+                  className="text-xl font-black mb-3 text-[#0d0d0d] dark:text-white"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {b.title}
                 </h3>
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: "#555" }}
-                >
+                <p className="text-sm leading-relaxed text-[#555] dark:text-zinc-400">
                   {b.desc}
                 </p>
               </div>
@@ -462,54 +369,36 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ────────────────────────────────── */}
+      {/* ── HOW IT WORKS ── */}
       <section className="py-16 max-w-340 mx-auto px-6">
         <h2
-          className="text-3xl font-black mb-12 text-center"
-          style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+          className="text-3xl font-black mb-12 text-center text-[#0d0d0d] dark:text-white"
+          style={{ fontFamily: "var(--font-display)" }}
         >
           How It Works
         </h2>
         <div className="grid md:grid-cols-3 gap-6">
           {steps.map((step, i) => (
             <div key={step.num} className="relative">
-              <div
-                className="p-8 bg-white"
-                style={{
-                  border: "3px solid #0d0d0d",
-                  boxShadow: "4px 4px 0 #0d0d0d",
-                }}
-              >
+              <div className="p-8 bg-white dark:bg-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
                 <span
-                  className="inline-block mb-4 text-4xl font-black"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#d32f2f",
-                  }}
+                  className="inline-block mb-4 text-4xl font-black text-[#d32f2f]"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {step.num}
                 </span>
                 <h3
-                  className="text-xl font-black mb-3"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#0d0d0d",
-                  }}
+                  className="text-xl font-black mb-3 text-[#0d0d0d] dark:text-white"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   {step.title}
                 </h3>
-                <p
-                  className="text-sm leading-relaxed"
-                  style={{ color: "#666" }}
-                >
+                <p className="text-sm leading-relaxed text-[#666] dark:text-zinc-400">
                   {step.desc}
                 </p>
               </div>
               {i < 2 && (
-                <div
-                  className="hidden md:block absolute top-1/2 -right-3 text-2xl font-black z-10"
-                  style={{ color: "#d32f2f", transform: "translateY(-50%)" }}
-                >
+                <div className="hidden md:block absolute top-1/2 -right-3 text-2xl font-black z-10 text-[#d32f2f] -translate-y-1/2">
                   →
                 </div>
               )}
@@ -518,48 +407,33 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* ── SOCIAL PROOF ────────────────────────────────── */}
-      <section
-        className="py-16"
-        style={{
-          background: "#ebf4f5",
-          borderTop: "3px solid #0d0d0d",
-          borderBottom: "3px solid #0d0d0d",
-        }}
-      >
+      {/* ── SOCIAL PROOF ── */}
+      <section className="py-16 bg-[#ebf4f5] dark:bg-zinc-900 border-y-[3px] border-[#0d0d0d] dark:border-zinc-700">
         <div className="max-w-340 mx-auto px-6">
           <div className="text-center mb-12">
             <p
-              className="font-black mb-4"
+              className="font-black mb-4 text-[#0d0d0d] dark:text-white"
               style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "clamp(36px, 5vw, 64px)",
-                color: "#0d0d0d",
               }}
             >
-              Join <span style={{ color: "#d32f2f" }}>10,000+</span> Writers
+              Join <span className="text-[#d32f2f]">10,000+</span> Writers
             </p>
             <div className="flex justify-center -space-x-2 mb-3">
               {[
-                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&crop=face",
-                "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&crop=face",
-                "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face",
-                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face",
+                ...AVATARS,
                 "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&crop=face",
               ].map((src, i) => (
                 <img
                   key={i}
                   src={src}
                   alt="writer"
-                  className="w-11 h-11 object-cover"
-                  style={{ border: "3px solid #0d0d0d" }}
+                  className="w-11 h-11 object-cover border-[3px] border-[#0d0d0d] dark:border-zinc-600"
                 />
               ))}
             </div>
-            <p
-              className="text-sm"
-              style={{ color: "#888", fontFamily: "var(--font-sans)" }}
-            >
+            <p className="text-sm text-[#888] dark:text-zinc-500">
               Real writers. Real stories. Real growth.
             </p>
           </div>
@@ -567,36 +441,25 @@ function LandingPage() {
             {testimonials.map((t) => (
               <div
                 key={t.name}
-                className="bg-white p-6"
-                style={{
-                  border: "3px solid #0d0d0d",
-                  boxShadow: "4px 4px 0 #0d0d0d",
-                }}
+                className="bg-white dark:bg-zinc-800 p-6 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]"
               >
-                <p
-                  className="mb-4 italic text-base leading-relaxed"
-                  style={{ color: "#333", fontFamily: "var(--font-sans)" }}
-                >
+                <p className="mb-4 italic text-base leading-relaxed text-[#333] dark:text-zinc-300">
                   "{t.quote}"
                 </p>
                 <div className="flex items-center gap-3">
                   <img
                     src={t.avatar}
                     alt={t.name}
-                    className="w-10 h-10"
-                    style={{ border: "2px solid #0d0d0d" }}
+                    className="w-10 h-10 border-2 border-[#0d0d0d] dark:border-zinc-600"
                   />
                   <div>
                     <p
-                      className="font-black text-sm"
-                      style={{
-                        fontFamily: "var(--font-display)",
-                        color: "#0d0d0d",
-                      }}
+                      className="font-black text-sm text-[#0d0d0d] dark:text-white"
+                      style={{ fontFamily: "var(--font-display)" }}
                     >
                       {t.name}
                     </p>
-                    <p className="text-xs" style={{ color: "#888" }}>
+                    <p className="text-xs text-[#888] dark:text-zinc-500">
                       {t.role}
                     </p>
                   </div>
@@ -607,19 +470,14 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* ── FINAL CTA ────────────────────────────────────── */}
-      <section
-        className="py-20 text-center"
-        style={{ background: "#d32f2f", borderBottom: "3px solid #0d0d0d" }}
-      >
+      {/* ── FINAL CTA ── */}
+      <section className="py-20 text-center bg-[#d32f2f] border-b-[3px] border-[#0d0d0d]">
         <div className="max-w-340 mx-auto px-6">
           <h2
-            className="font-black mb-6"
+            className="font-black mb-6 text-white leading-[1.1]"
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "clamp(36px, 5vw, 64px)",
-              color: "white",
-              lineHeight: 1.1,
             }}
           >
             Start Your Writing
@@ -632,29 +490,11 @@ function LandingPage() {
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/register">
               <button
-                className="font-black uppercase tracking-wider"
+                className="font-black uppercase tracking-wider bg-white text-[#d32f2f] border-[3px] border-[#0d0d0d] shadow-[6px_6px_0_#0d0d0d] cursor-pointer transition-all hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[9px_9px_0_#0d0d0d]"
                 style={{
-                  background: "white",
-                  color: "#d32f2f",
-                  border: "3px solid #0d0d0d",
-                  boxShadow: "6px 6px 0 #0d0d0d",
                   padding: "18px 48px",
                   fontFamily: "var(--font-display)",
                   fontSize: "1.1rem",
-                  cursor: "pointer",
-                  transition: "transform 0.15s, box-shadow 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.target as HTMLButtonElement).style.transform =
-                    "translate(-3px,-3px)";
-                  (e.target as HTMLButtonElement).style.boxShadow =
-                    "9px 9px 0 #0d0d0d";
-                }}
-                onMouseLeave={(e) => {
-                  (e.target as HTMLButtonElement).style.transform =
-                    "translate(0,0)";
-                  (e.target as HTMLButtonElement).style.boxShadow =
-                    "6px 6px 0 #0d0d0d";
                 }}
               >
                 🚀 Create Your Free Account
@@ -662,16 +502,11 @@ function LandingPage() {
             </Link>
             <Link to="/explore">
               <button
-                className="font-black uppercase tracking-wider"
+                className="font-black uppercase tracking-wider bg-transparent text-white border-[3px] border-white shadow-[4px_4px_0_rgba(0,0,0,0.3)] cursor-pointer"
                 style={{
-                  background: "transparent",
-                  color: "white",
-                  border: "3px solid white",
-                  boxShadow: "4px 4px 0 rgba(0,0,0,0.3)",
                   padding: "18px 48px",
                   fontFamily: "var(--font-display)",
                   fontSize: "1.1rem",
-                  cursor: "pointer",
                 }}
               >
                 Browse Stories

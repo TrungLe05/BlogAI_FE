@@ -14,17 +14,20 @@ function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-[#ebf4f5]" style={{ borderBottom: "3px solid #0d0d0d" }}>
+    <header
+      className="sticky top-0 z-50 bg-[#ebf4f5] dark:bg-zinc-900 border-b-[3px] border-[#0d0d0d] dark:border-zinc-600"
+    >
       <div className="max-w-340 mx-auto px-6 h-16 flex items-center justify-between gap-6">
         {/* Logo */}
         <Link to="/" className="shrink-0">
           <span
+          className="font-bold text-[#0d0d0d] tracking-[0.05em] dark:text-zinc-100"
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "clamp(22px, 3vw, 28px)",
-              fontWeight: 700,
-              color: "#0d0d0d",
-              letterSpacing: "0.05em",
+              // fontWeight: 700,
+              // color: "#0d0d0d",
+              // letterSpacing: "0.05em",
             }}
           >
             Blog<span style={{ color: "#d32f2f" }}>AI</span>
@@ -37,7 +40,7 @@ function Header() {
             <Link
               key={item.label}
               to={item.href}
-              className="px-5 py-4 font-bold text-sm uppercase tracking-wider hover:bg-[#0d0d0d] hover:text-white transition-colors"
+              className=" px-5 py-4 dark:text-white font-bold text-sm uppercase tracking-wider hover:bg-[#0d0d0d] hover:text-white transition-colors"
               style={{ fontFamily: "var(--font-display)" }}
             >
               {item.label}
@@ -59,7 +62,7 @@ function Header() {
             className="p-2 hover:bg-[#0d0d0d] hover:text-white transition-colors"
             onClick={() => setSearchOpen(!isSearchOpen)}
           >
-            <Search size={18} />
+            <Search size={18} className="dark:text-white"/>
           </button>
           <button
             className="brutal-btn-red text-sm"
@@ -73,7 +76,7 @@ function Header() {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="lg:hidden p-2"
+          className="lg:hidden p-2 dark:text-white"
           onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="toggle menu"
         >
@@ -84,17 +87,15 @@ function Header() {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden bg-white"
-          style={{ borderTop: "2px solid #0d0d0d" }}
+          className="lg:hidden bg-white dark:bg-black border-t-2 border-[#0d0d0d] dark:border-zinc-600"
         >
           {navItems.map((item) => (
             <Link
               key={item.label}
               to={item.href}
-              className="block px-6 py-4 font-bold text-sm uppercase tracking-wider hover:bg-[#0d0d0d] hover:text-white transition-colors"
+              className="border-b-2 border-[#0d0d0d] dark:text-white hover:dark:bg-zinc-400 dark:border-zinc-600 block px-6 py-4 font-bold text-sm uppercase tracking-wider hover:bg-[#0d0d0d] hover:text-white transition-colors"
               style={{
                 fontFamily: "var(--font-display)",
-                borderBottom: "1px solid #0d0d0d",
               }}
               onClick={() => setMobileMenuOpen(false)}
             >

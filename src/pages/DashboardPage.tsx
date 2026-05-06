@@ -46,7 +46,7 @@ import { SettingsContent } from "@/components/dashboard/settings";
 type ActiveView = "write" | "stats" | "profile" | "settings";
 
 // ─────────────────────────────────────────────────────────────────
-// AI PANELS (unchanged)
+// AI PANELS
 // ─────────────────────────────────────────────────────────────────
 async function generateTitlesFromAI(content: string): Promise<string[]> {
   const { data } = await blogApi.generateTitles(content);
@@ -64,6 +64,7 @@ function AISummaryPanel({
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const hasContent = content.trim().split(/\s+/).filter(Boolean).length >= 10;
+
   const handleGenerate = async () => {
     if (!hasContent) return;
     setIsLoading(true);
@@ -76,21 +77,13 @@ function AISummaryPanel({
       setIsLoading(false);
     }
   };
+
   return (
-    <div
-      className="mb-8"
-      style={{
-        border: "3px solid #0d0d0d",
-        boxShadow: "4px 4px 0 #0d0d0d",
-        background: "white",
-      }}
-    >
-      <div
-        className="flex items-center justify-between px-6 py-4"
-        style={{ background: "#0d0d0d" }}
-      >
+    <div className="mb-8 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] bg-white dark:bg-[#1a1d26]">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 bg-[#0d0d0d] dark:bg-[#070809]">
         <div className="flex items-center gap-3">
-          <Sparkles size={16} color="#d32f2f" />
+          <Sparkles size={16} className="text-[#d32f2f]" />
           <span
             className="font-black text-xs uppercase tracking-[0.15em] text-white"
             style={{ fontFamily: "var(--font-display)" }}
@@ -98,12 +91,8 @@ function AISummaryPanel({
             AI Summary
           </span>
           <span
-            className="px-2 py-0.5 text-xs font-black uppercase tracking-widest"
-            style={{
-              background: "#d32f2f",
-              color: "white",
-              fontFamily: "var(--font-display)",
-            }}
+            className="px-2 py-0.5 text-xs font-black uppercase tracking-widest bg-[#d32f2f] text-white"
+            style={{ fontFamily: "var(--font-display)" }}
           >
             BETA
           </span>
@@ -111,15 +100,9 @@ function AISummaryPanel({
         <button
           onClick={handleGenerate}
           disabled={!hasContent || isLoading}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest"
-          style={{
-            fontFamily: "var(--font-display)",
-            background: hasContent && !isLoading ? "#d32f2f" : "#555",
-            color: "white",
-            border: "3px solid white",
-            cursor: hasContent && !isLoading ? "pointer" : "not-allowed",
-            opacity: !hasContent ? 0.5 : 1,
-          }}
+          className={`flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest text-white border-[3px] border-white transition-opacity
+            ${hasContent && !isLoading ? "bg-[#d32f2f] cursor-pointer" : "bg-[#555] cursor-not-allowed opacity-50"}`}
+          style={{ fontFamily: "var(--font-display)" }}
         >
           {isLoading ? (
             <>
@@ -136,10 +119,12 @@ function AISummaryPanel({
           )}
         </button>
       </div>
+
+      {/* Body */}
       <div className="p-5">
         <p
-          className="text-xs font-black uppercase tracking-[0.15em] mb-3"
-          style={{ fontFamily: "var(--font-display)", color: "#8f6f6c" }}
+          className="text-xs font-black uppercase tracking-[0.15em] mb-3 text-[#8f6f6c] dark:text-slate-400"
+          style={{ fontFamily: "var(--font-display)" }}
         >
           {summary
             ? "AI generated — edit freely ↓"
@@ -150,16 +135,12 @@ function AISummaryPanel({
           onChange={(e) => onSummaryChange(e.target.value)}
           placeholder="Write a short summary to hook your readers..."
           rows={3}
-          className="w-full p-4 text-sm outline-none resize-none"
-          style={{
-            border: `3px solid ${summary.length > 200 ? "#d32f2f" : "#0d0d0d"}`,
-            fontFamily: "var(--font-sans)",
-            background: "#f2fbfc",
-          }}
+          className={`w-full p-4 text-sm outline-none resize-none bg-[#f2fbfc] dark:bg-[#151820] text-[#151d1e] dark:text-slate-200
+            border-[3px] ${summary.length > 200 ? "border-[#d32f2f]" : "border-[#0d0d0d] dark:border-[#2d3148]"}`}
+          style={{ fontFamily: "var(--font-sans)" }}
         />
         <p
-          className="text-xs mt-1 text-right"
-          style={{ color: summary.length > 200 ? "#d32f2f" : "#8f6f6c" }}
+          className={`text-xs mt-1 text-right ${summary.length > 200 ? "text-[#d32f2f]" : "text-[#8f6f6c] dark:text-slate-400"}`}
         >
           {summary.length}/200
         </p>
@@ -181,6 +162,7 @@ function AITitlePanel({
   const [applied, setApplied] = useState<string | null>(null);
   const [dots, setDots] = useState("");
   const hasContent = content.trim().split(/\s+/).filter(Boolean).length >= 10;
+
   const handleGenerate = async () => {
     if (!hasContent) return;
     setIsLoading(true);
@@ -203,29 +185,22 @@ function AITitlePanel({
       setDots("");
     }
   };
+
   const handleApply = (t: string) => {
     onApply(t);
     setApplied(t);
   };
+
   return (
-    <div
-      className="mb-8"
-      style={{
-        border: "3px solid #0d0d0d",
-        boxShadow: "4px 4px 0 #d32f2f",
-        background: "white",
-      }}
-    >
+    <div className="mb-8 border-[3px] border-[#0d0d0d] dark:border-[#2d3148] shadow-[4px_4px_0_#d32f2f] bg-white dark:bg-[#1a1d26]">
+      {/* Header */}
       <div
-        className="flex items-center justify-between px-6 py-4 cursor-pointer select-none"
-        style={{
-          background: "#0d0d0d",
-          borderBottom: isOpen ? "3px solid #0d0d0d" : "none",
-        }}
+        className={`flex items-center justify-between px-6 py-4 cursor-pointer select-none bg-[#0d0d0d] dark:bg-[#070809]
+          ${isOpen ? "border-b-[3px] border-b-[#0d0d0d] dark:border-b-[#2d3148]" : ""}`}
         onClick={() => isOpen && !isLoading && setIsOpen(false)}
       >
         <div className="flex items-center gap-3">
-          <Sparkles size={16} color="#d32f2f" />
+          <Sparkles size={16} className="text-[#d32f2f]" />
           <span
             className="font-black text-xs uppercase tracking-[0.15em] text-white"
             style={{ fontFamily: "var(--font-display)" }}
@@ -233,12 +208,8 @@ function AITitlePanel({
             AI Title Generator
           </span>
           <span
-            className="px-2 py-0.5 text-xs font-black uppercase tracking-widest"
-            style={{
-              background: "#d32f2f",
-              color: "white",
-              fontFamily: "var(--font-display)",
-            }}
+            className="px-2 py-0.5 text-xs font-black uppercase tracking-widest bg-[#d32f2f] text-white"
+            style={{ fontFamily: "var(--font-display)" }}
           >
             BETA
           </span>
@@ -258,15 +229,9 @@ function AITitlePanel({
               handleGenerate();
             }}
             disabled={!hasContent || isLoading}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
-            style={{
-              fontFamily: "var(--font-display)",
-              background: hasContent && !isLoading ? "#d32f2f" : "#555",
-              color: "white",
-              border: "3px solid white",
-              cursor: hasContent && !isLoading ? "pointer" : "not-allowed",
-              opacity: !hasContent ? 0.5 : 1,
-            }}
+            className={`flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest text-white border-[3px] border-white transition-all
+              ${hasContent && !isLoading ? "bg-[#d32f2f] cursor-pointer" : "bg-[#555] cursor-not-allowed opacity-50"}`}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             {isLoading ? (
               <>
@@ -290,7 +255,7 @@ function AITitlePanel({
                 setIsOpen(false);
               }}
             >
-              <ChevronUp size={16} color="white" />
+              <ChevronUp size={16} className="text-white" />
             </button>
           )}
           {!isOpen && suggestions.length > 0 && (
@@ -300,39 +265,36 @@ function AITitlePanel({
                 setIsOpen(true);
               }}
             >
-              <ChevronDown size={16} color="white" />
+              <ChevronDown size={16} className="text-white" />
             </button>
           )}
         </div>
       </div>
+
+      {/* Body */}
       {isOpen && (
         <div className="p-5">
           {isLoading ? (
             <div className="space-y-3">
               <p
-                className="text-xs font-black uppercase tracking-[0.15em] mb-3 flex items-center gap-2"
-                style={{ fontFamily: "var(--font-display)", color: "#d32f2f" }}
+                className="text-xs font-black uppercase tracking-[0.15em] mb-3 flex items-center gap-2 text-[#d32f2f]"
+                style={{ fontFamily: "var(--font-display)" }}
               >
-                <Sparkles size={12} className="animate-pulse" />
-                Analysing{dots}
+                <Sparkles size={12} className="animate-pulse" /> Analysing{dots}
               </p>
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="animate-pulse"
-                  style={{
-                    height: "48px",
-                    background: `rgba(211,47,47,${0.04 * i + 0.04})`,
-                    border: "3px solid #e7f0f1",
-                  }}
+                  className="animate-pulse h-12 border-[3px] border-[#e7f0f1] dark:border-[#2d3148]"
+                  style={{ background: `rgba(211,47,47,${0.04 * i + 0.04})` }}
                 />
               ))}
             </div>
           ) : suggestions.length > 0 ? (
             <div>
               <p
-                className="text-xs font-black uppercase tracking-[0.15em] mb-4"
-                style={{ fontFamily: "var(--font-display)", color: "#8f6f6c" }}
+                className="text-xs font-black uppercase tracking-[0.15em] mb-4 text-[#8f6f6c] dark:text-slate-400"
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 Click to apply ↓
               </p>
@@ -343,45 +305,24 @@ function AITitlePanel({
                     <button
                       key={i}
                       onClick={() => handleApply(s)}
-                      className="w-full text-left flex items-start justify-between gap-3 transition-all group cursor-pointer"
-                      style={{
-                        padding: "12px 16px",
-                        border: `3px solid ${isApplied ? "#d32f2f" : "#0d0d0d"}`,
-                        background: isApplied ? "#d32f2f" : "white",
-                        boxShadow: isApplied ? "4px 4px 0 #0d0d0d" : "none",
-                        transform: isApplied ? "translate(-4px,-4px)" : "none",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isApplied) {
-                          e.currentTarget.style.transform =
-                            "translate(-4px,-4px)";
-                          e.currentTarget.style.boxShadow = "4px 4px 0 #d32f2f";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isApplied) {
-                          e.currentTarget.style.transform = "translate(0,0)";
-                          e.currentTarget.style.boxShadow = "none";
-                        }
-                      }}
+                      className={`w-full text-left flex items-start justify-between gap-3 transition-all group cursor-pointer p-3 border-[3px]
+                        ${
+                          isApplied
+                            ? "bg-[#d32f2f] border-[#d32f2f] shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#2d3148] -translate-x-1 -translate-y-1"
+                            : "bg-white dark:bg-[#1a1d26] border-[#0d0d0d] dark:border-[#2d3148] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_#d32f2f]"
+                        }`}
                     >
                       <div className="flex items-start gap-3 flex-1">
                         <span
-                          className="shrink-0 w-6 h-6 flex items-center justify-center text-xs font-black"
-                          style={{
-                            fontFamily: "var(--font-display)",
-                            background: isApplied ? "white" : "#0d0d0d",
-                            color: isApplied ? "#d32f2f" : "white",
-                          }}
+                          className={`shrink-0 w-6 h-6 flex items-center justify-center text-xs font-black
+                          ${isApplied ? "bg-white text-[#d32f2f]" : "bg-[#0d0d0d] dark:bg-[#2d3148] text-white"}`}
+                          style={{ fontFamily: "var(--font-display)" }}
                         >
                           {i + 1}
                         </span>
                         <span
-                          className="text-sm font-bold leading-snug"
-                          style={{
-                            fontFamily: "var(--font-display)",
-                            color: isApplied ? "white" : "#151d1e",
-                          }}
+                          className={`text-sm font-bold leading-snug ${isApplied ? "text-white" : "text-[#151d1e] dark:text-slate-200"}`}
+                          style={{ fontFamily: "var(--font-display)" }}
                         >
                           {s}
                         </span>
@@ -389,16 +330,12 @@ function AITitlePanel({
                       {isApplied ? (
                         <CheckCheck
                           size={15}
-                          color="white"
-                          className="shrink-0 mt-0.5"
+                          className="text-white shrink-0 mt-0.5"
                         />
                       ) : (
                         <span
-                          className="text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 shrink-0"
-                          style={{
-                            fontFamily: "var(--font-display)",
-                            color: "#d32f2f",
-                          }}
+                          className="text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 shrink-0 text-[#d32f2f]"
+                          style={{ fontFamily: "var(--font-display)" }}
                         >
                           Apply
                         </span>
@@ -416,7 +353,7 @@ function AITitlePanel({
 }
 
 // ─────────────────────────────────────────────────────────────────
-// WRITE VIEW (unchanged logic)
+// WRITE VIEW
 // ─────────────────────────────────────────────────────────────────
 type WriteViewProps = {
   title: string;
@@ -463,9 +400,11 @@ function WriteView({
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
   const wordCount = content.split(/\s+/).filter(Boolean).length;
+
   useEffect(() => {
     setCoverImagePreview(coverImageUrl || null);
   }, [coverImageUrl]);
+
   const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (f) {
@@ -473,18 +412,22 @@ function WriteView({
       setCoverImageFile(f);
     }
   };
+
   const handleRemoveCover = () => {
     setCoverImagePreview(null);
     setCoverImageFile(null);
     onRemoveCover();
   };
+
   const removeTag = (t: string) => setTags(tags.filter((tag) => tag !== t));
+
   useEffect(() => {
     blogApi
       .getAllTag()
       .then(({ data }) => setTagsData(data.result))
       .catch(console.error);
   }, []);
+
   const groupedTags = tagsData?.reduce(
     (acc, item) => {
       if (!acc[item.groupName]) acc[item.groupName] = [];
@@ -495,22 +438,20 @@ function WriteView({
   );
 
   return (
-    <div className="flex flex-col h-full">
-      <div
-        className="flex bg-white shrink-0"
-        style={{ borderBottom: "3px solid #0d0d0d" }}
-      >
+    <div className="flex flex-col h-full ">
+      {/* Tab bar */}
+      <div className="flex bg-white dark:bg-[#111318] shrink-0 border-b-[3px] border-[#0d0d0d] dark:border-[#2d3148]">
         {(["write", "preview"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className="px-8 py-3.5 text-xs font-black uppercase tracking-[0.15em] transition-colors cursor-pointer"
-            style={{
-              fontFamily: "var(--font-display)",
-              background: activeTab === tab ? "#0d0d0d" : "transparent",
-              color: activeTab === tab ? "white" : "#5b403d",
-              borderRight: "3px solid #0d0d0d",
-            }}
+            className={`px-8 py-3.5 text-xs font-black uppercase tracking-[0.15em] transition-colors cursor-pointer border-r-[3px] border-[#0d0d0d] dark:border-[#2d3148]
+              ${
+                activeTab === tab
+                  ? "bg-[#0d0d0d] dark:bg-[#2d3148] text-white"
+                  : "bg-transparent text-[#5b403d] dark:text-slate-400 hover:bg-[#f2fbfc] dark:hover:bg-[#1a1d26]"
+              }`}
+            style={{ fontFamily: "var(--font-display)" }}
           >
             {tab === "write" ? (
               <span className="flex items-center gap-2">
@@ -524,7 +465,9 @@ function WriteView({
           </button>
         ))}
       </div>
-      <div className="flex-1 overflow-auto" style={{ background: "#f2fbfc" }}>
+
+      {/* Content */}
+      <div className="flex-1 overflow-auto bg-[#f2fbfc] dark:bg-[#0f1117]">
         {activeTab === "write" && (
           <div className="max-w-250 mx-auto p-8">
             <AITitlePanel content={content} onApply={setTitle} />
@@ -533,42 +476,28 @@ function WriteView({
               summary={summary}
               onSummaryChange={setSummary}
             />
+
+            {/* Tags */}
             <div className="max-w-full mx-auto pb-6">
-              <div
-                className="bg-white p-8"
-                style={{
-                  border: "3px solid #0d0d0d",
-                  boxShadow: "4px 4px 0 #0d0d0d",
-                }}
-              >
+              <div className="bg-white dark:bg-[#1a1d26] p-8 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
                 <h2
-                  className="font-black text-sm uppercase tracking-widest mb-6"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#151d1e",
-                  }}
+                  className="font-black text-sm uppercase tracking-widest mb-6 text-[#151d1e] dark:text-slate-200"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   Post Tags
                 </h2>
                 <div className="mb-5">
                   <label
-                    className="block mb-2 text-xs font-black uppercase tracking-[0.15em]"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      color: "#5b403d",
-                    }}
+                    className="block mb-2 text-xs font-black uppercase tracking-[0.15em] text-[#5b403d] dark:text-slate-400"
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
                     <Tag size={12} className="inline mr-1.5" />
                     Tags (max 5)
                   </label>
                   <div className="flex gap-3 mb-3">
                     <select
-                      className="flex-1 px-4 py-3 text-sm outline-none"
-                      style={{
-                        border: "3px solid #0d0d0d",
-                        background: "#ffffff",
-                        fontFamily: "var(--font-sans)",
-                      }}
+                      className="flex-1 px-4 py-3 text-sm outline-none border-[3px] border-[#0d0d0d] dark:border-[#2d3148] bg-white dark:bg-[#1e2130] text-[#151d1e] dark:text-slate-200"
+                      style={{ fontFamily: "var(--font-sans)" }}
                       value={selectedGroup}
                       onChange={(e) => {
                         setSelectedGroup(e.target.value);
@@ -584,12 +513,8 @@ function WriteView({
                         ))}
                     </select>
                     <select
-                      className="flex-1 px-4 py-3 text-sm outline-none"
-                      style={{
-                        border: "3px solid #0d0d0d",
-                        background: "#ffffff",
-                        fontFamily: "var(--font-sans)",
-                      }}
+                      className="flex-1 px-4 py-3 text-sm outline-none border-[3px] border-[#0d0d0d] dark:border-[#2d3148] bg-white dark:bg-[#1e2130] text-[#151d1e] dark:text-slate-200 disabled:opacity-50"
+                      style={{ fontFamily: "var(--font-sans)" }}
                       disabled={!selectedGroup}
                       value={selectedTagInGroup}
                       onChange={(e) => {
@@ -616,18 +541,13 @@ function WriteView({
                     {tags.map((tag) => (
                       <span
                         key={tag}
-                        className="flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase tracking-widest"
-                        style={{
-                          background: "#0d0d0d",
-                          color: "white",
-                          fontFamily: "var(--font-display)",
-                          border: "3px solid #0d0d0d",
-                        }}
+                        className="flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase tracking-widest bg-[#0d0d0d] dark:bg-[#2d3148] text-white border-[3px] border-[#0d0d0d] dark:border-[#2d3148]"
+                        style={{ fontFamily: "var(--font-display)" }}
                       >
                         {tag}
                         <button
                           onClick={() => removeTag(tag)}
-                          className="ml-1 cursor-pointer"
+                          className="ml-1 cursor-pointer hover:text-[#d32f2f]"
                         >
                           <X size={10} />
                         </button>
@@ -635,11 +555,8 @@ function WriteView({
                     ))}
                     {tags.length >= 5 && (
                       <span
-                        className="text-xs font-black self-center uppercase tracking-widest"
-                        style={{
-                          color: "#d32f2f",
-                          fontFamily: "var(--font-display)",
-                        }}
+                        className="text-xs font-black self-center uppercase tracking-widest text-[#d32f2f]"
+                        style={{ fontFamily: "var(--font-display)" }}
                       >
                         Max 5 tags reached
                       </span>
@@ -648,30 +565,24 @@ function WriteView({
                 </div>
               </div>
             </div>
+
+            {/* Cover image */}
             {!coverImagePreview ? (
               <div
-                className="mb-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white transition-colors"
-                style={{
-                  border: "3px dashed #0d0d0d",
-                  height: "500px",
-                  background: "rgba(255,255,255,0.4)",
-                }}
+                className="mb-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white dark:hover:bg-[#1a1d26] transition-colors border-[3px] border-dashed border-[#0d0d0d] dark:border-[#2d3148] h-125 bg-white/40 dark:bg-[#1a1d26]/40"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload
                   size={32}
-                  style={{ color: "#8f6f6c", marginBottom: "12px" }}
+                  className="text-[#8f6f6c] dark:text-slate-400 mb-3"
                 />
                 <p
-                  className="font-black text-xs uppercase tracking-[0.15em]"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    color: "#8f6f6c",
-                  }}
+                  className="font-black text-xs uppercase tracking-[0.15em] text-[#8f6f6c] dark:text-slate-400"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
                   Click to upload cover image
                 </p>
-                <p className="text-xs mt-2" style={{ color: "#b0a0a0" }}>
+                <p className="text-xs mt-2 text-[#b0a0a0] dark:text-slate-500">
                   Recommended: 1200 × 630px
                 </p>
                 <input
@@ -683,92 +594,59 @@ function WriteView({
                 />
               </div>
             ) : (
-              <div
-                className="mb-6 relative"
-                style={{ border: "3px solid #0d0d0d" }}
-              >
+              <div className="mb-6 relative border-[3px] border-[#0d0d0d] dark:border-[#2d3148]">
                 <img
                   src={coverImagePreview}
                   alt="cover"
-                  className="w-full"
-                  style={{ height: "500px", objectFit: "cover" }}
+                  className="w-full h-125 object-cover"
                 />
                 <button
                   onClick={handleRemoveCover}
-                  className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white transition-all cursor-pointer"
-                  style={{
-                    border: "3px solid #0d0d0d",
-                    boxShadow: "3px 3px 0 #0d0d0d",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#d32f2f";
-                    e.currentTarget.style.color = "white";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "white";
-                    e.currentTarget.style.color = "#0d0d0d";
-                  }}
+                  className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center bg-white dark:bg-[#1a1d26] border-[3px] border-[#0d0d0d] dark:border-[#2d3148] shadow-[3px_3px_0_#0d0d0d] dark:shadow-[3px_3px_0_#2d3148] transition-all cursor-pointer hover:bg-[#d32f2f] hover:text-white"
                 >
                   <X size={14} />
                 </button>
               </div>
             )}
+
             <RichEditor content={content} onChange={setContent} />
+
+            {/* Footer actions */}
             <div className="mt-4 flex justify-between items-center">
               <p
-                className="text-xs font-bold"
-                style={{ color: "#8f6f6c", fontFamily: "var(--font-display)" }}
+                className="text-xs font-bold text-[#8f6f6c] dark:text-slate-400"
+                style={{ fontFamily: "var(--font-display)" }}
               >
                 {wordCount} words · ~{Math.ceil(wordCount / 200)} min read
                 {wordCount >= 10 && (
-                  <span style={{ color: "#d32f2f", marginLeft: "10px" }}>
+                  <span className="text-[#d32f2f] ml-2.5">
                     ✦ AI title ready
                   </span>
                 )}
               </p>
               <div className="flex gap-4">
                 <button
-                  className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    background: "white",
-                    color: "#151d1e",
-                    border: "3px solid #0d0d0d",
-                    boxShadow: "4px 4px 0 #0d0d0d",
-                  }}
+                  className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest 
+                  transition-all cursor-pointer bg-white dark:bg-[#1a1d26] text-[#151d1e] dark:text-slate-200 
+                  border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] 
+                  dark:shadow-[4px_4px_0_#52525b] hover:-translate-x-1 hover:-translate-y-1 
+                  hover:shadow-[8px_8px_0_#0d0d0d] dark:hover:shadow-[8px_8px_0_#52525b] disabled:opacity-50"
+                  style={{ fontFamily: "var(--font-display)" }}
                   onClick={onSaveDraft}
                   disabled={isDraftSaving}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translate(-4px,-4px)";
-                    e.currentTarget.style.boxShadow = "8px 8px 0 #0d0d0d";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translate(0,0)";
-                    e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
-                  }}
                 >
                   <Save size={14} />
                   {isDraftSaving ? "Saving..." : "Save Draft"}
                 </button>
                 <button
-                  className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    background: "#af101a",
-                    color: "white",
-                    border: "3px solid #0d0d0d",
-                    boxShadow: "4px 4px 0 #0d0d0d",
-                  }}
+                  className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest 
+                  transition-all cursor-pointer bg-[#af101a] text-white border-[3px] border-[#0d0d0d] 
+                  dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] hover:-translate-x-1 
+                  hover:-translate-y-1 hover:shadow-[8px_8px_0_#0d0d0d] dark:hover:shadow-[8px_8px_0_#52525b] 
+                  disabled:opacity-50"
+                  style={{ fontFamily: "var(--font-display)" }}
                   onClick={onSavePublish}
                   disabled={isPublishSaving}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translate(-4px,-4px)";
-                    e.currentTarget.style.boxShadow = "8px 8px 0 #0d0d0d";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translate(0,0)";
-                    e.currentTarget.style.boxShadow = "4px 4px 0 #0d0d0d";
-                  }}
                 >
                   <Save size={14} />
                   {isPublishSaving ? "Publishing..." : "Publish"}
@@ -777,20 +655,15 @@ function WriteView({
             </div>
           </div>
         )}
+
+        {/* Preview tab */}
         {activeTab === "preview" && (
           <div className="max-w-200 mx-auto p-8">
-            <div
-              className="bg-white p-10"
-              style={{
-                border: "3px solid #0d0d0d",
-                boxShadow: "4px 4px 0 #0d0d0d",
-              }}
-            >
+            <div className="bg-white dark:bg-[#1a1d26] p-10 border-[3px] border-[#0d0d0d] dark:border-[#2d3148] shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#2d3148]">
               <h1
-                className="text-4xl font-black mb-8"
+                className="text-4xl font-black mb-8 text-[#0d0d0d] dark:text-slate-100"
                 style={{
                   fontFamily: "var(--font-display)",
-                  color: "#0d0d0d",
                   letterSpacing: "-0.02em",
                   lineHeight: 1.1,
                 }}
@@ -798,10 +671,9 @@ function WriteView({
                 {title || "Your Post Title"}
               </h1>
               <h3
-                className="text-2xl font-black mb-8"
+                className="text-2xl font-black mb-8 text-[#0d0d0d] dark:text-slate-200"
                 style={{
                   fontFamily: "var(--font-display)",
-                  color: "#0d0d0d",
                   letterSpacing: "-0.02em",
                   lineHeight: 1.1,
                 }}
@@ -810,11 +682,11 @@ function WriteView({
               </h3>
               {content ? (
                 <div
-                  className="prose-content"
+                  className="prose-content dark:prose-invert"
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
               ) : (
-                <p style={{ color: "#8f6f6c" }}>
+                <p className="text-[#8f6f6c] dark:text-slate-400">
                   Start writing to see your preview here...
                 </p>
               )}
@@ -846,24 +718,15 @@ function SideItem({
     <button
       onClick={onClick}
       title={!expanded ? label : undefined}
-      className="flex items-center w-full transition-all cursor-pointer"
-      style={{
-        gap: expanded ? 12 : 0,
-        padding: expanded ? "13px 18px" : "16px 0",
-        justifyContent: expanded ? "flex-start" : "center",
-        background: active ? "#d32f2f" : "transparent",
-        color: active ? "white" : "#5b403d",
-        borderBottom: "2px solid rgba(0,0,0,0.06)",
-        overflow: "hidden",
-        whiteSpace: "nowrap",
-      }}
+      className={`flex items-center w-full transition-all cursor-pointer border-b-2 border-white/6 overflow-hidden whitespace-nowrap
+        ${active ? "bg-[#d32f2f] text-white" : "bg-transparent text-[#5b403d] dark:text-slate-400 hover:bg-white/5"}
+        ${expanded ? "gap-3 px-4.5 py-3.25 justify-start" : "gap-0 px-0 py-4 justify-center"}`}
     >
-      <span style={{ flexShrink: 0 }}>{icon}</span>
+      <span className="shrink-0">{icon}</span>
       <span
-        className="font-black uppercase tracking-[0.12em] transition-all"
+        className="font-black uppercase tracking-[0.12em] transition-all text-[0.7rem]"
         style={{
           fontFamily: "var(--font-display)",
-          fontSize: "0.7rem",
           opacity: expanded ? 1 : 0,
           maxWidth: expanded ? 120 : 0,
           transition: "opacity 0.2s, max-width 0.25s",
@@ -1088,26 +951,18 @@ function DashboardPage() {
 
   return (
     <div
-      style={{
-        background: "#f2fbfc",
-        fontFamily: "var(--font-sans)",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
+      className="bg-[#f2fbfc] dark:bg-[#0f1117] h-screen flex flex-col"
+      style={{ fontFamily: "var(--font-sans)" }}
     >
-      {/* TOP BAR */}
-      <div
-        className="shrink-0 flex items-center justify-between px-8 h-14 bg-white"
-        style={{ borderBottom: "3px solid #0d0d0d", zIndex: 50 }}
-      >
+      {/* ── TOP BAR ── */}
+      <div className="shrink-0 flex items-center justify-between px-8 h-14 bg-white dark:bg-[#111318] border-b-[3px] border-[#0d0d0d] dark:border-[#2d3148] z-50">
         <div className="flex items-center">
           <Link to="/">
             <span
-              className="text-xl font-black"
-              style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+              className="text-xl font-black text-[#0d0d0d] dark:text-white"
+              style={{ fontFamily: "var(--font-display)" }}
             >
-              Blog<span style={{ color: "#d32f2f" }}>AI</span>
+              Blog<span className="text-[#d32f2f]">AI</span>
             </span>
           </Link>
           {activeView === "write" && (
@@ -1116,20 +971,14 @@ function DashboardPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Your story begins here..."
-              className="flex-1 mx-8 pr-6 text-base font-bold bg-transparent outline-none"
-              style={{
-                fontFamily: "var(--font-display)",
-                color: "#151d1e",
-                borderBottom: "3px solid #0d0d0d",
-                paddingBottom: "4px",
-                minWidth: "300px",
-              }}
+              className="flex-1 mx-8 pr-6 text-base font-bold bg-transparent outline-none text-[#151d1e] dark:text-slate-200 border-b-[3px] border-[#0d0d0d] dark:border-[#2d3148] pb-1 min-w-75 placeholder:text-[#8f6f6c] dark:placeholder:text-slate-500"
+              style={{ fontFamily: "var(--font-display)" }}
             />
           )}
           {activeView !== "write" && (
             <span
-              className="mx-8 text-sm font-black uppercase tracking-[0.15em]"
-              style={{ fontFamily: "var(--font-display)", color: "#151d1e" }}
+              className="mx-8 text-sm font-black uppercase tracking-[0.15em] text-[#151d1e] dark:text-slate-200"
+              style={{ fontFamily: "var(--font-display)" }}
             >
               {activeView === "stats"
                 ? "Your Statistics"
@@ -1139,22 +988,32 @@ function DashboardPage() {
             </span>
           )}
         </div>
+
         <div className="flex items-center gap-3">
+          {/* Dark mode toggle */}
+          {/* <button
+            onClick={toggleDark}
+            title={isDark ? "Switch to light" : "Switch to dark"}
+            className="w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] dark:hover:bg-[#1e2130] transition-colors cursor-pointer border-[3px] border-[#0d0d0d] dark:border-[#2d3148] text-[#151d1e] dark:text-slate-200"
+          >
+            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+          </button> */}
+
           <button
             title="Search"
-            className="w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] transition-colors cursor-pointer"
-            style={{ border: "3px solid #0d0d0d" }}
+            className="w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] dark:hover:bg-[#1e2130] transition-colors cursor-pointer border-[3px] border-[#0d0d0d] dark:border-[#2d3148] text-[#151d1e] dark:text-slate-200"
           >
             <Search size={16} />
           </button>
+
           <button
             onClick={() => navigate("/messages")}
             title="Messages"
-            className="relative w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] transition-colors cursor-pointer"
-            style={{ border: "3px solid #0d0d0d" }}
+            className="relative w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] dark:hover:bg-[#1e2130] transition-colors cursor-pointer border-[3px] border-[#0d0d0d] dark:border-[#2d3148] text-[#151d1e] dark:text-slate-200"
           >
             <MessageCircle size={16} />
           </button>
+
           <NotificationBell />
           <AvatarDropdown
             onSettingsClick={() => handleActiveView("settings")}
@@ -1162,62 +1021,38 @@ function DashboardPage() {
         </div>
       </div>
 
-      {/* BODY */}
+      {/* ── BODY ── */}
       <div className="flex flex-1 overflow-hidden">
         {/* ── COLLAPSIBLE SIDEBAR ── */}
         <div
           onMouseEnter={() => setSidebarExpanded(true)}
           onMouseLeave={() => setSidebarExpanded(false)}
-          style={{
-            width: sidebarExpanded ? 180 : 60,
-            flexShrink: 0,
-            display: "flex",
-            flexDirection: "column",
-            borderRight: "3px solid #0d0d0d",
-            background: "#0d0d0d",
-            transition: "width 0.25s cubic-bezier(0.4,0,0.2,1)",
-            overflow: "hidden",
-            zIndex: 40,
-          }}
+          className="shrink-0 flex flex-col border-r-[3px] border-[#0d0d0d] dark:border-[#2d3148] bg-[#0d0d0d] dark:bg-[#070809] z-40 overflow-hidden transition-[width] duration-250 ease-in-out"
+          style={{ width: sidebarExpanded ? 180 : 60 }}
         >
-          {/* Logo mark when collapsed */}
+          {/* Logo */}
           <div
+            className="flex items-center border-b-2 border-white/8 transition-[padding] duration-250 overflow-hidden whitespace-nowrap"
             style={{
               padding: sidebarExpanded ? "14px 18px" : "14px 0",
-              display: "flex",
               justifyContent: sidebarExpanded ? "flex-start" : "center",
-              alignItems: "center",
-              borderBottom: "2px solid rgba(255,255,255,0.08)",
-              transition: "padding 0.25s",
-              overflow: "hidden",
-              whiteSpace: "nowrap",
             }}
           >
             <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 900,
-                fontSize: "1rem",
-                color: "white",
-                flexShrink: 0,
-              }}
+              className="font-black text-base text-white shrink-0"
+              style={{ fontFamily: "var(--font-display)" }}
             >
-              B<span style={{ color: "#d32f2f" }}>.</span>
+              B<span className="text-[#d32f2f]">.</span>
             </span>
             <span
+              className="font-black text-[0.75rem] text-white/50 pl-1.5 overflow-hidden transition-[opacity,max-width] duration-250"
               style={{
                 fontFamily: "var(--font-display)",
-                fontWeight: 900,
-                fontSize: "0.75rem",
-                color: "rgba(255,255,255,0.5)",
                 opacity: sidebarExpanded ? 1 : 0,
                 maxWidth: sidebarExpanded ? 120 : 0,
-                overflow: "hidden",
-                transition: "opacity 0.2s, max-width 0.25s",
-                paddingLeft: sidebarExpanded ? 6 : 0,
               }}
             >
-              log<span style={{ color: "#d32f2f" }}>AI</span>
+              log<span className="text-[#d32f2f]">AI</span>
             </span>
           </div>
 
@@ -1246,7 +1081,7 @@ function DashboardPage() {
           )}
         </div>
 
-        {/* MAIN CONTENT */}
+        {/* ── MAIN CONTENT ── */}
         <div className="flex-1 overflow-hidden flex flex-col">
           {activeView === "write" && (
             <WriteView
@@ -1328,6 +1163,19 @@ function Enable2FADialog({ open, onClose, handleEnable2FA }: Enable2FAProps) {
       </DialogContent>
     </Dialog>
   );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// THEME INIT (gọi trong main.tsx trước render)
+// ─────────────────────────────────────────────────────────────────
+export function initTheme() {
+  const saved = localStorage.getItem("theme");
+  const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  if (saved === "dark" || (!saved && prefersDark)) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
 }
 
 export default DashboardPage;
