@@ -1,11 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import { Search, ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import BlogCard from "@/features/blog/components/BlogCard";
 import { useExplore } from "@/features/blog/hooks/useExplore";
 
 export default function ExplorePage() {
-  const navigate = useNavigate();
   const {
     search,
     setSearch,
