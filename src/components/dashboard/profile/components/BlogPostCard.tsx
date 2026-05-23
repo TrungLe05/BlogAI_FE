@@ -47,11 +47,11 @@ function BlogPostCard({
       ].join(" ")}
     >
       {/* Cover image */}
-      <div className="w-[140px] shrink-0 overflow-hidden border-r-[3px] border-[#0d0d0d] dark:border-zinc-600">
+      <div className="w-35 shrink-0 overflow-hidden border-r-[3px] border-[#0d0d0d] dark:border-zinc-600">
         <img
           src={post.coverImageUrl}
           alt={post.title}
-          className="w-full h-full object-cover block min-h-[120px]"
+          className="w-full h-full object-cover block min-h-30"
         />
       </div>
 

@@ -181,7 +181,7 @@ function LandingPage() {
           <div className="relative">
             <div className="absolute -top-3 -left-3 w-full h-full bg-[#0d0d0d] dark:bg-zinc-700 z-0" />
             <div className="relative z-10 bg-white dark:bg-zinc-900 overflow-hidden group border-[3px] border-[#0d0d0d] dark:border-zinc-600">
-              <div className="relative overflow-hidden h-[260px]">
+              <div className="relative overflow-hidden h-65">
                 <img
                   src={
                     blogViewst?.coverImageUrl ||
@@ -268,7 +268,7 @@ function LandingPage() {
                 key={blog.blogId}
                 className="bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] overflow-hidden block group transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_0_#0d0d0d] dark:hover:shadow-[8px_8px_0_#52525b]"
               >
-                <div className="relative overflow-hidden h-[200px]">
+                <div className="relative overflow-hidden h-50">
                   <img
                     src={blog?.coverImageUrl}
                     alt={blog?.title}
@@ -490,7 +490,7 @@ function LandingPage() {
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/register">
               <button
-                className="font-black uppercase tracking-wider bg-white text-[#d32f2f] border-[3px] border-[#0d0d0d] shadow-[6px_6px_0_#0d0d0d] cursor-pointer transition-all hover:-translate-x-[3px] hover:-translate-y-[3px] hover:shadow-[9px_9px_0_#0d0d0d]"
+                className="font-black uppercase tracking-wider bg-white text-[#d32f2f] border-[3px] border-[#0d0d0d] shadow-[6px_6px_0_#0d0d0d] cursor-pointer transition-all hover:-translate-x-0.75 hover:-translate-y-0.75 hover:shadow-[9px_9px_0_#0d0d0d]"
                 style={{
                   padding: "18px 48px",
                   fontFamily: "var(--font-display)",

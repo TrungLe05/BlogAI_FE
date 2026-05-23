@@ -187,7 +187,7 @@ function LoginPage() {
             </button>
 
             <button
-              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm bg-white  text-[#0d0d0d]  border-[#0d0d0d]  shadow-[4px_4px_0_#0d0d0d]  transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d]  cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm bg-white  text-[#0d0d0d]  border-[#0d0d0d] border-[3px]  shadow-[4px_4px_0_#0d0d0d]  transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d]  cursor-pointer"
               style={{
                 padding: "12px 24px",
                 fontFamily: "var(--font-display)",

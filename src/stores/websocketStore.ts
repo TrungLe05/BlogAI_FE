@@ -15,6 +15,9 @@ export interface ChatMessagePayload {
   content?: string;
   messageType?: string;
   createdAt?: string;
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
 }
 
 export interface NotificationPayload {
@@ -121,12 +124,6 @@ const useWebSocketStore = create<WebSocketStore>((set) => ({
           try {
             console.log("=== CHAT MESSAGE RECEIVED ===", msg.body);
             const payload: ChatMessagePayload = JSON.parse(msg.body);
-
-            // Đang xem đúng conversation này → bỏ qua, không push vào queue
-            if (payload.type === "NEW_MESSAGE") {
-              const { currentConversationId } = useWebSocketStore.getState();
-              if (payload.conversationId === currentConversationId) return;
-            }
 
             set((state) => ({
               chatMessageQueue: [...state.chatMessageQueue, payload],
