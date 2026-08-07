@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Save,
   Eye,
@@ -10,15 +10,8 @@ import {
   BarChart,
   Upload,
   X,
-  Sparkles,
-  RefreshCw,
-  CheckCheck,
-  ChevronDown,
-  ChevronUp,
-  Wand2,
   UserCircle,
   MessageCircle,
-  Search,
 } from "lucide-react";
 import { ProfileContent } from "@/components/dashboard/profile";
 import { StatsContent } from "@/components/dashboard/stats";
@@ -42,315 +35,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/api/authApi";
 import { SettingsContent } from "@/components/dashboard/settings";
+import { AIEditableField } from "@/components/dashboard/AIEditableField";
+import { FULL_AI_ACTIONS, TITLE_AI_ACTIONS } from "@/constants/aiActions";
+import { usePrePublishReview } from "@/hooks/usePrePublishReview";
+import { AIPrePublishReviewPanel } from "@/components/dashboard/AIPrePublishReviewPanel";
 
 type ActiveView = "write" | "stats" | "profile" | "settings";
-
-// ─────────────────────────────────────────────────────────────────
-// AI PANELS
-// ─────────────────────────────────────────────────────────────────
-async function generateTitlesFromAI(content: string): Promise<string[]> {
-  const { data } = await blogApi.generateTitles(content);
-  return data.result;
-}
-
-function AISummaryPanel({
-  content,
-  summary,
-  onSummaryChange,
-}: {
-  content: string;
-  summary: string;
-  onSummaryChange: (s: string) => void;
-}) {
-  const [isLoading, setIsLoading] = useState(false);
-  const hasContent = content.trim().split(/\s+/).filter(Boolean).length >= 10;
-
-  const handleGenerate = async () => {
-    if (!hasContent) return;
-    setIsLoading(true);
-    try {
-      const { data } = await blogApi.generateSummary(content);
-      onSummaryChange(data.result);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="mb-8 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] bg-white dark:bg-[#1a1d26]">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 bg-[#0d0d0d] dark:bg-[#070809]">
-        <div className="flex items-center gap-3">
-          <Sparkles size={16} className="text-[#d32f2f]" />
-          <span
-            className="font-black text-xs uppercase tracking-[0.15em] text-white"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            AI Summary
-          </span>
-          <span
-            className="px-2 py-0.5 text-xs font-black uppercase tracking-widest bg-[#d32f2f] text-white"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            BETA
-          </span>
-        </div>
-        <button
-          onClick={handleGenerate}
-          disabled={!hasContent || isLoading}
-          className={`flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest text-white border-[3px] border-white transition-opacity
-            ${hasContent && !isLoading ? "bg-[#d32f2f] cursor-pointer" : "bg-[#555] cursor-not-allowed opacity-50"}`}
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          {isLoading ? (
-            <>
-              <RefreshCw size={12} className="animate-spin" /> Generating...
-            </>
-          ) : summary ? (
-            <>
-              <RefreshCw size={12} /> Regenerate
-            </>
-          ) : (
-            <>
-              <Wand2 size={12} /> Generate
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Body */}
-      <div className="p-5">
-        <p
-          className="text-xs font-black uppercase tracking-[0.15em] mb-3 text-[#8f6f6c] dark:text-slate-400"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          {summary
-            ? "AI generated — edit freely ↓"
-            : "Or write your own summary ↓"}
-        </p>
-        <textarea
-          value={summary}
-          onChange={(e) => onSummaryChange(e.target.value)}
-          placeholder="Write a short summary to hook your readers..."
-          rows={3}
-          className={`w-full p-4 text-sm outline-none resize-none bg-[#f2fbfc] dark:bg-[#151820] text-[#151d1e] dark:text-slate-200
-            border-[3px] ${summary.length > 200 ? "border-[#d32f2f]" : "border-[#0d0d0d] dark:border-[#2d3148]"}`}
-          style={{ fontFamily: "var(--font-sans)" }}
-        />
-        <p
-          className={`text-xs mt-1 text-right ${summary.length > 200 ? "text-[#d32f2f]" : "text-[#8f6f6c] dark:text-slate-400"}`}
-        >
-          {summary.length}/200
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function AITitlePanel({
-  content,
-  onApply,
-}: {
-  content: string;
-  onApply: (t: string) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [applied, setApplied] = useState<string | null>(null);
-  const [dots, setDots] = useState("");
-  const hasContent = content.trim().split(/\s+/).filter(Boolean).length >= 10;
-
-  const handleGenerate = async () => {
-    if (!hasContent) return;
-    setIsLoading(true);
-    setSuggestions([]);
-    setApplied(null);
-    setIsOpen(true);
-    let d = 0;
-    const di = setInterval(() => {
-      d = (d + 1) % 4;
-      setDots(".".repeat(d));
-    }, 400);
-    try {
-      const titles = await generateTitlesFromAI(content);
-      setSuggestions(titles);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      clearInterval(di);
-      setIsLoading(false);
-      setDots("");
-    }
-  };
-
-  const handleApply = (t: string) => {
-    onApply(t);
-    setApplied(t);
-  };
-
-  return (
-    <div className="mb-8 border-[3px] border-[#0d0d0d] dark:border-[#2d3148] shadow-[4px_4px_0_#d32f2f] bg-white dark:bg-[#1a1d26]">
-      {/* Header */}
-      <div
-        className={`flex items-center justify-between px-6 py-4 cursor-pointer select-none bg-[#0d0d0d] dark:bg-[#070809]
-          ${isOpen ? "border-b-[3px] border-b-[#0d0d0d] dark:border-b-[#2d3148]" : ""}`}
-        onClick={() => isOpen && !isLoading && setIsOpen(false)}
-      >
-        <div className="flex items-center gap-3">
-          <Sparkles size={16} className="text-[#d32f2f]" />
-          <span
-            className="font-black text-xs uppercase tracking-[0.15em] text-white"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            AI Title Generator
-          </span>
-          <span
-            className="px-2 py-0.5 text-xs font-black uppercase tracking-widest bg-[#d32f2f] text-white"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            BETA
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          {!hasContent && (
-            <span
-              className="text-xs text-white/40"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Write 10+ words first
-            </span>
-          )}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleGenerate();
-            }}
-            disabled={!hasContent || isLoading}
-            className={`flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-widest text-white border-[3px] border-white transition-all
-              ${hasContent && !isLoading ? "bg-[#d32f2f] cursor-pointer" : "bg-[#555] cursor-not-allowed opacity-50"}`}
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {isLoading ? (
-              <>
-                <RefreshCw size={12} className="animate-spin" /> Generating
-                {dots}
-              </>
-            ) : suggestions.length > 0 ? (
-              <>
-                <RefreshCw size={12} /> Regenerate
-              </>
-            ) : (
-              <>
-                <Wand2 size={12} /> Generate
-              </>
-            )}
-          </button>
-          {isOpen && !isLoading && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpen(false);
-              }}
-            >
-              <ChevronUp size={16} className="text-white" />
-            </button>
-          )}
-          {!isOpen && suggestions.length > 0 && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsOpen(true);
-              }}
-            >
-              <ChevronDown size={16} className="text-white" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Body */}
-      {isOpen && (
-        <div className="p-5">
-          {isLoading ? (
-            <div className="space-y-3">
-              <p
-                className="text-xs font-black uppercase tracking-[0.15em] mb-3 flex items-center gap-2 text-[#d32f2f]"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                <Sparkles size={12} className="animate-pulse" /> Analysing{dots}
-              </p>
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="animate-pulse h-12 border-[3px] border-[#e7f0f1] dark:border-[#2d3148]"
-                  style={{ background: `rgba(211,47,47,${0.04 * i + 0.04})` }}
-                />
-              ))}
-            </div>
-          ) : suggestions.length > 0 ? (
-            <div>
-              <p
-                className="text-xs font-black uppercase tracking-[0.15em] mb-4 text-[#8f6f6c] dark:text-slate-400"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Click to apply ↓
-              </p>
-              <div className="space-y-3">
-                {suggestions.map((s, i) => {
-                  const isApplied = applied === s;
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => handleApply(s)}
-                      className={`w-full text-left flex items-start justify-between gap-3 transition-all group cursor-pointer p-3 border-[3px]
-                        ${
-                          isApplied
-                            ? "bg-[#d32f2f] border-[#d32f2f] shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#2d3148] -translate-x-1 -translate-y-1"
-                            : "bg-white dark:bg-[#1a1d26] border-[#0d0d0d] dark:border-[#2d3148] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0_#d32f2f]"
-                        }`}
-                    >
-                      <div className="flex items-start gap-3 flex-1">
-                        <span
-                          className={`shrink-0 w-6 h-6 flex items-center justify-center text-xs font-black
-                          ${isApplied ? "bg-white text-[#d32f2f]" : "bg-[#0d0d0d] dark:bg-[#2d3148] text-white"}`}
-                          style={{ fontFamily: "var(--font-display)" }}
-                        >
-                          {i + 1}
-                        </span>
-                        <span
-                          className={`text-sm font-bold leading-snug ${isApplied ? "text-white" : "text-[#151d1e] dark:text-slate-200"}`}
-                          style={{ fontFamily: "var(--font-display)" }}
-                        >
-                          {s}
-                        </span>
-                      </div>
-                      {isApplied ? (
-                        <CheckCheck
-                          size={15}
-                          className="text-white shrink-0 mt-0.5"
-                        />
-                      ) : (
-                        <span
-                          className="text-xs font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 shrink-0 text-[#d32f2f]"
-                          style={{ fontFamily: "var(--font-display)" }}
-                        >
-                          Apply
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─────────────────────────────────────────────────────────────────
 // WRITE VIEW
@@ -438,7 +128,7 @@ function WriteView({
   );
 
   return (
-    <div className="flex flex-col h-full ">
+    <div className="flex flex-col h-full">
       {/* Tab bar */}
       <div className="flex bg-white dark:bg-[#111318] shrink-0 border-b-[3px] border-[#0d0d0d] dark:border-[#2d3148]">
         {(["write", "preview"] as const).map((tab) => (
@@ -451,7 +141,7 @@ function WriteView({
                   ? "bg-[#0d0d0d] dark:bg-[#2d3148] text-white"
                   : "bg-transparent text-[#5b403d] dark:text-slate-400 hover:bg-[#f2fbfc] dark:hover:bg-[#1a1d26]"
               }`}
-            style={{ fontFamily: "var(--font-display)" }}
+            
           >
             {tab === "write" ? (
               <span className="flex items-center gap-2">
@@ -470,34 +160,87 @@ function WriteView({
       <div className="flex-1 overflow-auto bg-[#f2fbfc] dark:bg-[#0f1117]">
         {activeTab === "write" && (
           <div className="max-w-250 mx-auto p-8">
-            <AITitlePanel content={content} onApply={setTitle} />
-            <AISummaryPanel
-              content={content}
-              summary={summary}
-              onSummaryChange={setSummary}
-            />
+            {/* ── Title Field ── */}
+            <div className="mb-6">
+              <label
+                className="block mb-2 text-xs font-black uppercase tracking-[0.15em] text-[#5b403d] dark:text-slate-400 font-display"
+                
+              >
+                <PenLine size={11} className="inline mr-1.5" />
+                Post Title
+                <span className="ml-2 text-[#b0a0a0] normal-case font-normal">
+                  - select text for AI rewrite
+                </span>
+              </label>
+              <AIEditableField
+                as="input"
+                fieldType="title"
+                value={title}
+                onChange={setTitle}
+                availableActions={TITLE_AI_ACTIONS}
+                placeholder="Blog title..."
+                className="w-full text-2xl font-bold border-b-2 border-[#0d0d0d] px-2 py-3 outline-none dark:placeholder:text-zinc-400 dark:text-zinc-400 dark:focus:border-zinc-200"
+                maxLength={120}
+              />
+              <p className="text-xs mt-1.5 text-right text-[#b0a0a0] dark:text-slate-500">
+                {title.length}/120 chars
+              </p>
+            </div>
+
+            {/* ── Summary Field ── */}
+            <div className="mb-8">
+              <label
+                className="block mb-2 text-xs font-black uppercase tracking-[0.15em] text-[#5b403d] dark:text-slate-400 font-display"
+                
+              >
+                Summary
+                <span className="ml-2 text-[#b0a0a0] normal-case font-normal">
+                  - select text for AI rewrite
+                </span>
+              </label>
+              <AIEditableField
+                as="textarea"
+                fieldType="summary"
+                value={summary}
+                onChange={setSummary}
+                availableActions={FULL_AI_ACTIONS}
+                placeholder="Short summary for preview..."
+                className="w-full border-[3px] border-[#0d0d0d] p-3 text-sm resize-none dark:placeholder:text-zinc-400 dark:text-zinc-400"
+                rows={3}
+                maxLength={300}
+              />
+              <p
+                className={`text-xs mt-1 text-right ${
+                  summary.length > 200
+                    ? "text-[#d32f2f]"
+                    : "text-[#8f6f6c] dark:text-slate-400"
+                }`}
+              >
+                {summary.length}/200
+              </p>
+            </div>
 
             {/* Tags */}
             <div className="max-w-full mx-auto pb-6">
               <div className="bg-white dark:bg-[#1a1d26] p-8 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
                 <h2
-                  className="font-black text-sm uppercase tracking-widest mb-6 text-[#151d1e] dark:text-slate-200"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="font-black text-sm uppercase tracking-widest mb-6 text-[#151d1e] dark:text-slate-200 font-display"
+                  
                 >
                   Post Tags
                 </h2>
                 <div className="mb-5">
                   <label
-                    className="block mb-2 text-xs font-black uppercase tracking-[0.15em] text-[#5b403d] dark:text-slate-400"
-                    style={{ fontFamily: "var(--font-display)" }}
+                    className="block mb-2 text-xs font-black uppercase tracking-[0.15em] text-[#5b403d] dark:text-slate-400 font-display"
+                    
                   >
                     <Tag size={12} className="inline mr-1.5" />
                     Tags (max 5)
                   </label>
                   <div className="flex gap-3 mb-3">
                     <select
-                      className="flex-1 px-4 py-3 text-sm outline-none border-[3px] border-[#0d0d0d] dark:border-[#2d3148] bg-white dark:bg-[#1e2130] text-[#151d1e] dark:text-slate-200"
-                      style={{ fontFamily: "var(--font-sans)" }}
+                      className="flex-1 px-4 py-3 text-sm outline-none border-[3px] border-[#0d0d0d] dark:border-[#2d3148] bg-white dark:bg-[#1e2130] text-[#151d1e] dark:text-slate-200 font-sans"
+                      
                       value={selectedGroup}
                       onChange={(e) => {
                         setSelectedGroup(e.target.value);
@@ -513,8 +256,8 @@ function WriteView({
                         ))}
                     </select>
                     <select
-                      className="flex-1 px-4 py-3 text-sm outline-none border-[3px] border-[#0d0d0d] dark:border-[#2d3148] bg-white dark:bg-[#1e2130] text-[#151d1e] dark:text-slate-200 disabled:opacity-50"
-                      style={{ fontFamily: "var(--font-sans)" }}
+                      className="flex-1 px-4 py-3 text-sm outline-none border-[3px] border-[#0d0d0d] dark:border-[#2d3148] bg-white dark:bg-[#1e2130] text-[#151d1e] dark:text-slate-200 disabled:opacity-50 font-sans"
+                      
                       disabled={!selectedGroup}
                       value={selectedTagInGroup}
                       onChange={(e) => {
@@ -541,8 +284,8 @@ function WriteView({
                     {tags.map((tag) => (
                       <span
                         key={tag}
-                        className="flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase tracking-widest bg-[#0d0d0d] dark:bg-[#2d3148] text-white border-[3px] border-[#0d0d0d] dark:border-[#2d3148]"
-                        style={{ fontFamily: "var(--font-display)" }}
+                        className="flex items-center gap-1.5 px-3 py-1 text-xs font-black uppercase tracking-widest bg-[#0d0d0d] dark:bg-[#2d3148] text-white border-[3px] border-[#0d0d0d] dark:border-[#2d3148] font-display"
+                        
                       >
                         {tag}
                         <button
@@ -555,8 +298,8 @@ function WriteView({
                     ))}
                     {tags.length >= 5 && (
                       <span
-                        className="text-xs font-black self-center uppercase tracking-widest text-[#d32f2f]"
-                        style={{ fontFamily: "var(--font-display)" }}
+                        className="text-xs font-black self-center uppercase tracking-widest text-[#d32f2f] font-display"
+                        
                       >
                         Max 5 tags reached
                       </span>
@@ -577,8 +320,8 @@ function WriteView({
                   className="text-[#8f6f6c] dark:text-slate-400 mb-3"
                 />
                 <p
-                  className="font-black text-xs uppercase tracking-[0.15em] text-[#8f6f6c] dark:text-slate-400"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="font-black text-xs uppercase tracking-[0.15em] text-[#8f6f6c] dark:text-slate-400 font-display"
+                  
                 >
                   Click to upload cover image
                 </p>
@@ -609,20 +352,16 @@ function WriteView({
               </div>
             )}
 
+            {/* Rich Editor — AI toolbar gắn trong RichEditor */}
             <RichEditor content={content} onChange={setContent} />
 
             {/* Footer actions */}
             <div className="mt-4 flex justify-between items-center">
               <p
-                className="text-xs font-bold text-[#8f6f6c] dark:text-slate-400"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-xs font-bold text-[#8f6f6c] dark:text-slate-400 font-display"
+                
               >
                 {wordCount} words · ~{Math.ceil(wordCount / 200)} min read
-                {wordCount >= 10 && (
-                  <span className="text-[#d32f2f] ml-2.5">
-                    ✦ AI title ready
-                  </span>
-                )}
               </p>
               <div className="flex gap-4">
                 <button
@@ -631,7 +370,6 @@ function WriteView({
                   border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] 
                   dark:shadow-[4px_4px_0_#52525b] hover:-translate-x-1 hover:-translate-y-1 
                   hover:shadow-[8px_8px_0_#0d0d0d] dark:hover:shadow-[8px_8px_0_#52525b] disabled:opacity-50"
-                  style={{ fontFamily: "var(--font-display)" }}
                   onClick={onSaveDraft}
                   disabled={isDraftSaving}
                 >
@@ -644,7 +382,6 @@ function WriteView({
                   dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b] hover:-translate-x-1 
                   hover:-translate-y-1 hover:shadow-[8px_8px_0_#0d0d0d] dark:hover:shadow-[8px_8px_0_#52525b] 
                   disabled:opacity-50"
-                  style={{ fontFamily: "var(--font-display)" }}
                   onClick={onSavePublish}
                   disabled={isPublishSaving}
                 >
@@ -661,22 +398,16 @@ function WriteView({
           <div className="max-w-200 mx-auto p-8">
             <div className="bg-white dark:bg-[#1a1d26] p-10 border-[3px] border-[#0d0d0d] dark:border-[#2d3148] shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#2d3148]">
               <h1
-                className="text-4xl font-black mb-8 text-[#0d0d0d] dark:text-slate-100"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.1,
-                }}
+                className="text-4xl font-bold mb-8 text-[#0d0d0d] dark:text-slate-100 font-display"
+                style={{ letterSpacing: "-0.02em",
+                  lineHeight: 1.1 }}
               >
                 {title || "Your Post Title"}
               </h1>
               <h3
-                className="text-2xl font-black mb-8 text-[#0d0d0d] dark:text-slate-200"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  letterSpacing: "-0.02em",
-                  lineHeight: 1.1,
-                }}
+                className="text-2xl font-bold mb-8 text-[#0d0d0d] dark:text-slate-200 font-display"
+                style={{ letterSpacing: "-0.02em",
+                  lineHeight: 1.1 }}
               >
                 {summary || "Your Post Summary"}
               </h3>
@@ -697,8 +428,6 @@ function WriteView({
     </div>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────
 // COLLAPSIBLE SIDEBAR ITEM
 // ─────────────────────────────────────────────────────────────────
 function SideItem({
@@ -724,13 +453,10 @@ function SideItem({
     >
       <span className="shrink-0">{icon}</span>
       <span
-        className="font-black uppercase tracking-[0.12em] transition-all text-[0.7rem]"
-        style={{
-          fontFamily: "var(--font-display)",
-          opacity: expanded ? 1 : 0,
+        className="font-black uppercase tracking-[0.12em] transition-all text-[0.7rem] font-display"
+        style={{ opacity: expanded ? 1 : 0,
           maxWidth: expanded ? 120 : 0,
-          transition: "opacity 0.2s, max-width 0.25s",
-        }}
+          transition: "opacity 0.2s, max-width 0.25s" }}
       >
         {label}
       </span>
@@ -742,7 +468,23 @@ function SideItem({
 // DASHBOARD PAGE
 // ─────────────────────────────────────────────────────────────────
 function DashboardPage() {
-  const [activeView, setActiveView] = useState<ActiveView>("write");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialView = (searchParams.get("view") as ActiveView) || "write";
+  const [activeView, setActiveView] = useState<ActiveView>(
+    ["write", "stats", "profile", "settings"].includes(initialView)
+      ? initialView
+      : "write",
+  );
+
+  useEffect(() => {
+    const viewParam = searchParams.get("view") as ActiveView;
+    if (
+      viewParam &&
+      ["write", "stats", "profile", "settings"].includes(viewParam)
+    ) {
+      setActiveView(viewParam);
+    }
+  }, [searchParams]);
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const navigate = useNavigate();
   const [summary, setSummary] = useState("");
@@ -756,6 +498,7 @@ function DashboardPage() {
   const [isPublishSaving, setIsPublishSaving] = useState(false);
   const [_isLoadingBlog, setIsLoadingBlog] = useState(false);
   const [show2FADialog, setShow2FADialog] = useState(false);
+  const prePublishReview = usePrePublishReview();
 
   useEffect(() => {
     const fetch2FAStatus = async () => {
@@ -832,6 +575,42 @@ function DashboardPage() {
     }
   };
 
+  const doPublish = async () => {
+    setIsPublishSaving(true);
+    try {
+      if (editingBlogId) {
+        await blogApi.updateDraft(editingBlogId, {
+          title,
+          summary,
+          content,
+          tags: tagsSelection,
+          coverImage: coverImageFile,
+        });
+        await blogApi.publishBlog(editingBlogId);
+      } else {
+        await blogApi.saveAndPublishBlog({
+          title,
+          summary,
+          content,
+          tags: tagsSelection,
+          coverImage: coverImageFile,
+        });
+      }
+      toast.success("Blog published successfully!");
+      setTitle("");
+      setContent("");
+      setCoverImageFile(null);
+      setCoverImageUrl("");
+      setTagsSelection([]);
+      setEditingBlogId(null);
+      setSummary("");
+    } catch (e) {
+      toast.error(extractApiError(e));
+    } finally {
+      setIsPublishSaving(false);
+    }
+  };
+
   const handlePublishBlog = async () => {
     const errors = editingBlogId
       ? validateUpdateBlog({
@@ -851,47 +630,18 @@ function DashboardPage() {
       errors.forEach((e) => toast.error(e.message));
       return;
     }
-    toast("Are you sure you want to publish this blog?", {
-      description: "Once published, it will no longer be possible to edit it",
+
+    toast("Ready to publish?", {
+      description:
+        "You can let AI check readability, SEO and engagement first, or publish right away.",
       action: {
-        label: "Confirm",
-        onClick: async () => {
-          setIsPublishSaving(true);
-          try {
-            if (editingBlogId) {
-              await blogApi.updateDraft(editingBlogId, {
-                title,
-                summary,
-                content,
-                tags: tagsSelection,
-                coverImage: coverImageFile,
-              });
-              await blogApi.publishBlog(editingBlogId);
-            } else {
-              await blogApi.saveAndPublishBlog({
-                title,
-                summary,
-                content,
-                tags: tagsSelection,
-                coverImage: coverImageFile,
-              });
-            }
-            toast.success("Blog published successfully!");
-            setTitle("");
-            setContent("");
-            setCoverImageFile(null);
-            setCoverImageUrl("");
-            setTagsSelection([]);
-            setEditingBlogId(null);
-            setSummary("");
-          } catch (e) {
-            toast.error(extractApiError(e));
-          } finally {
-            setIsPublishSaving(false);
-          }
-        },
+        label: "AI Review",
+        onClick: () => prePublishReview.runReview({ title, summary, content }),
       },
-      cancel: { label: "Cancel", onClick: () => {} },
+      cancel: {
+        label: "Publish Now",
+        onClick: () => doPublish(),
+      },
     });
   };
 
@@ -928,12 +678,16 @@ function DashboardPage() {
             setCoverImageFile(null);
             setTagsSelection([]);
             setEditingBlogId(null);
+            setActiveView(view);
+            setSearchParams({ view }, { replace: true });
           },
         },
         cancel: { label: "Cancel", onClick: () => {} },
       });
+      return;
     }
     setActiveView(view);
+    setSearchParams({ view }, { replace: true });
   };
 
   const sideItems: {
@@ -951,67 +705,33 @@ function DashboardPage() {
 
   return (
     <div
-      className="bg-[#f2fbfc] dark:bg-[#0f1117] h-screen flex flex-col"
-      style={{ fontFamily: "var(--font-sans)" }}
+      className="bg-[#f2fbfc] dark:bg-[#0f1117] h-screen flex flex-col font-sans"
+      
     >
       {/* ── TOP BAR ── */}
-      <div className="shrink-0 flex items-center justify-between px-8 h-14 bg-white dark:bg-[#111318] border-b-[3px] border-[#0d0d0d] dark:border-[#2d3148] z-50">
-        <div className="flex items-center">
+      <div className="shrink-0 flex items-center justify-between px-10 h-14 bg-white dark:bg-[#111318] border-b-[3px] border-[#0d0d0d] dark:border-[#2d3148] z-50">
+        <div className="flex items-center gap-4">
           <Link to="/">
             <span
-              className="text-xl font-black text-[#0d0d0d] dark:text-white"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="text-xl font-black text-[#0d0d0d] dark:text-white font-display"
+              
             >
               Blog<span className="text-[#d32f2f]">AI</span>
             </span>
           </Link>
-          {activeView === "write" && (
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Your story begins here..."
-              className="flex-1 mx-8 pr-6 text-base font-bold bg-transparent outline-none text-[#151d1e] dark:text-slate-200 border-b-[3px] border-[#0d0d0d] dark:border-[#2d3148] pb-1 min-w-75 placeholder:text-[#8f6f6c] dark:placeholder:text-slate-500"
-              style={{ fontFamily: "var(--font-display)" }}
-            />
-          )}
-          {activeView !== "write" && (
-            <span
-              className="mx-8 text-sm font-black uppercase tracking-[0.15em] text-[#151d1e] dark:text-slate-200"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              {activeView === "stats"
-                ? "Your Statistics"
-                : activeView === "profile"
-                  ? "Your Profile"
-                  : "Settings"}
-            </span>
-          )}
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Dark mode toggle */}
-          {/* <button
-            onClick={toggleDark}
-            title={isDark ? "Switch to light" : "Switch to dark"}
-            className="w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] dark:hover:bg-[#1e2130] transition-colors cursor-pointer border-[3px] border-[#0d0d0d] dark:border-[#2d3148] text-[#151d1e] dark:text-slate-200"
-          >
-            {isDark ? <Sun size={16} /> : <Moon size={16} />}
-          </button> */}
-
-          <button
-            title="Search"
-            className="w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] dark:hover:bg-[#1e2130] transition-colors cursor-pointer border-[3px] border-[#0d0d0d] dark:border-[#2d3148] text-[#151d1e] dark:text-slate-200"
-          >
-            <Search size={16} />
-          </button>
-
           <button
             onClick={() => navigate("/messages")}
             title="Messages"
-            className="relative w-9 h-9 flex items-center justify-center hover:bg-[#ecf5f6] dark:hover:bg-[#1e2130] transition-colors cursor-pointer border-[3px] border-[#0d0d0d] dark:border-[#2d3148] text-[#151d1e] dark:text-slate-200"
+            className="relative w-10 h-10 rounded-full flex items-center justify-center
+                   text-gray-500 dark:text-zinc-400
+                   hover:text-[#0d0d0d] dark:hover:text-zinc-100
+                   hover:bg-black/5 dark:hover:bg-white/6
+                   transition-colors cursor-pointer"
           >
-            <MessageCircle size={16} />
+            <MessageCircle size={17} strokeWidth={1.8} />
           </button>
 
           <NotificationBell />
@@ -1039,18 +759,15 @@ function DashboardPage() {
             }}
           >
             <span
-              className="font-black text-base text-white shrink-0"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="font-black text-base text-white shrink-0 font-display"
+              
             >
               B<span className="text-[#d32f2f]">.</span>
             </span>
             <span
-              className="font-black text-[0.75rem] text-white/50 pl-1.5 overflow-hidden transition-[opacity,max-width] duration-250"
-              style={{
-                fontFamily: "var(--font-display)",
-                opacity: sidebarExpanded ? 1 : 0,
-                maxWidth: sidebarExpanded ? 120 : 0,
-              }}
+              className="font-black text-[0.75rem] text-white/50 pl-1.5 overflow-hidden transition-[opacity,max-width] duration-250 font-display"
+              style={{ opacity: sidebarExpanded ? 1 : 0,
+                maxWidth: sidebarExpanded ? 120 : 0 }}
             >
               log<span className="text-[#d32f2f]">AI</span>
             </span>
@@ -1118,6 +835,17 @@ function DashboardPage() {
         handleEnable2FA={() => {
           setActiveView("settings");
           setShow2FADialog(false);
+        }}
+      />
+
+      <AIPrePublishReviewPanel
+        open={prePublishReview.state.open}
+        isLoading={prePublishReview.state.isLoading}
+        result={prePublishReview.state.result}
+        onEditMore={prePublishReview.close}
+        onPublishAnyway={() => {
+          prePublishReview.close();
+          doPublish();
         }}
       />
     </div>

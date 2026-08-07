@@ -20,6 +20,8 @@ export interface ChatMessagePayload {
   fileSize?: number;
 }
 
+
+
 export interface NotificationPayload {
   type: "FOLLOW" | "CHAT_UNLOCKED" | "CHAT_SETUP_FAILED" | "NEW_MESSAGE";
   fromUserId: string;

@@ -2,7 +2,7 @@ import { ApiResponse } from "@/types/response/authResponse.type";
 import axiosClient from "./axiosClient";
 import { BlogResponse, TagResponse } from "@/types/response/blogResponse.types";
 import { CreateBlogRequest } from "@/types/request/blogRequest.types";
-
+import { PrePublishReviewResult } from "@/features/blog/types/blog.types";
 
 const blogApi = {
   getAllBlog: () => axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs"),
@@ -108,6 +108,26 @@ const blogApi = {
     axiosClient.post<ApiResponse<number>>(`/blogs/${blogId}/view`),
   get4BlogViewest: () =>
     axiosClient.get<ApiResponse<BlogResponse[]>>("/blogs/4-viewest"),
+
+  rewriteText: (
+    text: string,
+    instruction: string,
+    fieldType: "title" | "summary" | "content",
+  ) =>
+    axiosClient.post<ApiResponse<string>>("/ai/rewrite", {
+      text,
+      instruction,
+      fieldType,
+    }),
+  reviewPrePublish: (payload: {
+    title: string;
+    summary: string;
+    content: string;
+  }) =>
+    axiosClient.post<ApiResponse<PrePublishReviewResult>>(
+      "/ai/review-prepublish",
+      payload,
+    ),
 };
 
 export default blogApi;

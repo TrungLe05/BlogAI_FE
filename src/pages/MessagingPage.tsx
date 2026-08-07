@@ -254,10 +254,7 @@ export default function MessagingPage() {
       {isLoading && <LoadingSpinner />}
       <style>{`@keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.5} 30%{transform:translateY(-6px);opacity:1} }`}</style>
 
-      <div
-        className="h-screen flex flex-col bg-[#ebf4f5] dark:bg-zinc-950"
-        style={{ fontFamily: "var(--font-sans)" }}
-      >
+      <div className="h-screen flex flex-col bg-[#ebf4f5] dark:bg-zinc-950 font-sans">
         <div className="shrink-0 flex items-center gap-3 px-6 h-14 bg-white dark:bg-zinc-900 border-b-[3px] border-[#0d0d0d] dark:border-zinc-700 z-50">
           <button
             onClick={() => navigate(-1)}
@@ -265,10 +262,7 @@ export default function MessagingPage() {
           >
             <ArrowLeft size={16} />
           </button>
-          <span
-            className="text-base font-black uppercase tracking-widest text-[#0d0d0d] dark:text-white"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
+          <span className="text-base font-black uppercase tracking-widest text-[#0d0d0d] dark:text-white font-display">
             Messages
           </span>
         </div>
@@ -310,11 +304,8 @@ export default function MessagingPage() {
                 <div className="w-20 h-20 flex items-center justify-center bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[6px_6px_0_#0d0d0d]">
                   <MessageCircle size={36} className="text-[#d32f2f]" />
                 </div>
-                <p
-                  className="text-lg font-black uppercase tracking-widest text-[#0d0d0d] dark:text-white"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  Chọn cuộc trò chuyện
+                <p className="text-lg font-display font-bold uppercase tracking-widest text-[#0d0d0d] dark:text-white ">
+                  Select a conversation
                 </p>
               </div>
             )}

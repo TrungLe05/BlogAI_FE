@@ -38,8 +38,8 @@ export default function ConversationItem({ conv, isActive, userId, onSelect }: P
         />
         {conv.unreadCount > 0 && (
           <span
-            className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white bg-[#d32f2f]"
-            style={{ fontSize: "9px", fontWeight: 900, fontFamily: "var(--font-display)" }}
+            className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white bg-[#d32f2f] font-display"
+            style={{ fontSize: "9px", fontWeight: 900}}
           >
             {conv.unreadCount > 9 ? "9+" : conv.unreadCount}
           </span>
@@ -50,7 +50,6 @@ export default function ConversationItem({ conv, isActive, userId, onSelect }: P
         <div className="flex items-center justify-between gap-1">
           <p
             className={`text-xs font-black truncate ${isActive ? "text-white" : "text-[#0d0d0d] dark:text-zinc-100"}`}
-            style={{ fontFamily: "var(--font-display)" }}
           >
             {conv.otherUser.fullName}
           </p>

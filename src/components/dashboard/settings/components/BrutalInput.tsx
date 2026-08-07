@@ -23,10 +23,9 @@ export function BrutalInput({
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        style={{
-          width: "100%",
+        style={{ width: "100%",
           padding: suffix ? "10px 44px 10px 12px" : "10px 12px",
-          fontFamily: "var(--font-sans)",
+          
           fontSize: "0.875rem",
           color: "#0d0d0d",
           background: focused ? "#dbe4e5" : "#ffffff",
@@ -35,8 +34,7 @@ export function BrutalInput({
           outline: "none",
           boxShadow: focused ? "3px 3px 0 #0d0d0d" : "none",
           transition: "background 0.15s, box-shadow 0.15s",
-          boxSizing: "border-box" as const,
-        }}
+          boxSizing: "border-box" as const }}
       />
       {suffix && (
         <div

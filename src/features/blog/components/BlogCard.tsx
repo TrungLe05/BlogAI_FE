@@ -42,8 +42,8 @@ export default function BlogCard({ blog, onTagClick }: Props) {
       {/* Body */}
       <div className="p-4">
         <h3
-          className="font-black text-base leading-tight mb-2 line-clamp-2 text-[#0d0d0d] dark:text-white"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="font-display font-bold text-base leading-tight mb-2 line-clamp-2 text-[#0d0d0d] dark:text-white"
+          
         >
           {blog.title}
         </h3>
@@ -66,8 +66,8 @@ export default function BlogCard({ blog, onTagClick }: Props) {
               className="w-6 h-6 object-cover border-2 border-[#0d0d0d] dark:border-zinc-600"
             />
             <span
-              className="text-xs font-bold truncate max-w-25 text-[#0d0d0d] dark:text-zinc-200 hover:text-[#d32f2f] transition-colors"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="text-xs font-bold truncate max-w-25 text-[#0d0d0d] dark:text-zinc-200 hover:text-[#d32f2f] transition-colors font-display"
+              
             >
               {blog.author.fullName}
             </span>

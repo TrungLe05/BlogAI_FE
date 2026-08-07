@@ -93,8 +93,8 @@ function RegisterPage() {
 
   return (
     <div
-      className="min-h-screen grid lg:grid-cols-2 bg-[#ebf4f5] "
-      style={{ fontFamily: "var(--font-sans)" }}
+      className="min-h-screen grid lg:grid-cols-2 bg-[#ebf4f5]  font-sans"
+      
     >
       {/* Left Panel */}
       <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-[#ebf4f5] border-r-[3px] border-[#0d0d0d]">
@@ -106,8 +106,8 @@ function RegisterPage() {
         <div className="relative z-10">
           <Link to="/">
             <span
-              className="text-2xl font-black text-[#0d0d0d]"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="text-2xl font-black text-[#0d0d0d] font-display"
+              
             >
               Blog<span className="text-[#d32f2f]">AI</span>
             </span>
@@ -116,12 +116,9 @@ function RegisterPage() {
 
         <div className="relative z-10">
           <h2
-            className="font-black mb-4 text-[#0d0d0d]"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(36px, 4vw, 52px)",
-              lineHeight: 1.1,
-            }}
+            className="font-black mb-4 text-[#0d0d0d] font-display"
+            style={{ fontSize: "clamp(36px, 4vw, 52px)",
+              lineHeight: 1.1 }}
           >
             Join <span className="text-[#d32f2f]">10,000+</span>
             <br />
@@ -140,14 +137,14 @@ function RegisterPage() {
                 className="p-4 bg-white text-center border-[3px] border-[#0d0d0d] shadow-[4px_4px_0_#0d0d0d]"
               >
                 <p
-                  className="font-black text-2xl text-[#d32f2f]"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="font-black text-2xl text-[#d32f2f] font-display"
+                  
                 >
                   {s.value}
                 </p>
                 <p
-                  className="text-xs text-[#666]"
-                  style={{ fontFamily: "var(--font-sans)" }}
+                  className="text-xs text-[#666] font-sans"
+                  
                 >
                   {s.label}
                 </p>
@@ -177,8 +174,8 @@ function RegisterPage() {
           <div className="lg:hidden mb-8 text-center">
             <Link to="/">
               <span
-                className="text-2xl font-black text-[#0d0d0d]"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-2xl font-black text-[#0d0d0d] font-display"
+                
               >
                 Blog<span className="text-[#d32f2f]">AI</span>
               </span>
@@ -187,8 +184,8 @@ function RegisterPage() {
 
           <div className="bg-white p-8 border-[3px] border-[#0d0d0d]  shadow-[6px_6px_0_#0d0d0d]">
             <h1
-              className="font-black text-2xl mb-2 text-[#0d0d0d]"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="font-black text-2xl mb-2 text-[#0d0d0d] font-display"
+              
             >
               Create Your Account
             </h1>
@@ -198,11 +195,8 @@ function RegisterPage() {
 
             {/* Google */}
             <button
-              className="w-full flex items-center justify-center gap-3 mb-5 font-bold text-sm bg-white text-[#0d0d0d] border-[3px] border-[#0d0d0d] shadow-[4px_4px_0_#0d0d0d] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] cursor-pointer"
-              style={{
-                padding: "12px 24px",
-                fontFamily: "var(--font-display)",
-              }}
+              className="w-full flex items-center justify-center gap-3 mb-5 font-bold text-sm bg-white text-[#0d0d0d] border-[3px] border-[#0d0d0d] shadow-[4px_4px_0_#0d0d0d] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] cursor-pointer font-display"
+              style={{ padding: "12px 24px" }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24">
                 <path
@@ -225,11 +219,8 @@ function RegisterPage() {
               Sign up with Google
             </button>
             <button
-              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm bg-white  text-[#0d0d0d] border-[3px] border-[#0d0d0d]  shadow-[4px_4px_0_#0d0d0d] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] cursor-pointer"
-              style={{
-                padding: "12px 24px",
-                fontFamily: "var(--font-display)",
-              }}
+              className="w-full flex items-center justify-center gap-3 mb-6 font-bold text-sm bg-white  text-[#0d0d0d] border-[3px] border-[#0d0d0d]  shadow-[4px_4px_0_#0d0d0d] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#0d0d0d] cursor-pointer font-display"
+              style={{ padding: "12px 24px" }}
               onClick={authApi.loginWithGithub}
             >
               <svg
@@ -245,8 +236,8 @@ function RegisterPage() {
             <div className="flex items-center gap-3 mb-5">
               <div className="flex-1 h-0.5 bg-[#0d0d0d]" />
               <span
-                className="text-xs font-bold uppercase text-[#0d0d0d]"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-xs font-bold uppercase text-[#0d0d0d] font-display"
+                
               >
                 or
               </span>
@@ -256,8 +247,8 @@ function RegisterPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
-                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d] font-display"
+                  
                 >
                   Full Name
                 </label>
@@ -271,8 +262,8 @@ function RegisterPage() {
               </div>
               <div>
                 <label
-                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d] font-display"
+                  
                 >
                   Email Address
                 </label>
@@ -286,8 +277,8 @@ function RegisterPage() {
               </div>
               <div>
                 <label
-                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d] font-display"
+                  
                 >
                   Password
                 </label>
@@ -310,8 +301,8 @@ function RegisterPage() {
               </div>
               <div>
                 <label
-                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d]"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="block mb-1.5 text-xs font-black uppercase tracking-widest text-[#0d0d0d] font-display"
+                  
                 >
                   Confirm Password
                 </label>
@@ -364,8 +355,8 @@ function RegisterPage() {
               Already a writer?{" "}
               <Link
                 to="/login"
-                className="font-black text-[#d32f2f]"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="font-black text-[#d32f2f] font-display"
+                
               >
                 Log in →
               </Link>

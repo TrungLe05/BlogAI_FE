@@ -72,14 +72,14 @@ function TopPostsTable({ range, fmtNum }: TopPostsTableProps) {
       {/* Header bar */}
       <div className="px-5 py-3 flex items-center justify-between bg-[#0d0d0d] dark:bg-zinc-800 border-b-[3px] border-[#0d0d0d] dark:border-zinc-600">
         <h2
-          className="font-black text-xs uppercase tracking-[0.15em] text-white"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="font-black text-xs uppercase tracking-[0.15em] text-white font-display"
+          
         >
           Top Performing Posts
         </h2>
         <span
-          className="text-white/40 text-xs font-bold"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="text-white/40 text-xs font-bold font-display"
+          
         >
           {RANGE_LABELS[range]}
         </span>
@@ -87,8 +87,8 @@ function TopPostsTable({ range, fmtNum }: TopPostsTableProps) {
 
       {/* Column headers */}
       <div
-        className="grid text-xs font-black uppercase tracking-[0.15em] px-5 py-3 text-[#8f6f6c] dark:text-zinc-500 bg-[#ecf5f6] dark:bg-zinc-800/60 border-b-[3px] border-[#e7f0f1] dark:border-zinc-700"
-        style={{ gridTemplateColumns: COL, fontFamily: "var(--font-display)" }}
+        className="grid text-xs font-black uppercase tracking-[0.15em] px-5 py-3 text-[#8f6f6c] dark:text-zinc-500 bg-[#ecf5f6] dark:bg-zinc-800/60 border-b-[3px] border-[#e7f0f1] dark:border-zinc-700 font-display"
+        style={{ gridTemplateColumns: COL}}
       >
         <span>#</span>
         <span>Post</span>
@@ -113,19 +113,16 @@ function TopPostsTable({ range, fmtNum }: TopPostsTableProps) {
         >
           {/* Rank badge */}
           <span
-            className="w-6 h-6 flex items-center justify-center text-xs font-black text-white"
-            style={{
-              fontFamily: "var(--font-display)",
-              background: post.rank === 1 ? "#d32f2f" : "#0d0d0d",
-            }}
+            className="w-6 h-6 flex items-center justify-center text-xs font-black text-white font-display"
+            style={{ background: post.rank === 1 ? "#d32f2f" : "#0d0d0d" }}
           >
             {post.rank}
           </span>
 
           {/* Title */}
           <span
-            className="text-xs font-bold pr-4 truncate text-[#151d1e] dark:text-zinc-200"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-xs font-bold pr-4 truncate text-[#151d1e] dark:text-zinc-200 font-display"
+            
             title={post.title}
           >
             {post.title}

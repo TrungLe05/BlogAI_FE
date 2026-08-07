@@ -12,8 +12,8 @@ function BrutalToggle({
   return (
     <div className="flex items-center justify-between py-3 border-b-[3px] border-[#e7f0f1] dark:border-zinc-600">
       <span
-        className="text-sm font-bold dark:text-white text-[#151d1e]"
-        style={{ fontFamily: "var(--font-display)" }}
+        className="text-sm font-bold dark:text-white text-[#151d1e] font-display"
+        
       >
         {label}
       </span>

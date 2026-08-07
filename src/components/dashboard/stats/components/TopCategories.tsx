@@ -26,10 +26,12 @@ function TopCategories() {
           <div
             key={cat.name}
             className={`${i === 0 ? "bg-[#0d0d0d] dark:bg-zinc-900" : "bg-white"} flex items-center gap-3 p-3 border-[3px] border-[#0d0d0d] dark:border-zinc-600`}
-            style={{
-              // background: i === 0 ? "#0d0d0d" : "#ffffff",
-              // border: "3px solid #0d0d0d",
-            }}
+            style={
+              {
+                // background: i === 0 ? "#0d0d0d" : "#ffffff",
+                // border: "3px solid #0d0d0d",
+              }
+            }
           >
             <span
               className="w-6 h-6 flex items-center justify-center text-xs font-black shrink-0"

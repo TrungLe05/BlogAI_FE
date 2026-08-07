@@ -50,10 +50,10 @@ function ProfileBanner({
           </div>
           {/* Identity */}
           <div className="flex-1">
-            <h1 className="font-black text-white text-3xl mb-1" style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.02em" }}>
+            <h1 className="font-black text-white text-3xl mb-1 font-display" style={{ letterSpacing: "-0.02em"  }}>
               {form.fullName}
             </h1>
-            <p className="text-white/40 text-xs uppercase tracking-[0.15em] mb-4" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="text-white/40 text-xs uppercase tracking-[0.15em] mb-4 font-display" >
               {form.email}
             </p>
             <div className="flex flex-wrap gap-3">
@@ -65,8 +65,8 @@ function ProfileBanner({
           {/* Actions */}
           <div className="flex flex-col gap-3 shrink-0">
             <button
-              className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
-              style={{ fontFamily: "var(--font-display)", background: "#d32f2f", color: "white", border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 rgba(255,255,255,0.2)" }}
+              className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer font-display"
+              style={{ background: "#d32f2f", color: "white", border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 rgba(255,255,255,0.2)"  }}
               onClick={() => document.getElementById("dash-edit-panel")?.scrollIntoView({ behavior: "smooth" })}
               onMouseEnter={(e) => { e.currentTarget.style.transform = "translate(-2px,-2px)"; e.currentTarget.style.boxShadow = "6px 6px 0 rgba(255,255,255,0.3)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = "translate(0,0)"; e.currentTarget.style.boxShadow = "4px 4px 0 rgba(255,255,255,0.2)"; }}
@@ -74,8 +74,8 @@ function ProfileBanner({
               <Edit3 size={13} /> Edit Profile
             </button>
             <button
-              className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
-              style={{ fontFamily: "var(--font-display)", background: "transparent", color: "white", border: "3px solid rgba(255,255,255,0.3)" }}
+              className="flex items-center gap-2 px-5 py-2.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer font-display"
+              style={{ background: "transparent", color: "white", border: "3px solid rgba(255,255,255,0.3)"  }}
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = "white"; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.3)"; }}
             >

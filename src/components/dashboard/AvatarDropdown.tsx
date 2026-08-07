@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Settings, LogOut, KeyRound, Globe, ChevronDown } from "lucide-react";
+import { Settings, LogOut, KeyRound, Globe } from "lucide-react";
 import useAuthStore from "@/stores/authStore";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { authApi } from "@/api/authApi";
 import { extractApiError } from "@/utils/apiError";
 import LoadingSpinner from "../common/LoadingSpinner";
+import UserAvatar from "../common/userAvatar";
 
 interface AvatarDropdownProps {
   onSettingsClick?: () => void;
@@ -45,8 +46,12 @@ export function AvatarDropdown({ onSettingsClick }: AvatarDropdownProps) {
       icon: <Settings size={14} />,
       label: "Settings",
       onClick: () => {
-        onSettingsClick?.();
         setDropdownOpen(false);
+        if (onSettingsClick) {
+          onSettingsClick();
+        } else {
+          navigate("/dashboard?view=settings");
+        }
       },
     },
     {
@@ -81,7 +86,7 @@ export function AvatarDropdown({ onSettingsClick }: AvatarDropdownProps) {
           onClick={() => setDropdownOpen((o) => !o)}
           title="Account menu"
         >
-          <div className="relative">
+          {/* <div className="relative">
             <img
               src={
                 user?.avatarUrl ||
@@ -95,15 +100,16 @@ export function AvatarDropdown({ onSettingsClick }: AvatarDropdownProps) {
               className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500"
               style={{ border: "2px solid white" }}
             />
-          </div>
-          <ChevronDown
+          </div> */}
+          <UserAvatar />
+          {/* <ChevronDown
             size={13}
             style={{
               color: "#0d0d0d",
               transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
               transition: "transform 0.15s ease",
             }}
-          />
+          /> */}
         </button>
 
         {dropdownOpen && (
@@ -122,8 +128,8 @@ export function AvatarDropdown({ onSettingsClick }: AvatarDropdownProps) {
               }}
             >
               <p
-                className="text-xs font-black uppercase truncate"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-xs font-black uppercase truncate font-display"
+                
               >
                 {user?.fullName}
               </p>
@@ -136,14 +142,11 @@ export function AvatarDropdown({ onSettingsClick }: AvatarDropdownProps) {
                 <button
                   key={item.label}
                   onClick={item.onClick}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "0.8rem",
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors font-display"
+                  style={{ fontSize: "0.8rem",
                     fontWeight: 700,
                     color: item.danger ? "#d32f2f" : "#0d0d0d",
-                    borderBottom: "1px solid rgba(0,0,0,0.06)",
-                  }}
+                    borderBottom: "1px solid rgba(0,0,0,0.06)" }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = item.danger
                       ? "#d32f2f"
@@ -190,7 +193,7 @@ function ChangePasswordDialog({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const {logout} = useAuthStore();
+  const { logout } = useAuthStore();
   const navigate = useNavigate();
   const handleSubmit = async () => {
     const dataSubmit = { currentPassword, newPassword, confirmPassword };
@@ -254,7 +257,7 @@ function ChangePasswordDialog({
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <Button
-              type="button" // ✅ tránh form submit mặc định
+              type="button"
               className="w-full"
               onClick={handleSubmit}
             >
@@ -286,8 +289,8 @@ function ChangeLanguageDialog({
       <DialogContent className="sm:max-w-xs">
         <DialogHeader>
           <DialogTitle
-            className="font-black uppercase tracking-widest"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="font-black uppercase tracking-widest font-display"
+            
           >
             Change Language
           </DialogTitle>
@@ -299,17 +302,15 @@ function ChangeLanguageDialog({
               key={lang.code}
               onClick={() => setSelected(lang.code)}
               className="flex items-center gap-4 px-4 py-3 transition-all text-left"
-              style={{
-                border: `3px solid #0d0d0d`,
+              style={{ border: `3px solid #0d0d0d`,
                 background: selected === lang.code ? "#0d0d0d" : "white",
                 color: selected === lang.code ? "white" : "#0d0d0d",
                 boxShadow:
                   selected === lang.code
                     ? "3px 3px 0 #d32f2f"
                     : "3px 3px 0 #0d0d0d",
-                fontFamily: "var(--font-display)",
-                fontWeight: 800,
-              }}
+                
+                fontWeight: 800 }}
             >
               <span className="text-2xl">{lang.flag}</span>
               <div>
@@ -344,14 +345,11 @@ function ChangeLanguageDialog({
         </div>
 
         <Button
-          className="w-full font-black uppercase tracking-widest"
-          style={{
-            fontFamily: "var(--font-display)",
-            background: "#d32f2f",
+          className="w-full font-black uppercase tracking-widest font-display"
+          style={{ background: "#d32f2f",
             border: "3px solid #0d0d0d",
             boxShadow: "3px 3px 0 #0d0d0d",
-            borderRadius: 0,
-          }}
+            borderRadius: 0 }}
           onClick={() => onOpenChange(false)}
         >
           Apply

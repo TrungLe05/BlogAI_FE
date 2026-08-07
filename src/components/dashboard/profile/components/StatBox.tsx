@@ -24,10 +24,10 @@ function StatBox({
         if (onClick) e.currentTarget.style.background = "rgba(255,255,255,0.06)";
       }}
     >
-      <p className="font-black text-2xl text-white" style={{ fontFamily: "var(--font-display)" }}>
+      <p className="font-black text-2xl text-white font-display" >
         {value}
       </p>
-      <p className="text-xs text-white/50 uppercase tracking-[0.15em] mt-1" style={{ fontFamily: "var(--font-display)" }}>
+      <p className="text-xs text-white/50 uppercase tracking-[0.15em] mt-1 font-display" >
         {label}
       </p>
     </div>

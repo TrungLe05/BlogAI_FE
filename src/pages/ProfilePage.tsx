@@ -82,10 +82,10 @@ function StatBox({ value, label }: { value: string; label: string }) {
       className="text-center px-6 py-3"
       style={{ border: "3px solid rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.08)" }}
     >
-      <p className="font-black text-2xl text-white" style={{ fontFamily: "var(--font-display)" }}>
+      <p className="font-black text-2xl text-white font-display" >
         {value}
       </p>
-      <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5" style={{ fontFamily: "var(--font-display)" }}>
+      <p className="text-xs text-white/60 uppercase tracking-widest mt-0.5 font-display" >
         {label}
       </p>
     </div>
@@ -122,7 +122,7 @@ function ProfilePage() {
     n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
 
   return (
-    <div style={{ background: "#ebf4f5", minHeight: "100vh", fontFamily: "var(--font-sans)" }}>
+    <div className="font-sans" style={{ background: "#ebf4f5", minHeight: "100vh" }}>
 
       {/* ── Profile Banner ───────────────────────────────── */}
       <div
@@ -158,12 +158,12 @@ function ProfilePage() {
             {/* Identity */}
             <div className="flex-1">
               <h1
-                className="font-black text-white mb-1"
-                style={{ fontFamily: "var(--font-display)", fontSize: "clamp(24px, 3vw, 36px)" }}
+                className="font-black text-white mb-1 font-display"
+                style={{ fontSize: "clamp(24px, 3vw, 36px)"  }}
               >
                 {form.name}
               </h1>
-              <p className="text-white/50 text-sm mb-2" style={{ fontFamily: "var(--font-display)" }}>
+              <p className="text-white/50 text-sm mb-2 font-display" >
                 {form.username}
               </p>
               <p className="text-white/70 text-sm leading-relaxed max-w-xl mb-4">
@@ -229,18 +229,15 @@ function ProfilePage() {
                   key={t}
                   onClick={() => setActiveTab(t)}
                   className="flex-1 py-3 text-sm font-black uppercase tracking-widest transition-colors relative"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    background: activeTab === t ? "#0d0d0d" : "transparent",
+                  style={{ background: activeTab === t ? "#0d0d0d" : "transparent",
                     color: activeTab === t ? "white" : "#555",
-                    borderRight: t !== "scheduled" ? "2px solid #0d0d0d" : "none",
-                  }}
+                    borderRight: t !== "scheduled" ? "2px solid #0d0d0d" : "none" }}
                 >
                   {t}
                   {t === "drafts" && (
                     <span
-                      className="ml-2 text-xs px-1.5 font-black"
-                      style={{ background: "#d32f2f", color: "white", fontFamily: "var(--font-display)" }}
+                      className="ml-2 text-xs px-1.5 font-black font-display"
+                      style={{ background: "#d32f2f", color: "white"}}
                     >
                       {DRAFTS.length}
                     </span>
@@ -285,8 +282,8 @@ function ProfilePage() {
                       <div>
                         <div className="flex items-center justify-between mb-2">
                           <span
-                            className="text-xs font-black uppercase tracking-widest px-2 py-0.5 text-white"
-                            style={{ background: "#d32f2f", fontFamily: "var(--font-display)" }}
+                            className="text-xs font-black uppercase tracking-widest px-2 py-0.5 text-white font-display"
+                            style={{ background: "#d32f2f"}}
                           >
                             {post.category}
                           </span>
@@ -304,8 +301,8 @@ function ProfilePage() {
                           </div>
                         </div>
                         <h3
-                          className="font-black text-base leading-tight mb-2"
-                          style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+                          className="font-black text-base leading-tight mb-2 font-display"
+                          style={{ color: "#0d0d0d"  }}
                         >
                           {post.title}
                         </h3>
@@ -354,12 +351,12 @@ function ProfilePage() {
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <span
-                          className="text-xs font-black uppercase tracking-widest px-2 py-0.5 mb-2 inline-block"
-                          style={{ background: "#f0f0f0", color: "#666", border: "2px solid #ccc", fontFamily: "var(--font-display)" }}
+                          className="text-xs font-black uppercase tracking-widest px-2 py-0.5 mb-2 inline-block font-display"
+                          style={{ background: "#f0f0f0", color: "#666", border: "2px solid #ccc"}}
                         >
                           Draft
                         </span>
-                        <h3 className="font-black text-base" style={{ fontFamily: "var(--font-display)" }}>
+                        <h3 className="font-black text-base font-display" >
                           {draft.title}
                         </h3>
                         <p className="text-xs mt-1" style={{ color: "#888" }}>
@@ -394,7 +391,7 @@ function ProfilePage() {
                 style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
               >
                 <p className="text-5xl mb-4">📅</p>
-                <h3 className="font-black text-xl mb-2" style={{ fontFamily: "var(--font-display)" }}>No Scheduled Posts</h3>
+                <h3 className="font-black text-xl mb-2 font-display" >No Scheduled Posts</h3>
                 <p className="text-sm mb-6" style={{ color: "#888" }}>
                   Schedule posts from the Dashboard → Settings tab.
                 </p>
@@ -416,8 +413,8 @@ function ProfilePage() {
               style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
             >
               <h2
-                className="font-black text-lg mb-5 flex items-center gap-2"
-                style={{ fontFamily: "var(--font-display)", borderBottom: "3px solid #0d0d0d", paddingBottom: "12px" }}
+                className="font-black text-lg mb-5 flex items-center gap-2 font-display"
+                style={{ borderBottom: "3px solid #0d0d0d", paddingBottom: "12px"  }}
               >
                 <Edit3 size={18} style={{ color: "#d32f2f" }} />
                 Edit Profile
@@ -432,8 +429,8 @@ function ProfilePage() {
                 ].map(({ label, key, type, placeholder }) => (
                   <div key={key}>
                     <label
-                      className="block mb-1.5 text-xs font-black uppercase tracking-widest"
-                      style={{ fontFamily: "var(--font-display)" }}
+                      className="block mb-1.5 text-xs font-black uppercase tracking-widest font-display"
+                      
                     >
                       {label}
                     </label>
@@ -449,8 +446,8 @@ function ProfilePage() {
 
                 <div>
                   <label
-                    className="block mb-1.5 text-xs font-black uppercase tracking-widest"
-                    style={{ fontFamily: "var(--font-display)" }}
+                    className="block mb-1.5 text-xs font-black uppercase tracking-widest font-display"
+                    
                   >
                     Bio
                   </label>
@@ -493,17 +490,16 @@ function ProfilePage() {
                 <div style={{ background: "rgba(255,255,255,0.2)", border: "2px solid rgba(255,255,255,0.4)", width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <Settings size={16} color="white" />
                 </div>
-                <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "0.9rem", color: "#fff", margin: 0 }}>Account Settings</p>
+                <p className="font-display" style={{ fontWeight: 900, fontSize: "0.9rem", color: "#fff", margin: 0 }}>Account Settings</p>
               </div>
-              <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.78rem", color: "rgba(255,255,255,0.75)", marginBottom: "14px" }}>
+              <p className="font-sans" style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.75)", marginBottom: "14px" }}>
                 Manage password, notifications, appearance &amp; security.
               </p>
               <Link to="/settings">
                 <button
-                  style={{
-                    width: "100%",
+                  className="font-display" style={{ width: "100%",
                     padding: "10px 16px",
-                    fontFamily: "var(--font-display)",
+                    
                     fontWeight: 900,
                     fontSize: "0.78rem",
                     letterSpacing: "0.1em",
@@ -516,8 +512,7 @@ function ProfilePage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: "6px",
-                  }}
+                    gap: "6px" }}
                 >
                   <ArrowRight size={14} /> Go to Settings
                 </button>
@@ -534,7 +529,7 @@ function ProfilePage() {
               }}
             >
               <div style={{ background: "#0d0d0d", padding: "12px 16px", borderBottom: "3px solid #0d0d0d" }}>
-                <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
+                <p className="font-display" style={{ fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", margin: 0, display: "flex", alignItems: "center", gap: "6px" }}>
                   <BarChart2 size={12} /> Writing Statistics
                 </p>
               </div>
@@ -553,10 +548,10 @@ function ProfilePage() {
                       borderBottom: i < 2 ? "2px solid #e7f0f1" : "none",
                     }}
                   >
-                    <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5b403d", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: "4px" }}>
+                    <p className="font-display" style={{ fontWeight: 700, fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#5b403d", margin: "0 0 4px 0", display: "flex", alignItems: "center", gap: "4px" }}>
                       {stat.icon} {stat.label}
                     </p>
-                    <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "1.3rem", color: "#0d0d0d", margin: 0 }}>
+                    <p className="font-display" style={{ fontWeight: 900, fontSize: "1.3rem", color: "#0d0d0d", margin: 0 }}>
                       {stat.value}
                     </p>
                   </div>
@@ -573,7 +568,7 @@ function ProfilePage() {
                 padding: "20px",
               }}
             >
-              <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", margin: "0 0 14px 0" }}>
+              <p className="font-display" style={{ fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", margin: "0 0 14px 0" }}>
                 Quick Actions
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -589,10 +584,9 @@ function ProfilePage() {
                 </Link>
                 <Link to="/explore">
                   <button
-                    style={{
-                      width: "100%",
+                    className="font-display" style={{ width: "100%",
                       padding: "10px 14px",
-                      fontFamily: "var(--font-display)",
+                      
                       fontWeight: 700,
                       fontSize: "0.8rem",
                       letterSpacing: "0.08em",
@@ -604,8 +598,7 @@ function ProfilePage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: "6px",
-                    }}
+                      gap: "6px" }}
                   >
                     <Zap size={14} /> Explore Stories
                   </button>
@@ -621,17 +614,16 @@ function ProfilePage() {
                 background: "#fff",
               }}
             >
-              <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#af101a", margin: "0 0 8px 0" }}>⚠ Danger Zone</p>
-              <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.78rem", color: "#5b403d", margin: "0 0 12px 0" }}>
+              <p className="font-display" style={{ fontWeight: 900, fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#af101a", margin: "0 0 8px 0" }}>⚠ Danger Zone</p>
+              <p className="font-sans" style={{ fontSize: "0.78rem", color: "#5b403d", margin: "0 0 12px 0" }}>
                 Deleting your account is permanent and irreversible.
               </p>
               <button
-                style={{
-                  display: "inline-flex",
+                className="font-display" style={{ display: "inline-flex",
                   alignItems: "center",
                   gap: "6px",
                   padding: "8px 16px",
-                  fontFamily: "var(--font-display)",
+                  
                   fontWeight: 700,
                   fontSize: "0.78rem",
                   letterSpacing: "0.08em",
@@ -639,8 +631,7 @@ function ProfilePage() {
                   color: "#af101a",
                   background: "#fff",
                   border: "3px solid #af101a",
-                  cursor: "pointer",
-                }}
+                  cursor: "pointer" }}
               >
                 <Trash2 size={13} /> Delete Account
               </button>

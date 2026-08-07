@@ -45,7 +45,7 @@ export default function ChatWindow({
             <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white dark:border-zinc-900" />
           </div>
           <div>
-            <p className="text-sm font-black text-[#0d0d0d] dark:text-white" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="text-sm font-black text-[#0d0d0d] dark:text-white font-display" >
               {conv.otherUser.fullName}
             </p>
             <p className="text-xs text-[#888] dark:text-zinc-500">{conv.otherUser.email}</p>

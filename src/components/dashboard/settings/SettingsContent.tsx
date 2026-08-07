@@ -8,7 +8,7 @@ import {
   ShieldCheck,
   ChevronRight,
 } from "lucide-react";
-import { AccountSection } from "./sections/AccountSection";
+// import { AccountSection } from "./sections/AccountSection";
 import { PasswordSection } from "./sections/PasswordSection";
 import { NotificationsSection } from "./sections/NotificationsSection";
 import { LanguageSection } from "./sections/LanguageSection";
@@ -16,7 +16,6 @@ import { AppearanceSection } from "./sections/AppearanceSection";
 import { TwoFASection } from "./sections/TwoFASection";
 
 type SettingsSection =
-  | "account"
   | "password"
   | "notifications"
   | "language"
@@ -28,7 +27,6 @@ const NAV_ITEMS: {
   icon: React.ReactNode;
   label: string;
 }[] = [
-  { key: "account", icon: <User size={14} />, label: "Account" },
   { key: "password", icon: <Lock size={14} />, label: "Password" },
   { key: "notifications", icon: <Bell size={14} />, label: "Notifications" },
   { key: "language", icon: <Globe size={14} />, label: "Language" },
@@ -40,7 +38,6 @@ const SECTION_TITLES: Record<
   SettingsSection,
   { icon: React.ReactNode; label: string }
 > = {
-  account: { icon: <User size={14} />, label: "Account Overview" },
   password: { icon: <Lock size={14} />, label: "Password & Security" },
   notifications: {
     icon: <Bell size={14} />,
@@ -55,11 +52,11 @@ const SECTION_TITLES: Record<
 };
 
 export function SettingsContent() {
-  const [active, setActive] = useState<SettingsSection>("account");
+  const [active, setActive] = useState<SettingsSection>("password");
   const sec = SECTION_TITLES[active];
 
   const content: Record<SettingsSection, React.ReactNode> = {
-    account: <AccountSection onNavigate={setActive} />,
+    // account: <AccountSection onNavigate={setActive} />,
     password: <PasswordSection />,
     notifications: <NotificationsSection />,
     language: <LanguageSection />,
@@ -74,8 +71,8 @@ export function SettingsContent() {
         {/* Nav header */}
         <div className="px-4 py-3.5 bg-[#0d0d0d] dark:bg-zinc-800 border-b-[3px] border-[#0d0d0d] dark:border-zinc-700">
           <p
-            className="font-black text-[0.6rem] uppercase tracking-[0.15em] text-white/55 m-0"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="font-black text-[0.6rem] uppercase tracking-[0.15em] text-white/55 m-0 font-display"
+            
           >
             Preferences
           </p>
@@ -107,7 +104,6 @@ export function SettingsContent() {
               </span>
               <span
                 className={`flex-1 font-bold text-[0.78rem] ${isActive ? "text-white" : "text-[#0d0d0d] dark:text-zinc-200"}`}
-                style={{ fontFamily: "var(--font-display)" }}
               >
                 {item.label}
               </span>
@@ -125,11 +121,8 @@ export function SettingsContent() {
             {sec.icon}
           </span>
           <h2
-            className="font-black text-base text-[#0d0d0d] dark:text-white m-0"
-            style={{
-              fontFamily: "var(--font-display)",
-              letterSpacing: "-0.01em",
-            }}
+            className="font-black text-base text-[#0d0d0d] dark:text-white m-0 font-display"
+            style={{ letterSpacing: "-0.01em" }}
           >
             {sec.label}
           </h2>

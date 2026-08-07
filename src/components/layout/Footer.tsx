@@ -19,11 +19,8 @@ const socialLinks = [
 function Footer() {
   return (
     <footer
-      style={{
-        background: "#0d0d0d",
-        borderTop: "3px solid #0d0d0d",
-        fontFamily: "var(--font-sans)",
-      }}
+      className="font-sans" style={{ background: "#0d0d0d",
+        borderTop: "3px solid #0d0d0d" }}
     >
       <div className="max-w-[1360px] mx-auto px-6 py-12">
         <div className="grid md:grid-cols-3 gap-10 items-start mb-10">
@@ -31,8 +28,8 @@ function Footer() {
           <div>
             <Link to="/">
               <span
-                className="text-2xl font-black mb-3 block"
-                style={{ fontFamily: "var(--font-display)", color: "white" }}
+                className="text-2xl font-black mb-3 block font-display"
+                style={{ color: "white"  }}
               >
                 Blog<span style={{ color: "#d32f2f" }}>AI</span>
               </span>
@@ -46,8 +43,8 @@ function Footer() {
           {/* Navigation */}
           <div>
             <h4
-              className="font-black text-xs uppercase tracking-widest mb-4 text-white/40"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="font-black text-xs uppercase tracking-widest mb-4 text-white/40 font-display"
+              
             >
               Navigation
             </h4>
@@ -56,8 +53,8 @@ function Footer() {
                 <li key={link.label}>
                   <Link
                     to={link.href}
-                    className="text-sm text-white/70 hover:text-white transition-colors font-medium"
-                    style={{ fontFamily: "var(--font-display)" }}
+                    className="text-sm text-white/70 hover:text-white transition-colors font-medium font-display"
+                    
                   >
                     → {link.label}
                   </Link>
@@ -69,8 +66,8 @@ function Footer() {
           {/* Social + CTA */}
           <div>
             <h4
-              className="font-black text-xs uppercase tracking-widest mb-4 text-white/40"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="font-black text-xs uppercase tracking-widest mb-4 text-white/40 font-display"
+              
             >
               Follow Us
             </h4>

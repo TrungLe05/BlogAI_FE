@@ -2,7 +2,7 @@ import { Search, ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import BlogCard from "@/features/blog/components/BlogCard";
 import { useExplore } from "@/features/blog/hooks/useExplore";
-
+import { FileEdit, FilePenLine, FilePen } from "lucide-react";
 export default function ExplorePage() {
   const {
     search,
@@ -31,19 +31,16 @@ export default function ExplorePage() {
 
   return (
     <div
-      className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950"
-      style={{ fontFamily: "var(--font-sans)" }}
+      className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950 font-sans"
+      
     >
       {/* Header */}
       <div className="py-12 px-6 bg-[#0d0d0d] border-b-[3px] border-[#d32f2f]">
         <div className="max-w-7xl mx-auto">
           <h1
-            className="font-black mb-4 text-white"
-            style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "clamp(36px, 5vw, 64px)",
-              lineHeight: 1.1,
-            }}
+            className="font-black mb-4 text-white font-display"
+            style={{ fontSize: "clamp(36px, 5vw, 64px)",
+              lineHeight: 1.1 }}
           >
             Explore <span className="text-[#d32f2f]">Stories</span>
           </h1>
@@ -80,7 +77,7 @@ export default function ExplorePage() {
                     ? "bg-[#d32f2f] text-white border-[#d32f2f] shadow-[3px_3px_0_#0d0d0d] dark:shadow-[3px_3px_0_#52525b]"
                     : "bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-zinc-200 border-[#0d0d0d] dark:border-zinc-600 hover:bg-[#f2fbfc] dark:hover:bg-zinc-700"
                 }`}
-              style={{ fontFamily: "var(--font-display)" }}
+              
             >
               {group}
             </button>
@@ -98,7 +95,7 @@ export default function ExplorePage() {
                     ? "bg-[#0d0d0d] dark:bg-zinc-200 text-white dark:text-zinc-900 border-[#0d0d0d] dark:border-zinc-200"
                     : "bg-[#f2fbfc] dark:bg-zinc-700 text-[#0d0d0d] dark:text-zinc-200 border-[#0d0d0d] dark:border-zinc-500"
                 }`}
-              style={{ fontFamily: "var(--font-display)" }}
+              
             >
               All in {activeGroup}
             </button>
@@ -112,7 +109,7 @@ export default function ExplorePage() {
                       ? "bg-[#0d0d0d] dark:bg-zinc-200 text-white dark:text-zinc-900 border-[#0d0d0d] shadow-[2px_2px_0_#d32f2f]"
                       : "bg-[#f2fbfc] dark:bg-zinc-700 text-[#0d0d0d] dark:text-zinc-200 border-[#0d0d0d] dark:border-zinc-500"
                   }`}
-                style={{ fontFamily: "var(--font-display)" }}
+                
               >
                 {t.tag}
               </button>
@@ -134,15 +131,15 @@ export default function ExplorePage() {
                       : "bg-transparent text-[#555] dark:text-zinc-400 hover:bg-[#f2fbfc] dark:hover:bg-zinc-700"
                   }
                   ${i < SORTS.length - 1 ? "border-r-2 border-[#0d0d0d] dark:border-zinc-600" : ""}`}
-                style={{ fontFamily: "var(--font-display)" }}
+                
               >
                 {sort}
               </button>
             ))}
           </div>
           <p
-            className="text-sm text-[#888] dark:text-zinc-400"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-sm text-[#888] dark:text-zinc-400 font-display"
+            
           >
             <span className="font-black text-[#d32f2f]">
               {filteredAndSorted.length}
@@ -190,7 +187,7 @@ export default function ExplorePage() {
                               ? "bg-[#0d0d0d] dark:bg-zinc-200 text-white dark:text-zinc-900 border-[#0d0d0d] shadow-[3px_3px_0_#d32f2f]"
                               : "bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white border-[#0d0d0d] dark:border-zinc-600 shadow-[3px_3px_0_#0d0d0d]"
                           }`}
-                          style={{ fontFamily: "var(--font-display)" }}
+                          
                         >
                           {p}
                         </button>
@@ -213,10 +210,13 @@ export default function ExplorePage() {
               </>
             ) : (
               <div className="text-center py-20 bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d]">
-                <p className="text-6xl mb-4">📝</p>
+                {/* <p className="text-6xl mb-4">📝</p> */}
+                <div className="flex justify-center mb-4">
+                  <FileEdit size={60} />
+                </div>
                 <h3
-                  className="font-black text-xl mb-2 text-[#0d0d0d] dark:text-white"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="font-black text-xl mb-2 text-[#0d0d0d] dark:text-white font-display"
+                  
                 >
                   No stories found
                 </h3>
@@ -233,8 +233,8 @@ export default function ExplorePage() {
             <div className="bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
               <div className="px-5 py-3 bg-[#0d0d0d] border-b-[3px] border-[#0d0d0d]">
                 <h3
-                  className="font-black text-sm uppercase tracking-widest text-white flex items-center gap-2"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="font-black text-sm uppercase tracking-widest text-white flex items-center gap-2 font-display"
+                  
                 >
                   <TrendingUp size={14} /> Trending Topics
                 </h3>
@@ -247,14 +247,14 @@ export default function ExplorePage() {
                 >
                   <div className="flex items-center gap-3">
                     <span
-                      className="w-6 h-6 flex items-center justify-center text-xs font-black text-white bg-[#d32f2f]"
-                      style={{ fontFamily: "var(--font-display)" }}
+                      className="w-6 h-6 flex items-center justify-center text-xs font-black text-white bg-[#d32f2f] font-display"
+                      
                     >
                       {i + 1}
                     </span>
                     <span
-                      className="text-sm font-bold text-[#0d0d0d] dark:text-zinc-200"
-                      style={{ fontFamily: "var(--font-display)" }}
+                      className="text-sm font-bold text-[#0d0d0d] dark:text-zinc-200 font-display"
+                      
                     >
                       {t.tag}
                     </span>
@@ -269,8 +269,8 @@ export default function ExplorePage() {
             {/* Popular Tags */}
             <div className="bg-white dark:bg-zinc-800 p-5 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
               <h3
-                className="font-black text-sm uppercase tracking-widest mb-4 text-[#0d0d0d] dark:text-zinc-200"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="font-black text-sm uppercase tracking-widest mb-4 text-[#0d0d0d] dark:text-zinc-200 font-display"
+                
               >
                 Popular Tags
               </h3>

@@ -39,14 +39,14 @@ export function PasswordSection() {
       </div>
       <div>
         <FieldLabel>New Password</FieldLabel>
-        <BrutalInput type={showNew ? "text" : "password"} placeholder="Min. 8 characters" value={newPwd} onChange={setNewPwd}
+        <BrutalInput type={showNew ? "text" : "password"} placeholder="Min 8 characters" value={newPwd} onChange={setNewPwd}
           suffix={<span onClick={() => setShowNew(v => !v)}>{showNew ? <EyeOff size={14} /> : <Eye size={14} />}</span>} />
         {newPwd.length > 0 && (
           <div style={{ marginTop: 8 }}>
             <div style={{ display: "flex", gap: 4, marginBottom: 4 }}>
               {[1,2,3].map(i => <div key={i} style={{ flex: 1, height: 5, background: i <= strength ? strengthColors[strength] : "#e7f0f1", border: "1px solid #0d0d0d", transition: "background 0.2s" }} />)}
             </div>
-            <p style={{ fontFamily: "var(--font-display)", fontSize: "0.68rem", fontWeight: 700, color: strengthColors[strength], margin: 0 }}>{strengthLabels[strength]}</p>
+            <p className="font-display" style={{ fontSize: "0.68rem", fontWeight: 700, color: strengthColors[strength], margin: 0 }}>{strengthLabels[strength]}</p>
           </div>
         )}
       </div>
@@ -55,14 +55,14 @@ export function PasswordSection() {
         <BrutalInput type={showConfirm ? "text" : "password"} placeholder="Repeat new password" value={confirm} onChange={setConfirm}
           suffix={<span onClick={() => setShowConfirm(v => !v)}>{showConfirm ? <EyeOff size={14} /> : <Eye size={14} />}</span>} />
         {confirm.length > 0 && newPwd !== confirm && (
-          <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.72rem", color: "#af101a", marginTop: 4 }}>Passwords do not match.</p>
+          <p className="font-sans" style={{ fontSize: "0.72rem", color: "#af101a", marginTop: 4 }}>Passwords do not match.</p>
         )}
       </div>
       <SaveButton onClick={handleSave} loading={loading} />
       <div style={{ background: "#e7f0f1", border: "2px solid #0d0d0d", padding: "14px 16px" }}>
-        <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "#0d0d0d", margin: "0 0 8px" }}>💡 Security Tips</p>
+        <p className="font-display" style={{ fontWeight: 700, fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "#0d0d0d", margin: "0 0 8px" }}>💡 Security Tips</p>
         {["Use 8+ characters with symbols", "Never reuse passwords", "Enable Two-Factor Auth below"].map(tip => (
-          <p key={tip} style={{ fontFamily: "var(--font-sans)", fontSize: "0.78rem", color: "#5b403d", margin: "0 0 4px", paddingLeft: 10, borderLeft: "3px solid #af101a" }}>{tip}</p>
+          <p key={tip} className="font-sans" style={{ fontSize: "0.78rem", color: "#5b403d", margin: "0 0 4px", paddingLeft: 10, borderLeft: "3px solid #af101a" }}>{tip}</p>
         ))}
       </div>
     </div>

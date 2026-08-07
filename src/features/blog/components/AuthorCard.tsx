@@ -26,8 +26,8 @@ export default function AuthorCard({
         <div className="flex items-center gap-2 mb-1">
           <Link
             to={`/user/${blogDetail.author.id}`}
-            className="font-black text-[#0d0d0d] dark:text-white hover:text-[#d32f2f] transition-colors"
-            style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem" }}
+            className="font-black text-[#0d0d0d] dark:text-white hover:text-[#d32f2f] transition-colors font-display"
+            style={{ fontSize: "1.1rem"  }}
           >
             {blogDetail.author.fullName}
           </Link>
@@ -44,11 +44,8 @@ export default function AuthorCard({
             }`}
           disabled={isFollowLoading || isBlogLoading}
           onClick={onFollow}
-          style={{
-            fontFamily: "var(--font-display)",
-            opacity: isFollowLoading ? 0.6 : 1,
-            cursor: isFollowLoading ? "not-allowed" : "pointer",
-          }}
+          style={{ opacity: isFollowLoading ? 0.6 : 1,
+            cursor: isFollowLoading ? "not-allowed" : "pointer" }}
         >
           {isBlogLoading ? "..." : isFollowLoading ? "..." : isFollowing ? "Following ✓" : "Follow Author"}
         </button>

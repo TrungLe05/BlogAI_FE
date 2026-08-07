@@ -33,12 +33,9 @@ function BlogPostsList({
             key={t}
             onClick={() => onTabChange(t)}
             className="flex-1 py-3 text-xs font-black uppercase tracking-[0.15em] transition-colors cursor-pointer"
-            style={{
-              fontFamily: "var(--font-display)",
-              background: activeTab === t ? "#0d0d0d" : "transparent",
+            style={{ background: activeTab === t ? "#0d0d0d" : "transparent",
               color: activeTab === t ? "white" : "#5b403d",
-              borderRight: t === "published" ? "3px solid #0d0d0d" : "none",
-            }}
+              borderRight: t === "published" ? "3px solid #0d0d0d" : "none" }}
           >
             {t}
             {t === "drafts" && (

@@ -12,14 +12,14 @@ export default function SummaryPill({ icon, label, value }: Props) {
       </span>
       <div>
         <p
-          className="text-xs uppercase font-black tracking-widest leading-none text-[#888] dark:text-zinc-500"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="text-xs uppercase font-black tracking-widest leading-none text-[#888] dark:text-zinc-500 font-display"
+          
         >
           {label}
         </p>
         <p
-          className="font-black text-sm leading-tight text-[#0d0d0d] dark:text-zinc-200"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="font-black text-sm leading-tight text-[#0d0d0d] dark:text-zinc-200 font-display"
+          
         >
           {value}
         </p>

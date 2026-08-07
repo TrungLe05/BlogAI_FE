@@ -22,14 +22,14 @@ export default function BlogCardMini({ blog }: Props) {
         className="w-16 h-16 object-cover shrink-0 border-2 border-[#0d0d0d] dark:border-zinc-600"
       />
       <div>
-        <div className="flex gap-1 flex-wrap mb-1">
+        <div className="flex gap-1 flex-wrap mb-3">
           {blog.tags?.slice(0, 2).map((tag) => (
             <TagPill key={tag} tag={tag} />
           ))}
         </div>
         <p
-          className="text-sm font-bold leading-tight line-clamp-2 text-[#0d0d0d] dark:text-zinc-200"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="text-sm font-bold leading-tight line-clamp-2 text-[#0d0d0d] dark:text-zinc-200 font-display"
+          
         >
           {blog.title}
         </p>

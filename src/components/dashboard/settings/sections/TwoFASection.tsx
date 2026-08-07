@@ -7,6 +7,8 @@ import {
   AlertTriangle,
   Copy,
   CheckCircle,
+  Lock,
+  Key,
 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/api/authApi";
@@ -55,7 +57,6 @@ function StepBar({ current }: { current: number }) {
           />
           <p
             className={`font-black text-[0.58rem] uppercase tracking-[0.07em] m-0 ${i <= current ? "text-[#af101a]" : "text-[#aaa] dark:text-zinc-500"}`}
-            style={{ fontFamily: "var(--font-display)" }}
           >
             {label}
           </p>
@@ -103,7 +104,6 @@ function Btn({
           ? "bg-[#aaa] dark:bg-zinc-600 cursor-not-allowed border-[3px] border-[#aaa] dark:border-zinc-600 text-white shadow-none"
           : `${styles} cursor-pointer`,
       ].join(" ")}
-      style={{ fontFamily: "var(--font-display)" }}
     >
       {loading && <Loader2 size={13} className="animate-spin" />}
       {children}
@@ -240,10 +240,7 @@ export function TwoFASection() {
             )}
           </span>
           <div>
-            <p
-              className="font-black text-[0.9rem] text-[#0d0d0d] dark:text-white m-0"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
+            <p className="font-black text-[0.9rem] text-[#0d0d0d] dark:text-white m-0 font-display">
               Two-Factor Authentication
             </p>
             <p className="text-[0.72rem] text-[#5b403d] dark:text-zinc-400 m-0">
@@ -277,10 +274,7 @@ export function TwoFASection() {
             </span>
           </div>
           <div className="text-left">
-            <p
-              className="font-black text-[0.78rem] text-[#0d0d0d] dark:text-zinc-200 m-0 leading-tight"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
+            <p className="font-black text-[0.78rem] text-[#0d0d0d] dark:text-zinc-200 m-0 leading-tight font-display">
               {initialLoading ? "Loading..." : enabled ? "Enabled" : "Disabled"}
             </p>
             <p className="text-[0.65rem] text-[#888] dark:text-zinc-500 m-0">
@@ -294,10 +288,7 @@ export function TwoFASection() {
       {step === "setup" && setupData && (
         <div className={`bg-white dark:bg-zinc-900 ${card}`}>
           <StepBar current={0} />
-          <p
-            className="font-black text-[0.875rem] text-[#0d0d0d] dark:text-white m-0 mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
+          <p className="font-black text-[0.875rem] text-[#0d0d0d] dark:text-white m-0 mb-1.5 font-display">
             Scan with your authenticator app
           </p>
           <p className="text-[0.78rem] text-[#5b403d] dark:text-zinc-400 m-0 mb-4 leading-relaxed">
@@ -315,10 +306,7 @@ export function TwoFASection() {
               />
             </div>
             <div className="flex-1 min-w-45">
-              <p
-                className="font-bold text-[0.65rem] uppercase tracking-widest text-[#5b403d] dark:text-zinc-400 m-0 mb-1"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
+              <p className="font-bold text-[0.65rem] uppercase tracking-widest text-[#5b403d] dark:text-zinc-400 m-0 mb-1 font-display">
                 Can't scan? Enter manually:
               </p>
               <SecretCopyRow secret={setupData.totpSecret} />
@@ -350,10 +338,7 @@ export function TwoFASection() {
       {step === "confirm" && (
         <div className={`bg-white dark:bg-zinc-900 ${card}`}>
           <StepBar current={1} />
-          <p
-            className="font-black text-[0.875rem] text-[#0d0d0d] dark:text-white m-0 mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
+          <p className="font-black text-[0.875rem] text-[#0d0d0d] dark:text-white m-0 mb-1.5 font-display">
             Enter verification code
           </p>
           <p className="text-[0.78rem] text-[#5b403d] dark:text-zinc-400 m-0 mb-3.5">
@@ -381,11 +366,8 @@ export function TwoFASection() {
       {step === "disable_confirm" && (
         <div className={`bg-red-50 dark:bg-red-950/20 ${dangerCard}`}>
           <div className="flex items-center gap-2 mb-2.5">
-            <AlertTriangle size={15} className="text-[#af101a] shrink-0" />
-            <p
-              className="font-black text-[0.875rem] text-[#7f0d12] dark:text-red-400 m-0"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
+            <AlertTriangle size={16} className="text-[#af101a] shrink-0" />
+            <p className="font-black text-[0.875rem] text-[#7f0d12] dark:text-red-400 m-0 font-display">
               Disable Two-Factor Authentication
             </p>
           </div>
@@ -398,10 +380,17 @@ export function TwoFASection() {
                   setDisableMode(m);
                   setOtpCode("");
                 }}
-                className={`flex-1 py-2 font-bold text-[0.65rem] uppercase tracking-[0.08em] border-2 border-[#7f0d12] cursor-pointer transition-colors ${disableMode === m ? "bg-[#7f0d12] text-white" : "bg-white dark:bg-zinc-800 text-[#7f0d12] dark:text-red-400"}`}
-                style={{ fontFamily: "var(--font-display)" }}
+                className={`flex-1 py-2 font-bold text-[0.75rem] uppercase tracking-[0.08em] border-2 border-[#7f0d12] cursor-pointer transition-colors ${disableMode === m ? "bg-[#7f0d12] text-white" : "bg-white dark:bg-zinc-800 text-[#7f0d12] dark:text-red-400"}`}
               >
-                {m === "otp" ? "🔐 Authenticator Code" : "🗝️ Recovery Code"}
+                {m === "otp" ? (
+                  <div className="py-2 flex justify-center items-center gap-3">
+                    <Lock size={16} /> <span>Authenticator Code </span>{" "}
+                  </div>
+                ) : (
+                  <div className="py-2 flex justify-center items-center gap-3">
+                    <Key size={16} /> <span>Recovery Code </span>{" "}
+                  </div>
+                )}
               </button>
             ))}
           </div>
@@ -448,10 +437,7 @@ export function TwoFASection() {
       {/* ── Info box ── */}
       {step === "idle" && !initialLoading && (
         <div className="bg-[#e7f0f1] dark:bg-zinc-800/50 border-2 border-[#0d0d0d] dark:border-zinc-600 p-4">
-          <p
-            className="font-bold text-[0.65rem] uppercase tracking-widest text-[#0d0d0d] dark:text-zinc-200 m-0 mb-2"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
+          <p className="font-bold text-[0.65rem] uppercase tracking-widest text-[#0d0d0d] dark:text-zinc-200 m-0 mb-2 font-display">
             How it works
           </p>
           {[
@@ -473,10 +459,7 @@ export function TwoFASection() {
       {/* ── Recovery codes ── */}
       {showRecovery && (
         <div className={`bg-red-50 dark:bg-zinc-900 ${card}`}>
-          <p
-            className="font-black text-[0.9rem] text-[#0d0d0d] dark:text-white m-0 mb-1.5"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
+          <p className="font-black text-[0.9rem] text-[#0d0d0d] dark:text-white m-0 mb-1.5 font-display">
             ⚠️ Save your recovery codes
           </p>
           <p className="text-[0.78rem] text-[#5b403d] dark:text-zinc-400 m-0 mb-4 leading-relaxed">

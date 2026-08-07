@@ -30,14 +30,12 @@ function BrutalBarChart({ metric }: BrutalBarChartProps) {
               style={{ height: `${h}%`, minHeight: "8px" }}
             >
               <div
-                className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap"
-                style={{
-                  background: "#0d0d0d",
+                className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-display"
+                style={{ background: "#0d0d0d",
                   color: "white",
-                  fontFamily: "var(--font-display)",
+                  
                   zIndex: 10,
-                  border: "2px solid white",
-                }}
+                  border: "2px solid white" }}
               >
                 {metric === "views"
                   ? bar.views >= 1000
@@ -47,8 +45,8 @@ function BrutalBarChart({ metric }: BrutalBarChartProps) {
               </div>
             </div>
             <span
-              className="text-xs font-black uppercase text-[#8f6f6c] dark:text-zinc-400"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="text-xs font-black uppercase text-[#8f6f6c] dark:text-zinc-400 font-display"
+              
             >
               {bar.day}
             </span>

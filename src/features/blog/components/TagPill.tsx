@@ -11,7 +11,6 @@ export default function TagPill({ tag, onClick, size = "sm" }: Props) {
     <span
       onClick={onClick}
       className={`inline-block ${padding} text-xs font-black uppercase tracking-widest text-white bg-[#d32f2f] border-2 border-[#0d0d0d] ${onClick ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
-      style={{ fontFamily: "var(--font-display)" }}
     >
       {tag}
     </span>

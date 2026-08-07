@@ -28,13 +28,10 @@ export function AppearanceSection() {
   const { theme, changeTheme } = useTheme();
   return (
     <div className="dark:bg-black">
-      <p className="dark:text-white text-[#5b403d]"
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "0.82rem",
+      <p className="dark:text-white text-[#5b403d] font-sans"
+        style={{ fontSize: "0.82rem",
           // color: "#5b403d",
-          marginBottom: 16,
-        }}
+          marginBottom: 16 }}
       >
         Choose how BlogAI looks. Saved locally on this device.
       </p>
@@ -69,25 +66,19 @@ export function AppearanceSection() {
               {t.icon}
             </span>
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 900,
+              className="font-display" style={{ fontWeight: 900,
                 fontSize: "0.78rem",
                 letterSpacing: "0.05em",
                 color: theme === t.key ? "#ffffff" : "#0d0d0d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {t.label}
             </p>
             <p
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.65rem",
+              className="font-sans" style={{ fontSize: "0.65rem",
                 color: theme === t.key ? "rgba(255,255,255,0.55)" : "#5b403d",
                 margin: 0,
-                textAlign: "center" as const,
-              }}
+                textAlign: "center" as const }}
             >
               {t.desc}
             </p>

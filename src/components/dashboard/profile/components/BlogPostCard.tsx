@@ -47,7 +47,7 @@ function BlogPostCard({
       ].join(" ")}
     >
       {/* Cover image */}
-      <div className="w-35 shrink-0 overflow-hidden border-r-[3px] border-[#0d0d0d] dark:border-zinc-600">
+      <div className="w-50 shrink-0 overflow-hidden border-r-[3px] border-[#0d0d0d] dark:border-zinc-600">
         <img
           src={post.coverImageUrl}
           alt={post.title}
@@ -65,8 +65,8 @@ function BlogPostCard({
               {post.tags.map((tag, i) => (
                 <span
                   key={i}
-                  className="text-xs font-black uppercase tracking-widest px-2.5 py-1 text-white bg-[#d32f2f]"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="text-xs font-black uppercase tracking-widest px-2.5 py-1 text-white bg-[#d32f2f] font-display"
+                  
                 >
                   {tag}
                 </span>
@@ -161,16 +161,16 @@ function BlogPostCard({
 
           {/* Title */}
           <h3
-            className="font-black text-base leading-tight mb-2 text-[#151d1e] dark:text-white"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="font-bold text-xl leading-tight mb-2 text-[#151d1e] dark:text-white font-display"
+            
           >
             {post.title}
           </h3>
 
           {/* Summary */}
           <h5
-            className="font-thin text-sm leading-tight mb-2 text-[#666] dark:text-zinc-400"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="font-thin text-sm leading-tight mb-2 text-[#666] dark:text-zinc-400 font-display"
+            
           >
             {post.summary}
           </h5>
@@ -179,22 +179,22 @@ function BlogPostCard({
         {/* Bottom: meta */}
         <div className="flex flex-wrap items-center gap-4 pt-3 mt-2 border-t-[3px] border-[#e7f0f1] dark:border-zinc-700">
           <span
-            className="text-xs font-bold text-[#8f6f6c] dark:text-zinc-500"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="text-xs font-bold text-[#8f6f6c] dark:text-zinc-500 font-display"
+            
           >
             {post.createdAt}
           </span>
           <div className="flex items-center gap-3 ml-auto">
             <span
-              className="flex items-center gap-1.5 text-xs font-black text-[#151d1e] dark:text-zinc-300"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="flex items-center gap-1.5 text-xs font-black text-[#151d1e] dark:text-zinc-300 font-display"
+              
             >
               <Eye size={12} />
               {fmtNum(post.viewCount)}
             </span>
             <span
-              className="flex items-center gap-1.5 text-xs font-black text-[#d32f2f]"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="flex items-center gap-1.5 text-xs font-black text-[#d32f2f] font-display"
+              
             >
               <Heart size={12} />
             </span>

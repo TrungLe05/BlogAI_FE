@@ -25,7 +25,6 @@ function TrafficSources() {
           "text-[#151d1e] dark:text-white",
           "border-b-[3px] border-[#0d0d0d] dark:border-zinc-600",
         ].join(" ")}
-        style={{ fontFamily: "var(--font-display)" }}
       >
         <TrendingUp size={16} className="text-[#d32f2f]" />
         Traffic Sources
@@ -38,17 +37,14 @@ function TrafficSources() {
             {/* Label + badge */}
             <div className="flex items-center justify-between mb-2">
               <span
-                className="text-sm font-black uppercase tracking-[0.05em] text-[#151d1e] dark:text-zinc-200"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="text-sm font-black uppercase tracking-[0.05em] text-[#151d1e] dark:text-zinc-200 font-display"
+                
               >
                 {src.label}
               </span>
               <span
-                className="text-xs font-black px-2.5 py-0.5 text-white dark:text-[#0d0d0d]"
-                style={{
-                  background: src.color,
-                  fontFamily: "var(--font-display)",
-                }}
+                className="text-xs font-black px-2.5 py-0.5 text-white dark:text-[#0d0d0d] font-display"
+                style={{ background: src.color }}
               >
                 {src.pct}%
               </span>

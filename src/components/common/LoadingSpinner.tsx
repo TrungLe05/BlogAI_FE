@@ -17,8 +17,8 @@ export default function LoadingSpinner() {
           style={{ color: "#d32f2f" }}
         />
         <p
-          className="font-black text-sm uppercase tracking-widest"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="font-black text-sm uppercase tracking-widest font-display"
+          
         >
           Loading...
         </p>

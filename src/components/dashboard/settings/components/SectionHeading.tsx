@@ -31,14 +31,11 @@ export function SectionHeading({
         {icon}
       </span>
       <h2
-        style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
+        className="font-display" style={{ fontWeight: 900,
           fontSize: "1rem",
           color: "#0d0d0d",
           margin: 0,
-          letterSpacing: "-0.01em",
-        }}
+          letterSpacing: "-0.01em" }}
       >
         {children}
       </h2>

@@ -17,7 +17,7 @@ function FollowModal({ mode, followers, following, onClose, onUnfollow }: Follow
     <Dialog open={mode !== null} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-black uppercase tracking-widest" style={{ fontFamily: "var(--font-display)" }}>
+          <DialogTitle className="font-black uppercase tracking-widest font-display" >
             {mode === "followers" ? "Followers" : "Following"}
           </DialogTitle>
         </DialogHeader>
@@ -37,14 +37,14 @@ function FollowModal({ mode, followers, following, onClose, onUnfollow }: Follow
                 />
                 <div className="flex-1 min-w-0">
                   <Link to={`/user/${u.id}`}>
-                    <p className="font-black text-sm truncate" style={{ fontFamily: "var(--font-display)" }}>{u.fullName}</p>
+                    <p className="font-black text-sm truncate font-display" >{u.fullName}</p>
                   </Link>
                   <p className="text-xs truncate" style={{ color: "#888" }}>{u.email}</p>
                 </div>
                 {mode === "following" && (
                   <button
-                    className="px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer"
-                    style={{ fontFamily: "var(--font-display)", background: "white", color: "#0d0d0d", border: "2px solid #0d0d0d", boxShadow: "2px 2px 0 #0d0d0d" }}
+                    className="px-3 py-1.5 text-xs font-black uppercase tracking-widest transition-all cursor-pointer font-display"
+                    style={{ background: "white", color: "#0d0d0d", border: "2px solid #0d0d0d", boxShadow: "2px 2px 0 #0d0d0d"  }}
                     onMouseEnter={(e) => { e.currentTarget.style.background = "#d32f2f"; e.currentTarget.style.color = "white"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.background = "white"; e.currentTarget.style.color = "#0d0d0d"; }}
                     onClick={() => onUnfollow(u.id)}

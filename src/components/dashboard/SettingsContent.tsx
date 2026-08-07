@@ -83,14 +83,11 @@ function SectionHeading({
         {icon}
       </span>
       <h2
-        style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
+        className="font-display" style={{ fontWeight: 900,
           fontSize: "1rem",
           color: "#0d0d0d",
           margin: 0,
-          letterSpacing: "-0.01em",
-        }}
+          letterSpacing: "-0.01em" }}
       >
         {children}
       </h2>
@@ -101,16 +98,14 @@ function SectionHeading({
 function FieldLabel({ children }: { children: string }) {
   return (
     <label
-      style={{
-        display: "block",
-        fontFamily: "var(--font-display)",
+      className="font-display" style={{ display: "block",
+        
         fontWeight: 700,
         fontSize: "0.68rem",
         letterSpacing: "0.1em",
         textTransform: "uppercase" as const,
         color: "#5b403d",
-        marginBottom: 6,
-      }}
+        marginBottom: 6 }}
     >
       {children}
     </label>
@@ -140,10 +135,9 @@ function BrutalInput({
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        style={{
-          width: "100%",
+        style={{ width: "100%",
           padding: suffix ? "10px 44px 10px 12px" : "10px 12px",
-          fontFamily: "var(--font-sans)",
+          
           fontSize: "0.875rem",
           color: "#0d0d0d",
           background: focused ? "#dbe4e5" : "#ffffff",
@@ -152,8 +146,7 @@ function BrutalInput({
           outline: "none",
           boxShadow: focused ? "3px 3px 0 #0d0d0d" : "none",
           transition: "background 0.15s, box-shadow 0.15s",
-          boxSizing: "border-box" as const,
-        }}
+          boxSizing: "border-box" as const }}
       />
       {suffix && (
         <div
@@ -190,13 +183,12 @@ function SaveButton({
       disabled={loading}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
-      style={{
-        display: "inline-flex",
+      style={{ display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
         gap: 8,
         padding: "11px 22px",
-        fontFamily: "var(--font-display)",
+        
         fontWeight: 900,
         fontSize: "0.75rem",
         letterSpacing: "0.1em",
@@ -208,8 +200,7 @@ function SaveButton({
         transform: hov && !loading ? "translate(-2px,-2px)" : "translate(0,0)",
         cursor: loading ? "not-allowed" : "pointer",
         width: "100%",
-        transition: "transform 0.15s, box-shadow 0.15s",
-      }}
+        transition: "transform 0.15s, box-shadow 0.15s" }}
     >
       {loading ? (
         <Loader2 size={14} className="animate-spin" />
@@ -336,7 +327,7 @@ function PasswordSection() {
         <FieldLabel>New Password</FieldLabel>
         <BrutalInput
           type={showNew ? "text" : "password"}
-          placeholder="Min. 8 characters"
+          placeholder="Min 8 characters"
           value={newPwd}
           onChange={setNewPwd}
           suffix={
@@ -363,13 +354,10 @@ function PasswordSection() {
               ))}
             </div>
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "0.68rem",
+              className="font-display" style={{ fontSize: "0.68rem",
                 fontWeight: 700,
                 color: strengthColors[strength],
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {strengthLabels[strength]}
             </p>
@@ -391,12 +379,9 @@ function PasswordSection() {
         />
         {confirm.length > 0 && newPwd !== confirm && (
           <p
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.72rem",
+            className="font-sans" style={{ fontSize: "0.72rem",
               color: "#af101a",
-              marginTop: 4,
-            }}
+              marginTop: 4 }}
           >
             Passwords do not match.
           </p>
@@ -411,15 +396,12 @@ function PasswordSection() {
         }}
       >
         <p
-          style={{
-            fontFamily: "var(--font-display)",
-            fontWeight: 700,
+          className="font-display" style={{ fontWeight: 700,
             fontSize: "0.65rem",
             letterSpacing: "0.1em",
             textTransform: "uppercase" as const,
             color: "#0d0d0d",
-            margin: "0 0 8px",
-          }}
+            margin: "0 0 8px" }}
         >
           💡 Security Tips
         </p>
@@ -430,14 +412,11 @@ function PasswordSection() {
         ].map((tip) => (
           <p
             key={tip}
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.78rem",
+            className="font-sans" style={{ fontSize: "0.78rem",
               color: "#5b403d",
               margin: "0 0 4px",
               paddingLeft: 10,
-              borderLeft: "3px solid #af101a",
-            }}
+              borderLeft: "3px solid #af101a" }}
           >
             {tip}
           </p>
@@ -536,23 +515,17 @@ function NotificationsSection() {
             </span>
             <div>
               <p
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 700,
+                className="font-display" style={{ fontWeight: 700,
                   fontSize: "0.82rem",
                   color: "#0d0d0d",
-                  margin: 0,
-                }}
+                  margin: 0 }}
               >
                 {r.label}
               </p>
               <p
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  fontSize: "0.72rem",
+                className="font-sans" style={{ fontSize: "0.72rem",
                   color: "#5b403d",
-                  margin: 0,
-                }}
+                  margin: 0 }}
               >
                 {r.sub}
               </p>
@@ -611,24 +584,18 @@ function LanguageSection() {
           <span style={{ fontSize: "1.3rem", lineHeight: 1 }}>{lang.flag}</span>
           <div>
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
+              className="font-display" style={{ fontWeight: 700,
                 fontSize: "0.85rem",
                 color: selected === lang.code ? "#ffffff" : "#0d0d0d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {lang.label}
             </p>
             <p
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.68rem",
+              className="font-sans" style={{ fontSize: "0.68rem",
                 color:
                   selected === lang.code ? "rgba(255,255,255,0.65)" : "#5b403d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {lang.code.toUpperCase()}
             </p>
@@ -686,12 +653,9 @@ function AppearanceSection() {
   return (
     <div>
       <p
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "0.82rem",
+        className="font-sans" style={{ fontSize: "0.82rem",
           color: "#5b403d",
-          marginBottom: 16,
-        }}
+          marginBottom: 16 }}
       >
         Choose how BlogAI looks. Saved locally on this device.
       </p>
@@ -726,25 +690,19 @@ function AppearanceSection() {
               {t.icon}
             </span>
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 900,
+              className="font-display" style={{ fontWeight: 900,
                 fontSize: "0.78rem",
                 letterSpacing: "0.05em",
                 color: theme === t.key ? "#ffffff" : "#0d0d0d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {t.label}
             </p>
             <p
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.65rem",
+              className="font-sans" style={{ fontSize: "0.65rem",
                 color: theme === t.key ? "rgba(255,255,255,0.55)" : "#5b403d",
                 margin: 0,
-                textAlign: "center" as const,
-              }}
+                textAlign: "center" as const }}
             >
               {t.desc}
             </p>
@@ -795,10 +753,9 @@ function OtpInput({
       placeholder="000000"
       value={value}
       onChange={(e) => onChange(e.target.value.replace(/\D/g, ""))}
-      style={{
-        width: "100%",
+      style={{ width: "100%",
         padding: "14px",
-        fontFamily: "var(--font-display)",
+        
         fontWeight: 900,
         fontSize: "1.5rem",
         letterSpacing: "0.5em",
@@ -809,8 +766,7 @@ function OtpInput({
         borderRadius: 0,
         outline: "none",
         boxSizing: "border-box" as const,
-        transition: "box-shadow 0.15s",
-      }}
+        transition: "box-shadow 0.15s" }}
       onFocus={(e) => (e.currentTarget.style.boxShadow = "4px 4px 0 #af101a")}
       onBlur={(e) => (e.currentTarget.style.boxShadow = "none")}
     />
@@ -1017,23 +973,17 @@ function TwoFASection() {
           </span>
           <div>
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 900,
+              className="font-display" style={{ fontWeight: 900,
                 fontSize: "0.9rem",
                 color: "#0d0d0d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               Two-Factor Authentication
             </p>
             <p
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.72rem",
+              className="font-sans" style={{ fontSize: "0.72rem",
                 color: "#5b403d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {initialLoading
                 ? "Checking status..."
@@ -1098,24 +1048,18 @@ function TwoFASection() {
           </div>
           <div style={{ textAlign: "left" as const }}>
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 900,
+              className="font-display" style={{ fontWeight: 900,
                 fontSize: "0.78rem",
                 color: "#0d0d0d",
                 margin: 0,
-                lineHeight: 1.2,
-              }}
+                lineHeight: 1.2 }}
             >
               {initialLoading ? "Loading..." : enabled ? "Enabled" : "Disabled"}
             </p>
             <p
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.65rem",
+              className="font-sans" style={{ fontSize: "0.65rem",
                 color: "#888",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {enabled ? "Click to disable" : "Click to enable"}
             </p>
@@ -1146,15 +1090,12 @@ function TwoFASection() {
                   }}
                 />
                 <p
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontWeight: 700,
+                  className="font-display" style={{ fontWeight: 700,
                     fontSize: "0.58rem",
                     letterSpacing: "0.07em",
                     textTransform: "uppercase" as const,
                     color: i === 0 ? "#af101a" : "#aaa",
-                    margin: 0,
-                  }}
+                    margin: 0 }}
                 >
                   {label}
                 </p>
@@ -1163,24 +1104,18 @@ function TwoFASection() {
           </div>
 
           <p
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
+            className="font-display" style={{ fontWeight: 900,
               fontSize: "0.875rem",
               color: "#0d0d0d",
-              margin: "0 0 6px",
-            }}
+              margin: "0 0 6px" }}
           >
             Scan with your authenticator app
           </p>
           <p
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.78rem",
+            className="font-sans" style={{ fontSize: "0.78rem",
               color: "#5b403d",
               margin: "0 0 18px",
-              lineHeight: 1.6,
-            }}
+              lineHeight: 1.6 }}
           >
             Open <strong>Google Authenticator</strong> or <strong>Authy</strong>
             , tap the <strong>+</strong> button, then scan this QR code.
@@ -1214,27 +1149,21 @@ function TwoFASection() {
             </div>
             <div style={{ flex: 1, minWidth: 180 }}>
               <p
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 700,
+                className="font-display" style={{ fontWeight: 700,
                   fontSize: "0.65rem",
                   letterSpacing: "0.1em",
                   textTransform: "uppercase" as const,
                   color: "#5b403d",
-                  margin: "0 0 4px",
-                }}
+                  margin: "0 0 4px" }}
               >
                 Can't scan? Enter manually:
               </p>
               <SecretCopyRow secret={setupData.totpSecret} />
               <p
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  fontSize: "0.66rem",
+                className="font-sans" style={{ fontSize: "0.66rem",
                   color: "#aaa",
                   margin: "8px 0 0",
-                  lineHeight: 1.5,
-                }}
+                  lineHeight: 1.5 }}
               >
                 Save this secret somewhere safe — you'll need it to recover
                 access if you lose your device.
@@ -1245,9 +1174,8 @@ function TwoFASection() {
           <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
             <button
               onClick={handleCancel}
-              style={{
-                padding: "10px 16px",
-                fontFamily: "var(--font-display)",
+              className="font-display" style={{ padding: "10px 16px",
+                
                 fontWeight: 700,
                 fontSize: "0.72rem",
                 letterSpacing: "0.08em",
@@ -1256,8 +1184,7 @@ function TwoFASection() {
                 background: "#ffffff",
                 border: "3px solid #0d0d0d",
                 boxShadow: "3px 3px 0 #0d0d0d",
-                cursor: "pointer",
-              }}
+                cursor: "pointer" }}
             >
               Cancel
             </button>
@@ -1266,10 +1193,9 @@ function TwoFASection() {
                 setStep("confirm");
                 setOtpCode("");
               }}
-              style={{
-                flex: 1,
+              style={{ flex: 1,
                 padding: "11px 16px",
-                fontFamily: "var(--font-display)",
+                
                 fontWeight: 900,
                 fontSize: "0.72rem",
                 letterSpacing: "0.1em",
@@ -1282,8 +1208,7 @@ function TwoFASection() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 6,
-              }}
+                gap: 6 }}
             >
               I've scanned it <ChevronRight size={13} />
             </button>
@@ -1314,15 +1239,12 @@ function TwoFASection() {
                   }}
                 />
                 <p
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontWeight: 700,
+                  className="font-display" style={{ fontWeight: 700,
                     fontSize: "0.58rem",
                     letterSpacing: "0.07em",
                     textTransform: "uppercase" as const,
                     color: "#af101a",
-                    margin: 0,
-                  }}
+                    margin: 0 }}
                 >
                   {label}
                 </p>
@@ -1331,23 +1253,17 @@ function TwoFASection() {
           </div>
 
           <p
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
+            className="font-display" style={{ fontWeight: 900,
               fontSize: "0.875rem",
               color: "#0d0d0d",
-              margin: "0 0 6px",
-            }}
+              margin: "0 0 6px" }}
           >
             Enter verification code
           </p>
           <p
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.78rem",
+            className="font-sans" style={{ fontSize: "0.78rem",
               color: "#5b403d",
-              margin: "0 0 14px",
-            }}
+              margin: "0 0 14px" }}
           >
             Enter the 6-digit code currently shown in your authenticator app.
           </p>
@@ -1357,9 +1273,8 @@ function TwoFASection() {
           <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
             <button
               onClick={() => setStep("setup")}
-              style={{
-                padding: "10px 16px",
-                fontFamily: "var(--font-display)",
+              style={{ padding: "10px 16px",
+                
                 fontWeight: 700,
                 fontSize: "0.72rem",
                 letterSpacing: "0.08em",
@@ -1368,18 +1283,16 @@ function TwoFASection() {
                 background: "#ffffff",
                 border: "3px solid #0d0d0d",
                 boxShadow: "3px 3px 0 #0d0d0d",
-                cursor: "pointer",
-              }}
+                cursor: "pointer" }}
             >
               Back
             </button>
             <button
               onClick={handleConfirmEnable}
               disabled={loading || otpCode.length !== 6}
-              style={{
-                flex: 1,
+              className="font-display" style={{ flex: 1,
                 padding: "11px 16px",
-                fontFamily: "var(--font-display)",
+                
                 fontWeight: 900,
                 fontSize: "0.72rem",
                 letterSpacing: "0.1em",
@@ -1394,8 +1307,7 @@ function TwoFASection() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 6,
-              }}
+                gap: 6 }}
             >
               {loading ? (
                 <Loader2 size={13} className="animate-spin" />
@@ -1431,13 +1343,10 @@ function TwoFASection() {
               style={{ color: "#af101a", flexShrink: 0 }}
             />
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 900,
+              className="font-display" style={{ fontWeight: 900,
                 fontSize: "0.875rem",
                 color: "#7f0d12",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               Disable Two-Factor Authentication
             </p>
@@ -1452,10 +1361,9 @@ function TwoFASection() {
                   setDisableMode(m);
                   setOtpCode("");
                 }}
-                style={{
-                  flex: 1,
+                style={{ flex: 1,
                   padding: "8px",
-                  fontFamily: "var(--font-display)",
+                  
                   fontWeight: 700,
                   fontSize: "0.65rem",
                   letterSpacing: "0.08em",
@@ -1463,8 +1371,7 @@ function TwoFASection() {
                   background: disableMode === m ? "#7f0d12" : "#ffffff",
                   color: disableMode === m ? "#ffffff" : "#7f0d12",
                   border: "2px solid #7f0d12",
-                  cursor: "pointer",
-                }}
+                  cursor: "pointer" }}
               >
                 {m === "otp" ? "🔐 Authenticator Code" : "🗝️ Recovery Code"}
               </button>
@@ -1472,13 +1379,10 @@ function TwoFASection() {
           </div>
 
           <p
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.78rem",
+            className="font-sans" style={{ fontSize: "0.78rem",
               color: "#5b403d",
               margin: "0 0 14px",
-              lineHeight: 1.6,
-            }}
+              lineHeight: 1.6 }}
           >
             {disableMode === "otp"
               ? "Enter the 6-digit code from your authenticator app to confirm."
@@ -1520,9 +1424,8 @@ function TwoFASection() {
           <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
             <button
               onClick={handleCancel}
-              style={{
-                padding: "10px 16px",
-                fontFamily: "var(--font-display)",
+              className="font-display" style={{ padding: "10px 16px",
+                
                 fontWeight: 700,
                 fontSize: "0.72rem",
                 letterSpacing: "0.08em",
@@ -1531,8 +1434,7 @@ function TwoFASection() {
                 background: "#ffffff",
                 border: "3px solid #0d0d0d",
                 boxShadow: "3px 3px 0 #0d0d0d",
-                cursor: "pointer",
-              }}
+                cursor: "pointer" }}
             >
               Cancel
             </button>
@@ -1542,10 +1444,9 @@ function TwoFASection() {
                 loading ||
                 (disableMode === "otp" ? otpCode.length !== 6 : !otpCode.trim())
               }
-              style={{
-                flex: 1,
+              className="font-display" style={{ flex: 1,
                 padding: "11px 16px",
-                fontFamily: "var(--font-display)",
+                
                 fontWeight: 900,
                 fontSize: "0.72rem",
                 letterSpacing: "0.1em",
@@ -1558,8 +1459,7 @@ function TwoFASection() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 6,
-              }}
+                gap: 6 }}
             >
               {loading ? (
                 <>
@@ -1585,15 +1485,12 @@ function TwoFASection() {
           }}
         >
           <p
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 700,
+            className="font-display" style={{ fontWeight: 700,
               fontSize: "0.65rem",
               letterSpacing: "0.1em",
               textTransform: "uppercase" as const,
               color: "#0d0d0d",
-              margin: "0 0 8px",
-            }}
+              margin: "0 0 8px" }}
           >
             How it works
           </p>
@@ -1605,15 +1502,12 @@ function TwoFASection() {
           ].map((tip) => (
             <p
               key={tip}
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.75rem",
+              className="font-sans" style={{ fontSize: "0.75rem",
                 color: "#5b403d",
                 margin: "0 0 4px",
                 paddingLeft: 10,
                 borderLeft: "3px solid #af101a",
-                lineHeight: 1.5,
-              }}
+                lineHeight: 1.5 }}
             >
               {tip}
             </p>
@@ -1630,24 +1524,18 @@ function TwoFASection() {
           }}
         >
           <p
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
+            className="font-display" style={{ fontWeight: 900,
               fontSize: "0.9rem",
               color: "#0d0d0d",
-              margin: "0 0 6px",
-            }}
+              margin: "0 0 6px" }}
           >
             ⚠️ Save your recovery codes
           </p>
           <p
-            style={{
-              fontFamily: "var(--font-sans)",
-              fontSize: "0.78rem",
+            className="font-sans" style={{ fontSize: "0.78rem",
               color: "#5b403d",
               margin: "0 0 16px",
-              lineHeight: 1.6,
-            }}
+              lineHeight: 1.6 }}
           >
             Store these codes somewhere safe. Each can only be used once if you
             lose access to your authenticator app.
@@ -1686,10 +1574,9 @@ function TwoFASection() {
                 navigator.clipboard.writeText(recoveryCodes.join("\n"));
                 toast.success("Copied to clipboard!");
               }}
-              style={{
-                flex: 1,
+              style={{ flex: 1,
                 padding: "10px",
-                fontFamily: "var(--font-display)",
+                
                 fontWeight: 700,
                 fontSize: "0.72rem",
                 textTransform: "uppercase",
@@ -1697,17 +1584,15 @@ function TwoFASection() {
                 background: "#ffffff",
                 border: "3px solid #0d0d0d",
                 boxShadow: "3px 3px 0 #0d0d0d",
-                cursor: "pointer",
-              }}
+                cursor: "pointer" }}
             >
               Copy All
             </button>
             <button
               onClick={() => setShowRecovery(false)}
-              style={{
-                flex: 1,
+              style={{ flex: 1,
                 padding: "10px",
-                fontFamily: "var(--font-display)",
+                
                 fontWeight: 900,
                 fontSize: "0.72rem",
                 textTransform: "uppercase",
@@ -1715,8 +1600,7 @@ function TwoFASection() {
                 background: "#16a34a",
                 border: "3px solid #0d0d0d",
                 boxShadow: "3px 3px 0 #0d0d0d",
-                cursor: "pointer",
-              }}
+                cursor: "pointer" }}
             >
               I've saved them ✓
             </button>
@@ -1776,12 +1660,9 @@ function AccountSection({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       <p
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: "0.82rem",
+        className="font-sans" style={{ fontSize: "0.82rem",
           color: "#5b403d",
-          marginBottom: 8,
-        }}
+          marginBottom: 8 }}
       >
         Manage your account preferences, security, and display options.
       </p>
@@ -1820,23 +1701,17 @@ function AccountSection({
           </span>
           <div style={{ flex: 1 }}>
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
+              className="font-display" style={{ fontWeight: 700,
                 fontSize: "0.82rem",
                 color: "#0d0d0d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {item.label}
             </p>
             <p
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.72rem",
+              className="font-sans" style={{ fontSize: "0.72rem",
                 color: "#5b403d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {item.sub}
             </p>
@@ -1926,15 +1801,12 @@ export function SettingsContent() {
           }}
         >
           <p
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
+            className="font-display" style={{ fontWeight: 900,
               fontSize: "0.6rem",
               letterSpacing: "0.15em",
               textTransform: "uppercase" as const,
               color: "rgba(255,255,255,0.55)",
-              margin: 0,
-            }}
+              margin: 0 }}
           >
             Preferences
           </p>
@@ -1974,13 +1846,10 @@ export function SettingsContent() {
               {item.icon}
             </span>
             <span
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
+              className="font-display" style={{ fontWeight: 700,
                 fontSize: "0.78rem",
                 color: active === item.key ? "#ffffff" : "#0d0d0d",
-                flex: 1,
-              }}
+                flex: 1 }}
             >
               {item.label}
             </span>

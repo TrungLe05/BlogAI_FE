@@ -26,8 +26,8 @@ export function NotificationsSection() {
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span style={{ width: 28, height: 28, background: "#e7f0f1", border: "2px solid #0d0d0d", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{r.icon}</span>
             <div>
-              <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "0.82rem", color: "#0d0d0d", margin: 0 }}>{r.label}</p>
-              <p style={{ fontFamily: "var(--font-sans)", fontSize: "0.72rem", color: "#5b403d", margin: 0 }}>{r.sub}</p>
+              <p className="font-display" style={{ fontWeight: 700, fontSize: "0.82rem", color: "#0d0d0d", margin: 0 }}>{r.label}</p>
+              <p className="font-sans" style={{ fontSize: "0.72rem", color: "#5b403d", margin: 0 }}>{r.sub}</p>
             </div>
           </div>
           <BrutalToggle enabled={notifs[r.key]} onChange={() => toggle(r.key)} />

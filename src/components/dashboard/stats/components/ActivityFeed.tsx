@@ -55,8 +55,8 @@ function ActivityFeed() {
         // style={{ background: "#d32f2f", borderBottom: "3px solid #0d0d0d" }}
       >
         <h2
-          className="font-black text-xs uppercase tracking-[0.15em] text-white"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="font-black text-xs uppercase tracking-[0.15em] text-white font-display"
+          
         >
           Recent Activity
         </h2>

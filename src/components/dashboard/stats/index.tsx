@@ -63,18 +63,15 @@ export function StatsContent() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h1
-              className="font-black text-white text-4xl mb-2"
-              style={{
-                fontFamily: "var(--font-display)",
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
-              }}
+              className="font-black text-white text-4xl mb-2 font-display"
+              style={{ lineHeight: 1.1,
+                letterSpacing: "-0.02em" }}
             >
               Your <span style={{ color: "#d32f2f" }}>Stats</span>
             </h1>
             <p
-              className="text-white/50 text-sm dark:text-white"
-              style={{ fontFamily: "var(--font-sans)" }}
+              className="text-white/50 text-sm dark:text-white font-sans"
+              
             >
               Track performance across all your posts and audience growth
               metrics in real-time.
@@ -89,13 +86,10 @@ export function StatsContent() {
                 key={r}
                 onClick={() => setRange(r)}
                 className="px-4 py-2.5 text-xs font-black uppercase tracking-[0.15em] transition-colors cursor-pointer"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  background: range === r ? "#d32f2f" : "transparent",
+                style={{ background: range === r ? "#d32f2f" : "transparent",
                   color: range === r ? "white" : "rgba(255,255,255,0.5)",
                   borderRight:
-                    r !== "all" ? "3px solid rgba(255,255,255,0.15)" : "none",
-                }}
+                    r !== "all" ? "3px solid rgba(255,255,255,0.15)" : "none" }}
               >
                 {RANGE_LABELS[r]}
               </button>
@@ -117,8 +111,8 @@ export function StatsContent() {
         <div className="bg-white p-6 dark:bg-zinc-900 dark:shadow-[4px_4px_0_#52525b] shadow-[4px_4px_0_#0d0d0d] border-[3px] border-[#0d0d0d]">
           <div className="flex items-center justify-between mb-6  ">
             <h2
-              className="font-black text-sm uppercase tracking-widest flex items-center gap-2 text-[#151d1e] dark:text-zinc-100"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="font-black text-sm uppercase tracking-widest flex items-center gap-2 text-[#151d1e] dark:text-zinc-100 font-display"
+              
             >
               <BarChart2 size={18} style={{ color: "#d32f2f" }} /> Performance
               Overview
@@ -133,9 +127,7 @@ export function StatsContent() {
                   ${chartMetric === m ? "text-white dark:text-zinc-100" : "text-[#5b403d] dark:text-zinc-200"} 
                   ${m === "views" ? "border-r-[3px] border-[#0d0d0d] dark:border-zinc-600" : "none"} 
                   px-4 py-1.5 text-xs font-black uppercase tracking-widest transition-colors cursor-pointer`}
-                  style={{
-                    fontFamily: "var(--font-display)",
-                  }}
+                  
                 >
                   {m}
                 </button>

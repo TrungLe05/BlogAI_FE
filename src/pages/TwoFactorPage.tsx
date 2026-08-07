@@ -46,7 +46,7 @@ const TwoFactorPage: React.FC = () => {
         const { data } = await userApi.getMe();
         setAuth(token, data.result);
 
-        toast.success("Xác thực thành công!");
+        toast.success("Authentication successful!");
         navigate("/dashboard", { replace: true });
       } catch {
         setError(true);
@@ -61,8 +61,8 @@ const TwoFactorPage: React.FC = () => {
         }
         toast.error(
           mode === "otp"
-            ? "OTP không đúng hoặc đã hết hạn"
-            : "Recovery code không hợp lệ hoặc đã được dùng",
+            ? "The OTP is incorrect or has expired."
+            : "The recovery code is invalid or has already been used.",
         );
       } finally {
         setLoading(false);
@@ -99,13 +99,13 @@ const TwoFactorPage: React.FC = () => {
   const isOtpComplete = otpValue.length === 6;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#ebf4f5] dark:bg-zinc-950 p-6" style={{ fontFamily: "var(--font-sans)" }}>
+    <div className="min-h-screen flex items-center justify-center bg-[#ebf4f5] dark:bg-zinc-950 p-6 font-sans" >
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
           <span
-            className="font-black text-2xl text-[#0d0d0d] dark:text-white"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="font-black text-2xl text-[#0d0d0d] dark:text-white font-display"
+            
           >
             Blog<span className="text-[#d32f2f]">AI</span>
           </span>
@@ -128,12 +128,12 @@ const TwoFactorPage: React.FC = () => {
             </span>
             <div className="text-center">
               <h2
-                className="font-black text-xl text-[#0d0d0d] dark:text-white mb-1"
-                style={{ fontFamily: "var(--font-display)", letterSpacing: "-0.01em" }}
+                className="font-black text-xl text-[#0d0d0d] dark:text-white mb-1 font-display"
+                style={{ letterSpacing: "-0.01em"  }}
               >
                 {mode === "otp" ? "Two-Factor Auth" : "Recovery Code"}
               </h2>
-              <p className="text-xs text-[#666] dark:text-zinc-400" style={{ fontFamily: "var(--font-sans)" }}>
+              <p className="text-xs text-[#666] dark:text-zinc-400 font-sans" >
                 {mode === "otp"
                   ? "Enter the 6-digit code from your authenticator app"
                   : "Enter one of your saved recovery codes"}
@@ -176,12 +176,9 @@ const TwoFactorPage: React.FC = () => {
                               ? "border-[3px] border-[#0d0d0d] dark:border-zinc-500 bg-[#f2fbfc] dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
                               : "border-[3px] border-[#ccc] dark:border-zinc-600 bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
                         }`}
-                      style={{
-                        width: 48,
+                       style={{ width: 48,
                         height: 58,
-                        fontSize: "1.5rem",
-                        fontFamily: "var(--font-display)",
-                      }}
+                        fontSize: "1.5rem" }}
                     >
                       {hasValue ? (
                         otpValue[i]
@@ -231,7 +228,7 @@ const TwoFactorPage: React.FC = () => {
                     ? "bg-[#0d0d0d] dark:bg-zinc-200 dark:text-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-200 shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f] cursor-pointer"
                     : "bg-[#aaa] dark:bg-zinc-600 border-[3px] border-[#aaa] dark:border-zinc-600 cursor-not-allowed"
                   }`}
-                style={{ fontFamily: "var(--font-display)" }}
+                
               >
                 {loading ? (
                   <>
@@ -248,7 +245,7 @@ const TwoFactorPage: React.FC = () => {
               <button
                 onClick={() => switchMode("recovery")}
                 className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer mb-2.5"
-                style={{ fontFamily: "var(--font-display)" }}
+                
               >
                 <Key size={13} /> Use a recovery code instead
               </button>
@@ -296,7 +293,7 @@ const TwoFactorPage: React.FC = () => {
                     ? "bg-[#0d0d0d] dark:bg-zinc-200 dark:text-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-200 shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f] cursor-pointer"
                     : "bg-[#aaa] dark:bg-zinc-600 border-[3px] border-[#0d0d0d] dark:border-zinc-600 cursor-not-allowed"
                   }`}
-                style={{ fontFamily: "var(--font-display)" }}
+                
               >
                 {loading ? (
                   <>
@@ -313,7 +310,7 @@ const TwoFactorPage: React.FC = () => {
               <button
                 onClick={() => switchMode("otp")}
                 className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer mb-2.5"
-                style={{ fontFamily: "var(--font-display)" }}
+                
               >
                 <ShieldCheck size={13} /> Use authenticator app instead
               </button>
@@ -324,13 +321,13 @@ const TwoFactorPage: React.FC = () => {
           <button
             onClick={() => navigate("/login")}
             className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer"
-            style={{ fontFamily: "var(--font-display)" }}
+            
           >
             <ArrowLeft size={13} /> Back to Login
           </button>
         </div>
 
-        <p className="text-center text-xs text-[#999] dark:text-zinc-600 mt-4" style={{ fontFamily: "var(--font-sans)" }}>
+        <p className="text-center text-xs text-[#999] dark:text-zinc-600 mt-4 font-sans" >
           {mode === "otp"
             ? "Code refreshes every 30 seconds · Works with Google Authenticator & Authy"
             : "Each recovery code can only be used once"}

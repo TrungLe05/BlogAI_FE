@@ -129,12 +129,9 @@ function OverviewCard({
         </div>
         <div
           className="flex items-center gap-1 text-xs font-black px-2 py-1"
-          style={{
-            fontFamily: "var(--font-display)",
-            background: up ? "#dcfce7" : "#fee2e2",
+          style={{ background: up ? "#dcfce7" : "#fee2e2",
             color: up ? "#16a34a" : "#dc2626",
-            border: `2px solid ${up ? "#16a34a" : "#dc2626"}`,
-          }}
+            border: `2px solid ${up ? "#16a34a" : "#dc2626"}` }}
         >
           {up ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
           {Math.abs(change)}%
@@ -142,16 +139,13 @@ function OverviewCard({
       </div>
       <div>
         <p
-          className="font-black leading-none mb-1"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(28px, 3vw, 42px)",
-            color: accent,
-          }}
+          className="font-black leading-none mb-1 font-display"
+          style={{ fontSize: "clamp(28px, 3vw, 42px)",
+            color: accent }}
         >
           {value}
         </p>
-        <p className="text-sm font-bold" style={{ color: "#666", fontFamily: "var(--font-display)" }}>
+        <p className="text-sm font-bold font-display" style={{ color: "#666"}}>
           {label}
         </p>
       </div>
@@ -186,20 +180,18 @@ function BrutalBarChart({
             >
               {/* Tooltip */}
               <div
-                className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black px-2 py-0.5 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap"
-                style={{
-                  background: "#0d0d0d",
+                className="absolute -top-8 left-1/2 -translate-x-1/2 text-xs font-black px-2 py-0.5 opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-display"
+                style={{ background: "#0d0d0d",
                   color: "white",
-                  fontFamily: "var(--font-display)",
-                  zIndex: 10,
-                }}
+                  
+                  zIndex: 10 }}
               >
                 {metric === "views"
                   ? bar.views >= 1000 ? `${(bar.views / 1000).toFixed(1)}K` : bar.views
                   : bar.likes}
               </div>
             </div>
-            <span className="text-xs font-bold" style={{ color: "#888", fontFamily: "var(--font-display)" }}>
+            <span className="text-xs font-bold font-display" style={{ color: "#888"}}>
               {bar.day}
             </span>
           </div>
@@ -218,7 +210,7 @@ function StatisticsPage() {
     n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
 
   return (
-    <div style={{ background: "#ebf4f5", minHeight: "100vh", fontFamily: "var(--font-sans)" }}>
+    <div className="font-sans" style={{ background: "#ebf4f5", minHeight: "100vh" }}>
 
       {/* ── Page Header ──────────────────────────────────── */}
       <div
@@ -229,12 +221,9 @@ function StatisticsPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
               <h1
-                className="font-black text-white mb-2"
-                style={{
-                  fontFamily: "var(--font-display)",
-                  fontSize: "clamp(32px, 4vw, 56px)",
-                  lineHeight: 1.1,
-                }}
+                className="font-black text-white mb-2 font-display"
+                style={{ fontSize: "clamp(32px, 4vw, 56px)",
+                  lineHeight: 1.1 }}
               >
                 Your <span style={{ color: "#d32f2f" }}>Stats</span>
               </h1>
@@ -253,12 +242,9 @@ function StatisticsPage() {
                   key={r}
                   onClick={() => setRange(r)}
                   className="px-4 py-2 text-xs font-black uppercase tracking-widest transition-colors"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    background: range === r ? "#d32f2f" : "transparent",
+                  style={{ background: range === r ? "#d32f2f" : "transparent",
                     color: range === r ? "white" : "rgba(255,255,255,0.6)",
-                    borderRight: r !== "all" ? "1px solid rgba(255,255,255,0.2)" : "none",
-                  }}
+                    borderRight: r !== "all" ? "1px solid rgba(255,255,255,0.2)" : "none" }}
                 >
                   {r === "all" ? "All" : r.replace("d", "D").replace("0", "0 ")}
                 </button>
@@ -284,8 +270,8 @@ function StatisticsPage() {
         >
           <div className="flex items-center justify-between mb-6">
             <h2
-              className="font-black text-xl flex items-center gap-2"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="font-black text-xl flex items-center gap-2 font-display"
+              
             >
               <BarChart2 size={20} style={{ color: "#d32f2f" }} />
               Performance Overview
@@ -296,12 +282,9 @@ function StatisticsPage() {
                   key={m}
                   onClick={() => setChartMetric(m)}
                   className="px-4 py-1.5 text-xs font-black uppercase tracking-widest transition-colors"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    background: chartMetric === m ? "#0d0d0d" : "transparent",
+                  style={{ background: chartMetric === m ? "#0d0d0d" : "transparent",
                     color: chartMetric === m ? "white" : "#555",
-                    borderRight: m === "views" ? "1px solid #0d0d0d" : "none",
-                  }}
+                    borderRight: m === "views" ? "1px solid #0d0d0d" : "none" }}
                 >
                   {m}
                 </button>
@@ -309,7 +292,7 @@ function StatisticsPage() {
             </div>
           </div>
           <BrutalBarChart metric={chartMetric} />
-          <p className="text-xs mt-4 text-center" style={{ color: "#aaa", fontFamily: "var(--font-display)" }}>
+          <p className="text-xs mt-4 text-center font-display" style={{ color: "#aaa"}}>
             {RANGE_LABELS[range]} — {chartMetric === "views" ? "Page Views" : "Likes"}
           </p>
         </div>
@@ -327,8 +310,8 @@ function StatisticsPage() {
               style={{ background: "#0d0d0d", borderBottom: "3px solid #0d0d0d" }}
             >
               <h2
-                className="font-black text-sm uppercase tracking-widest text-white"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="font-black text-sm uppercase tracking-widest text-white font-display"
+                
               >
                 Top Performing Posts
               </h2>
@@ -339,14 +322,12 @@ function StatisticsPage() {
 
             {/* Table Header */}
             <div
-              className="grid text-xs font-black uppercase tracking-widest px-5 py-3"
-              style={{
-                gridTemplateColumns: "40px 1fr 100px 80px 80px 80px 60px",
-                fontFamily: "var(--font-display)",
+              className="grid text-xs font-black uppercase tracking-widest px-5 py-3 font-display"
+              style={{ gridTemplateColumns: "40px 1fr 100px 80px 80px 80px 60px",
+                
                 background: "#f7f7f7",
                 borderBottom: "2px solid #e5e5e5",
-                color: "#888",
-              }}
+                color: "#888" }}
             >
               <span>#</span>
               <span>Post</span>
@@ -368,17 +349,14 @@ function StatisticsPage() {
                 }}
               >
                 <span
-                  className="w-6 h-6 flex items-center justify-center text-xs font-black text-white"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    background: post.rank === 1 ? "#d32f2f" : "#0d0d0d",
-                  }}
+                  className="w-6 h-6 flex items-center justify-center text-xs font-black text-white font-display"
+                  style={{ background: post.rank === 1 ? "#d32f2f" : "#0d0d0d" }}
                 >
                   {post.rank}
                 </span>
                 <span
-                  className="text-sm font-bold pr-4 truncate"
-                  style={{ fontFamily: "var(--font-display)", color: "#0d0d0d" }}
+                  className="text-sm font-bold pr-4 truncate font-display"
+                  style={{ color: "#0d0d0d"  }}
                   title={post.title}
                 >
                   {post.title}
@@ -420,8 +398,8 @@ function StatisticsPage() {
               style={{ background: "#d32f2f", borderBottom: "3px solid #0d0d0d" }}
             >
               <h2
-                className="font-black text-sm uppercase tracking-widest text-white"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="font-black text-sm uppercase tracking-widest text-white font-display"
+                
               >
                 Recent Activity
               </h2>
@@ -461,8 +439,8 @@ function StatisticsPage() {
             style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
           >
             <h2
-              className="font-black text-lg mb-5 flex items-center gap-2"
-              style={{ fontFamily: "var(--font-display)", borderBottom: "3px solid #0d0d0d", paddingBottom: "12px" }}
+              className="font-black text-lg mb-5 flex items-center gap-2 font-display"
+              style={{ borderBottom: "3px solid #0d0d0d", paddingBottom: "12px"  }}
             >
               <TrendingUp size={18} style={{ color: "#d32f2f" }} /> Traffic Sources
             </h2>
@@ -470,14 +448,11 @@ function StatisticsPage() {
               {TRAFFIC_SOURCES.map((src) => (
                 <div key={src.label}>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm font-bold" style={{ fontFamily: "var(--font-display)" }}>{src.label}</span>
+                    <span className="text-sm font-bold font-display" >{src.label}</span>
                     <span
-                      className="text-xs font-black px-2 py-0.5"
-                      style={{
-                        background: src.color,
-                        color: "white",
-                        fontFamily: "var(--font-display)",
-                      }}
+                      className="text-xs font-black px-2 py-0.5 font-display"
+                      style={{ background: src.color,
+                        color: "white" }}
                     >
                       {src.pct}%
                     </span>
@@ -506,8 +481,8 @@ function StatisticsPage() {
             style={{ border: "3px solid #0d0d0d", boxShadow: "4px 4px 0 #0d0d0d" }}
           >
             <h2
-              className="font-black text-lg mb-5 flex items-center gap-2"
-              style={{ fontFamily: "var(--font-display)", borderBottom: "3px solid #0d0d0d", paddingBottom: "12px" }}
+              className="font-black text-lg mb-5 flex items-center gap-2 font-display"
+              style={{ borderBottom: "3px solid #0d0d0d", paddingBottom: "12px"  }}
             >
               <FileText size={18} style={{ color: "#d32f2f" }} /> Top Categories
             </h2>
@@ -519,30 +494,21 @@ function StatisticsPage() {
                   style={{ background: i === 0 ? "#0d0d0d" : "#f7f7f7", border: "2px solid #0d0d0d" }}
                 >
                   <span
-                    className="w-6 h-6 flex items-center justify-center text-xs font-black flex-shrink-0"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      background: i === 0 ? "#d32f2f" : "#0d0d0d",
-                      color: "white",
-                    }}
+                    className="w-6 h-6 flex items-center justify-center text-xs font-black flex-shrink-0 font-display"
+                    style={{ background: i === 0 ? "#d32f2f" : "#0d0d0d",
+                      color: "white" }}
                   >
                     {i + 1}
                   </span>
                   <span
-                    className="flex-1 text-sm font-bold"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      color: i === 0 ? "white" : "#0d0d0d",
-                    }}
+                    className="flex-1 text-sm font-bold font-display"
+                    style={{ color: i === 0 ? "white" : "#0d0d0d" }}
                   >
                     {cat.name}
                   </span>
                   <span
-                    className="text-xs font-black"
-                    style={{
-                      color: i === 0 ? "rgba(255,255,255,0.7)" : "#888",
-                      fontFamily: "var(--font-display)",
-                    }}
+                    className="text-xs font-black font-display"
+                    style={{ color: i === 0 ? "rgba(255,255,255,0.7)" : "#888" }}
                   >
                     {cat.posts} posts
                   </span>
@@ -575,8 +541,8 @@ function StatisticsPage() {
         >
           <div>
             <h3
-              className="font-black text-white text-2xl mb-1"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="font-black text-white text-2xl mb-1 font-display"
+              
             >
               Ready to grow your audience?
             </h3>
@@ -592,18 +558,16 @@ function StatisticsPage() {
             </Link>
             <Link to="/profile">
               <button
-                style={{
-                  padding: "12px 24px",
+                className="font-display" style={{ padding: "12px 24px",
                   border: "3px solid white",
                   color: "white",
                   background: "transparent",
-                  fontFamily: "var(--font-display)",
+                  
                   fontWeight: 900,
                   fontSize: "0.85rem",
                   textTransform: "uppercase",
                   letterSpacing: "0.05em",
-                  cursor: "pointer",
-                }}
+                  cursor: "pointer" }}
               >
                 View Profile
               </button>

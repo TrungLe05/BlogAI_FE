@@ -13,10 +13,9 @@ export function OtpInput({
       placeholder="000000"
       value={value}
       onChange={(e) => onChange(e.target.value.replace(/\D/g, ""))}
-      style={{
-        width: "100%",
+      style={{ width: "100%",
         padding: "14px",
-        fontFamily: "var(--font-display)",
+        
         fontWeight: 900,
         fontSize: "1.5rem",
         letterSpacing: "0.5em",
@@ -27,8 +26,7 @@ export function OtpInput({
         borderRadius: 0,
         outline: "none",
         boxSizing: "border-box" as const,
-        transition: "box-shadow 0.15s",
-      }}
+        transition: "box-shadow 0.15s" }}
       onFocus={(e) => (e.currentTarget.style.boxShadow = "4px 4px 0 #af101a")}
       onBlur={(e) => (e.currentTarget.style.boxShadow = "none")}
     />

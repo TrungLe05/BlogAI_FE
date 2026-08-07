@@ -39,24 +39,18 @@ export function LanguageSection() {
           <span style={{ fontSize: "1.3rem", lineHeight: 1 }}>{lang.flag}</span>
           <div>
             <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
+              className="font-display" style={{ fontWeight: 700,
                 fontSize: "0.85rem",
                 color: selected === lang.code ? "#ffffff" : "#0d0d0d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {lang.label}
             </p>
             <p
-              style={{
-                fontFamily: "var(--font-sans)",
-                fontSize: "0.68rem",
+              className="font-sans" style={{ fontSize: "0.68rem",
                 color:
                   selected === lang.code ? "rgba(255,255,255,0.65)" : "#5b403d",
-                margin: 0,
-              }}
+                margin: 0 }}
             >
               {lang.code.toUpperCase()}
             </p>

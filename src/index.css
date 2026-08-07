@@ -663,3 +663,109 @@ body {
 .dark .tiptap p.is-editor-empty:first-child::before {
   color: #71717a; /* zinc-500 */
 }
+
+/* ── Rich text content (RichEditor + Preview) ───────────────────── */
+.ProseMirror,
+.prose-content {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: #151d1e;
+  line-height: 1.75;
+}
+
+.dark .ProseMirror,
+.dark .prose-content {
+  color: #e2e8f0;
+}
+
+/* Heading dùng font-display nhưng weight vừa phải, không dùng font-black */
+.ProseMirror h1,
+.prose-content h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+  line-height: 1.25;
+  margin: 1.5em 0 0.6em;
+  letter-spacing: -0.01em;
+}
+
+.ProseMirror h2,
+.prose-content h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  margin: 1.4em 0 0.5em;
+}
+
+.ProseMirror h3,
+.prose-content h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  line-height: 1.35;
+  margin: 1.2em 0 0.4em;
+}
+
+.ProseMirror p,
+.prose-content p {
+  font-weight: 400;
+  margin: 0.8em 0;
+}
+
+.ProseMirror strong,
+.prose-content strong {
+  font-weight: 700; /* chỉ chữ in đậm thật sự mới đậm, không phải toàn đoạn */
+}
+
+.ProseMirror ul,
+.ProseMirror ol,
+.prose-content ul,
+.prose-content ol {
+  padding-left: 1.4em;
+  margin: 0.8em 0;
+}
+
+.ProseMirror li,
+.prose-content li {
+  margin: 0.3em 0;
+}
+
+.ProseMirror blockquote,
+.prose-content blockquote {
+  border-left: 3px solid #d32f2f;
+  padding-left: 1em;
+  margin: 1em 0;
+  font-style: italic;
+  color: #5b403d;
+}
+
+.ProseMirror a,
+.prose-content a {
+  color: #d32f2f;
+  text-decoration: underline;
+  font-weight: 500; /* không cần bold nặng như hiện tại */
+}
+
+.ProseMirror code,
+.prose-content code {
+  background: #f2f2f2;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: monospace;
+}
+
+.dark .ProseMirror code,
+.dark .prose-content code {
+  background: #1e2130;
+}
+
+/* Placeholder text (khi editor rỗng) */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #b0a0a0;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}

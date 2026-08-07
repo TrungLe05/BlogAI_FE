@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Eye, Heart, Clock } from "lucide-react";
+import { Eye, Heart, Clock, FileEdit } from "lucide-react";
 import { BlogResponse } from "@/types/response/blogResponse.types";
 
 interface Props {
@@ -10,12 +10,13 @@ interface Props {
 export default function UserBlogGrid({ blogs, isOwnProfile }: Props) {
   if (blogs.length === 0) {
     return (
-      <div className="text-center py-20 bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
-        <p className="text-6xl mb-4">📝</p>
-        <h3
-          className="font-black text-xl mb-2 text-[#0d0d0d] dark:text-white"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
+      <div className="w-full text-center py-20 bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] dark:shadow-[4px_4px_0_#52525b]">
+        {/* <p className="text-6xl mb-4">📝</p> */}
+        <div className="flex items-center justify-center mb-3">
+          <FileEdit size={70} strokeWidth={1.8} />
+        </div>
+
+        <h3 className="font-black text-xl mb-2 text-[#0d0d0d] dark:text-white font-display">
           No stories yet
         </h3>
         <p className="text-[#888] dark:text-zinc-500">
@@ -50,8 +51,7 @@ export default function UserBlogGrid({ blogs, isOwnProfile }: Props) {
                 {blog.tags.slice(0, 2).map((tag) => (
                   <span
                     key={tag}
-                    className="px-2 py-0.5 text-xs font-black uppercase tracking-widest text-white bg-[#d32f2f] border-2 border-[#0d0d0d]"
-                    style={{ fontFamily: "var(--font-display)" }}
+                    className="px-2 py-0.5 text-xs font-black uppercase tracking-widest text-white bg-[#d32f2f] border-2 border-[#0d0d0d] font-display"
                   >
                     {tag}
                   </span>
@@ -66,10 +66,7 @@ export default function UserBlogGrid({ blogs, isOwnProfile }: Props) {
 
           {/* Body */}
           <div className="p-4">
-            <h3
-              className="font-black text-base leading-tight mb-2 line-clamp-2 text-[#0d0d0d] dark:text-white"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
+            <h3 className="font-bold tracking-wider text-lg leading-tight mb-2 line-clamp-2 text-[#0d0d0d] dark:text-white font-display">
               {blog.title}
             </h3>
             <p className="text-xs mb-3 leading-relaxed line-clamp-2 text-[#666] dark:text-zinc-400">

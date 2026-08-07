@@ -65,7 +65,6 @@ export default function MessageInput({
               ? "bg-[#d32f2f] shadow-[3px_3px_0_#0d0d0d] hover:-translate-x-0.5 hover:-translate-y-0.5 cursor-pointer"
               : "bg-[#ccc] dark:bg-zinc-600 cursor-not-allowed"
             }`}
-          style={{ fontFamily: "var(--font-display)" }}
         >
           {isSending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
           {isSending ? "..." : "Send"}

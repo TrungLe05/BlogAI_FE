@@ -37,7 +37,7 @@ export default function UserHero({
         <button
           onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 mb-8 font-bold text-xs uppercase tracking-widest text-[#999] hover:text-[#d32f2f] transition-colors cursor-pointer"
-          style={{ fontFamily: "var(--font-display)" }}
+          
         >
           ← Go Back
         </button>
@@ -62,21 +62,13 @@ export default function UserHero({
             <div>
               <div className="flex items-center gap-3 flex-wrap mb-1">
                 <h1
-                  className="font-black text-white"
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontSize: "clamp(1.5rem, 3vw, 2.25rem)",
-                    lineHeight: 1.1,
-                  }}
+                  className="font-black text-white font-display"
+                  style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)",
+                    lineHeight: 1.1 }}
                 >
                   {profileUser.fullName}
                 </h1>
-                <span
-                  className="text-xs font-black uppercase tracking-widest text-white px-2 py-0.5 bg-[#d32f2f] border-2 border-white"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {profileUser.role === "ADMIN" ? "ADMIN" : "AUTHOR"}
-                </span>
+                
               </div>
 
               <p className="text-sm mb-4 text-[#999]">{profileUser.email}</p>
@@ -108,10 +100,7 @@ export default function UserHero({
                 disabled={isFollowLoading}
                 className={`flex items-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-widest transition-all cursor-pointer border-[3px] border-white text-white shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f]
                   ${isFollowing ? "bg-transparent" : "bg-[#d32f2f]"}`}
-                style={{
-                  fontFamily: "var(--font-display)",
-                  opacity: isFollowLoading ? 0.6 : 1,
-                }}
+                style={{ opacity: isFollowLoading ? 0.6 : 1 }}
               >
                 {isFollowLoading ? (
                   <Loader2 size={16} className="animate-spin" />
@@ -128,8 +117,8 @@ export default function UserHero({
           ) : (
             <div className="shrink-0 self-start sm:self-center">
               <span
-                className="inline-flex items-center gap-2 px-5 py-3 text-sm font-black uppercase tracking-widest text-[#999] border-[3px] border-[#999]"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="inline-flex items-center gap-2 px-5 py-3 text-sm font-black uppercase tracking-widest text-[#999] border-[3px] border-[#999] font-display"
+                
               >
                 Your Profile
               </span>

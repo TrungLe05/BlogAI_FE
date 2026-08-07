@@ -34,3 +34,16 @@ export interface TagStatsResponse{
     tag:string;
     count: number
 }
+
+
+export interface CriteriaScoreResult {
+  score: number;
+  suggestion: string;
+}
+
+export interface PrePublishReviewResult {
+  readability: CriteriaScoreResult;
+  seo: CriteriaScoreResult;
+  engagement: CriteriaScoreResult;
+  summaryQuality: CriteriaScoreResult;
+}

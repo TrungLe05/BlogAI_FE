@@ -32,15 +32,11 @@ export default function BlogDetailPage() {
   } = useBlogDetail(blogId);
 
   return (
-    <div
-      className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950"
-      style={{ fontFamily: "var(--font-sans)" }}
-    >
+    <div className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950 font-sans">
       <div className="max-w-340 mx-auto px-6 py-10">
         <Link
           to="/explore"
-          className="inline-flex items-center gap-2 mb-8 font-bold text-sm uppercase tracking-widest text-[#0d0d0d] dark:text-zinc-300 hover:text-[#d32f2f] transition-colors"
-          style={{ fontFamily: "var(--font-display)" }}
+          className="inline-flex items-center gap-2 mb-8 font-bold text-sm uppercase tracking-widest text-[#0d0d0d] dark:text-zinc-300 hover:text-[#d32f2f] transition-colors font-display"
         >
           <ArrowLeft size={16} /> Back to Explore
         </Link>
@@ -61,12 +57,8 @@ export default function BlogDetailPage() {
 
             {/* Title */}
             <h1
-              className="font-black mb-6 text-[#0d0d0d] dark:text-white"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(28px, 4vw, 48px)",
-                lineHeight: 1.1,
-              }}
+              className="font-bold tracking-wide mb-6 text-[#0d0d0d] dark:text-white font-display"
+              style={{ fontSize: "clamp(28px, 4vw, 48px)", lineHeight: 1.1 }}
             >
               {blogDetail?.title}
             </h1>
@@ -87,8 +79,7 @@ export default function BlogDetailPage() {
                 <div>
                   <Link
                     to={`/user/${blogDetail?.author.id}`}
-                    className="font-black text-sm text-[#0d0d0d] dark:text-white hover:text-[#d32f2f] transition-colors block"
-                    style={{ fontFamily: "var(--font-display)" }}
+                    className="font-black text-sm text-[#0d0d0d] dark:text-white hover:text-[#d32f2f] transition-colors block font-display"
                   >
                     {blogDetail?.author.fullName}
                   </Link>
@@ -152,10 +143,10 @@ export default function BlogDetailPage() {
 
             {/* Content */}
             <div
-              className="prose max-w-none mb-8 text-[#333] dark:text-zinc-300"
+              className="prose max-w-none mb-8 text-[#333] dark:text-zinc-300 font-sans"
               style={{
                 lineHeight: 1.8,
-                fontFamily: "var(--font-sans)",
+
                 fontSize: "1.05rem",
               }}
             >
@@ -172,10 +163,7 @@ export default function BlogDetailPage() {
                 disabled={isLiking}
                 className={`flex items-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-widest transition-all cursor-pointer border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#0d0d0d] hover:-translate-x-0.5 hover:-translate-y-0.5
                   ${blogDetail?.likedByCurrentUser ? "bg-[#d32f2f] text-white" : "bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"}`}
-                style={{
-                  fontFamily: "var(--font-display)",
-                  opacity: isLiking ? 0.6 : 1,
-                }}
+                style={{ opacity: isLiking ? 0.6 : 1 }}
               >
                 <Heart
                   size={18}
@@ -208,10 +196,7 @@ export default function BlogDetailPage() {
                   size={20}
                   className="text-[#0d0d0d] dark:text-white"
                 />
-                <h3
-                  className="font-black text-xl text-[#0d0d0d] dark:text-white"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
+                <h3 className="font-black text-xl text-[#0d0d0d] dark:text-white font-display">
                   Leave a Comment
                 </h3>
               </div>
@@ -232,22 +217,22 @@ export default function BlogDetailPage() {
           </article>
 
           {/* Sidebar */}
-          <aside className="hidden lg:block">
+          <aside className="hidden lg:block w-full h-full">
             <RelatedSidebar relatedBlogs={relatedBlogs} />
 
-            {/* Newsletter */}
+            {/* Newsletter
             <div className="bg-white dark:bg-zinc-800 p-6 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[4px_4px_0_#d32f2f]">
               <div className="mb-4 px-3 py-1 inline-block bg-[#d32f2f] border-2 border-[#0d0d0d]">
                 <span
-                  className="text-xs font-black uppercase text-white"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  className="text-xs font-black uppercase text-white font-display"
+                  
                 >
                   Newsletter
                 </span>
               </div>
               <h3
-                className="font-black text-lg mb-2 text-[#0d0d0d] dark:text-white"
-                style={{ fontFamily: "var(--font-display)" }}
+                className="font-black text-lg mb-2 text-[#0d0d0d] dark:text-white font-display"
+                
               >
                 Stay in the Loop
               </h3>
@@ -265,7 +250,7 @@ export default function BlogDetailPage() {
               >
                 Subscribe
               </button>
-            </div>
+            </div> */}
           </aside>
         </div>
       </div>

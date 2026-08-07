@@ -7,6 +7,9 @@ import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
 import LinkExt from "@tiptap/extension-link";
 import { useEffect, useRef, useState } from "react";
+import { useAIToolbar } from "@/hooks/useAIToolbar";
+import { AIFloatingToolbar } from "./AIFloatingToolbar";
+import { AIResultPanel } from "./AIResultPanel";
 import {
   Bold,
   Italic,
@@ -252,8 +255,6 @@ export function RichEditor({ content, onChange }: RichEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const editorWrapperRef = useRef<HTMLDivElement>(null);
-  const [isFloating, setIsFloating] = useState(false);
-  const [floatingTop, setFloatingTop] = useState(0);
 
   const editor = useEditor({
     extensions: [
@@ -268,6 +269,22 @@ export function RichEditor({ content, onChange }: RichEditorProps) {
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
 
+  // ── AI Toolbar cho content ──
+  const contentAI = useAIToolbar({
+    mode: "tiptap",
+    fieldType: "content", 
+    editor,
+  });
+
+  // Gắn selectionUpdate listener
+  useEffect(() => {
+    if (!editor) return;
+    editor.on("selectionUpdate", contentAI.handleTiptapSelection);
+    return () => {
+      editor.off("selectionUpdate", contentAI.handleTiptapSelection);
+    };
+  }, [editor, contentAI.handleTiptapSelection]);
+
   // Sync content khi load blog để edit
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
@@ -275,31 +292,6 @@ export function RichEditor({ content, onChange }: RichEditorProps) {
     }
   }, [content]);
 
-  // ── Detect scroll để chuyển toolbar sang floating dọc ────────
-  useEffect(() => {
-    const scrollContainer = document.querySelector(".overflow-auto"); // container scroll của WriteView
-    if (!scrollContainer) return;
-
-    const handleScroll = () => {
-      if (!toolbarRef.current || !editorWrapperRef.current) return;
-
-      const toolbarRect = toolbarRef.current.getBoundingClientRect();
-      const wrapperRect = editorWrapperRef.current.getBoundingClientRect();
-
-      // Toolbar bị scroll ra khỏi viewport → hiện floating
-      const shouldFloat = toolbarRect.bottom < 0;
-      setIsFloating(shouldFloat);
-
-      if (shouldFloat) {
-        // Tính top của floating toolbar relative với viewport
-        const top = Math.max(80, wrapperRect.top + 16);
-        setFloatingTop(top);
-      }
-    };
-
-    scrollContainer.addEventListener("scroll", handleScroll);
-    return () => scrollContainer.removeEventListener("scroll", handleScroll);
-  }, []);
 
   if (!editor) return null;
 
@@ -334,7 +326,6 @@ export function RichEditor({ content, onChange }: RichEditorProps) {
     <div
       ref={editorWrapperRef}
       className="relative border-[3px] border-[#0d0d0d] bg-white dark:shadow-[4px_4px_0_#52525b] dark:border-zinc-600"
-      // style={{ border: "3px solid #0d0d0d", background: "white" }}
     >
       {/* ── Toolbar ngang gốc (luôn render để giữ layout) ── */}
       <div
@@ -343,7 +334,6 @@ export function RichEditor({ content, onChange }: RichEditorProps) {
         style={{
           borderBottom: "3px solid #0d0d0d",
           background: "#fafafa",
-          visibility: isFloating ? "hidden" : "visible", // ẩn nhưng vẫn giữ chỗ
         }}
       >
         {groups.map((group, gi) => (
@@ -362,52 +352,7 @@ export function RichEditor({ content, onChange }: RichEditorProps) {
           </div>
         ))}
       </div>
-
-      {/* ── Floating toolbar dọc (hiện khi scroll) ── */}
-      {isFloating && (
-        <div
-          style={{
-            position: "fixed",
-            top: floatingTop + 20,
-            left: editorWrapperRef.current
-              ? editorWrapperRef.current.getBoundingClientRect().left - 44
-              : 0,
-            zIndex: 100,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            background: "white",
-            border: "3px solid #0d0d0d",
-            boxShadow: "4px 2px 0 #d32f2f",
-            padding: "4px 0",
-            width: "40px",
-          }}
-        >
-          {groups.map((group, gi) => (
-            <div
-              key={group.group}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                width: "100%",
-              }}
-            >
-              {group.items.map((btn) => (
-                <ToolbarBtn
-                  key={btn.title}
-                  onClick={btn.onClick}
-                  active={btn.active}
-                  title={btn.title}
-                  vertical
-                >
-                  {btn.icon}
-                </ToolbarBtn>
-              ))}
-              {gi < groups.length - 1 && <Separator vertical />}
-            </div>
-          ))}
-        </div>
-      )}
+      
 
       {/* Editor content */}
       <EditorContent
@@ -428,6 +373,28 @@ export function RichEditor({ content, onChange }: RichEditorProps) {
         className="hidden"
         onChange={handleImageUpload}
       />
+
+      {/* AI Floating Toolbar cho content selection */}
+      <AIFloatingToolbar
+        visible={contentAI.state.visible}
+        position={contentAI.state.position}
+        isLoading={contentAI.state.isLoading}
+        activeInstruction={contentAI.state.activeInstruction}
+        availableActions={["improve", "shorten", "expand", "tone:formal", "tone:casual", "tone:professional", "grammar"]}
+        onAction={contentAI.triggerRewrite}
+        onClose={contentAI.closeToolbar}
+      />
+
+      {/* AI Result Panel */}
+      {(contentAI.state.isLoading || contentAI.state.result) && (
+        <AIResultPanel
+          originalText={contentAI.state.originalText}
+          resultText={contentAI.state.result}
+          isLoading={contentAI.state.isLoading}
+          onAccept={contentAI.acceptResult}
+          onDiscard={contentAI.discardResult}
+        />
+      )}
     </div>
   );
 }

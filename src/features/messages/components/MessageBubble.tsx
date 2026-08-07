@@ -70,7 +70,7 @@ export default function MessageBubble({ msg, isLast, userId, onImageClick }: Pro
           </span>
           {isLastMine && (
             msg.isRead ? (
-              <span className="flex items-center gap-0.5 text-xs text-[#d32f2f] font-bold" style={{ fontSize: "10px", fontFamily: "var(--font-display)" }}>
+              <span className="flex items-center gap-0.5 text-xs text-[#d32f2f] font-bold font-display" style={{ fontSize: "10px"}}>
                 <CheckCheck size={11} /> Seen
               </span>
             ) : (
