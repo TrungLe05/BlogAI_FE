@@ -10,7 +10,6 @@ import { ActiveView } from "@/features/dashboard/types/dashboard.types";
 import SettingsView from "@/features/dashboard/views/SettingsView";
 import Enable2FADialog from "@/features/auth/components/TwoFAPromptDialog";
 import StatsView from "@/features/dashboard/views/StatsView";
-import UserAvatar from "@/shared/components/common/userAvatar";
 
 export { initTheme } from "@/features/dashboard/utils/theme";
 

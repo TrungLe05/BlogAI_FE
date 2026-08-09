@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ChevronLeft, Settings2 } from "lucide-react";
+import {  ChevronLeft, Settings2 } from "lucide-react";
 import MessageBubble from "./MessageBubble";
 import MessageInput from "./MessageInput";
 import TypingDots from "./TypingDots";

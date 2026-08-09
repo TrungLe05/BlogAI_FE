@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import {  MessageCircle } from "lucide-react";
 import useAuthStore from "@/features/auth/stores/authStore";
 import { toast } from "sonner";
 import LoadingSpinner from "@/shared/components/common/LoadingSpinner";
@@ -16,7 +16,6 @@ import ChatWindow from "@/features/messages/components/ChatWindow";
 import ImageLightbox from "@/features/messages/components/ImageLightbox";
 import ConversationList from "@/features/messages/components/ConversationList";
 import { ConversationResponse } from "@/features/messages/types/message.types";
-import DashboardSidebar from "@/features/dashboard/components/layout/DashboardSidebar";
 
 export default function MessagingPage() {
   const { user } = useAuthStore();
