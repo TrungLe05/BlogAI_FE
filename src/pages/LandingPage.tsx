@@ -15,11 +15,12 @@ import { extractApiError } from "@/utils/apiError";
 import { toast } from "sonner";
 import tagApi from "@/features/blog/api/tagApi";
 import LoadingSpinner from "@/shared/components/common/LoadingSpinner";
+
+import useAuthStore from "@/features/auth/stores/authStore";
 import {
   BlogResponse,
   TagStatsResponse,
-} from "@/types/response/blogResponse.types";
-import useAuthStore from "@/features/auth/stores/authStore";
+} from "@/features/blog/types/blog.types";
 
 const benefits = [
   {

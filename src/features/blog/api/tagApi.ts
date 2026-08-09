@@ -1,6 +1,6 @@
-import { ApiResponse } from "@/types/response/authResponse.type";
+import { ApiResponse } from "@/features/auth/types/auth.types";
 import axiosClient from "../../../shared/lib/axiosClient";
-import { TagStatsResponse } from "@/types/response/blogResponse.types";
+import { TagStatsResponse } from "../types/blog.types";
 const tagApi = {
   getTopTagsByViews: (limit = 10) =>
     axiosClient.get<ApiResponse<TagStatsResponse[]>>("/tags/top-views", {

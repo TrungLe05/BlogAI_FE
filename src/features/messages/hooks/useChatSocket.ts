@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import messageApi from "@/features/messages/api/messageApi";
 import useWebSocketStore from "@/features/messages/stores/websocketStore";
-import { MessageResponse } from "../types/message.types";
-import { ConversationResponse } from "@/types/response/conversationResponse.types";
+import { ConversationResponse, MessageResponse } from "../types/message.types";
 
 interface Props {
   selectedConvRef: React.MutableRefObject<ConversationResponse | null>;

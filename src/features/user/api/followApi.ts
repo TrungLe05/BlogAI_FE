@@ -1,5 +1,6 @@
-import { ApiResponse, User } from "@/types/response/authResponse.type";
+import { ApiResponse } from "@/features/auth/types/auth.types";
 import axiosClient from "../../../shared/lib/axiosClient";
+import { User } from "../types/user.types";
 
 const followApi = {
   follow: (id: string) => axiosClient.post(`/follows/${id}`),

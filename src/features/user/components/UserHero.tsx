@@ -1,8 +1,9 @@
 import { Users, Loader2, FileText, Eye, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { User } from "@/types/response/authResponse.type";
-import { BlogResponse } from "@/types/response/blogResponse.types";
+
 import StatChip from "./StatChip";
+import { User } from "../types/user.types";
+import { BlogResponse } from "@/features/blog/types/blog.types";
 
 function formatNum(n: number): string {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);

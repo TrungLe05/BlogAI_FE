@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { User } from "lucide-react";
-import { BlogResponse } from "@/types/response/blogResponse.types";
+import { BlogResponse } from "../types/blog.types";
 
 interface Props {
   blogDetail: BlogResponse;

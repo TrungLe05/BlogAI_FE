@@ -26,7 +26,7 @@ export function WriteView() {
   const [title, setTitle] = useState(emptyState.title);
   const [summary, setSummary] = useState(emptyState.summary);
   const [content, setContent] = useState(emptyState.content);
-  const [coverImageUrl, setCoverImageUrl] = useState(emptyState.coverImageUrl);
+  const [, setCoverImageUrl] = useState(emptyState.coverImageUrl);
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);

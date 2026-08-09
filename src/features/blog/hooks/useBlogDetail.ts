@@ -4,8 +4,8 @@ import { toast } from "sonner";
 import blogApi from "@/features/blog/api/blogApi";
 import followApi from "@/features/user/api/followApi";
 import useAuthStore from "@/features/auth/stores/authStore";
-import { BlogResponse } from "@/types/response/blogResponse.types";
 import { extractApiError } from "@/utils/apiError";
+import { BlogResponse } from "../types/blog.types";
 
 export function useBlogDetail(blogId: string | undefined) {
   const navigate = useNavigate();

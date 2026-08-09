@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import conversationApi from "@/features/messages/api/conversationApi";
 import { toast } from "sonner";
 import { extractApiError } from "@/utils/apiError";
-import { ConversationResponse } from "@/types/response/conversationResponse.types";
 import { ChatMessagePayload } from "@/features/messages/stores/websocketStore";
+import { ConversationResponse } from "../types/message.types";
 
 export function useConversations() {
   const [conversations, setConversations] = useState<ConversationResponse[]>(

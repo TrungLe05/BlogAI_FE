@@ -3,12 +3,9 @@ import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import blogApi from "@/features/blog/api/blogApi";
 import tagApi from "@/features/blog/api/tagApi";
-import {
-  BlogResponse,
-  TagResponse,
-  TagStatsResponse,
-} from "@/types/response/blogResponse.types";
+
 import { extractApiError } from "@/utils/apiError";
+import { BlogResponse, TagResponse, TagStatsResponse } from "../types/blog.types";
 
 const SORTS = ["Latest", "Most Viewed"] as const;
 const PAGE_SIZE = 9;

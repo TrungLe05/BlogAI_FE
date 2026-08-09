@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Eye, Clock } from "lucide-react";
-import { BlogResponse } from "@/types/response/blogResponse.types";
 import TagPill from "./TagPill";
+import { BlogResponse } from "../types/blog.types";
 
 const FALLBACK_COVER =
   "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=600&h=400&fit=crop";

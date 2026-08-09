@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Eye, Heart, Clock, FileEdit } from "lucide-react";
-import { BlogResponse } from "@/types/response/blogResponse.types";
+import { BlogResponse } from "@/features/blog/types/blog.types";
 
 interface Props {
   blogs: BlogResponse[];

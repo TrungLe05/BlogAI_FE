@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog";
-import { User } from "@/types/response/authResponse.type";
+import { User } from "@/features/user/types/user.types";
 
 interface FollowModalProps {
   mode: "followers" | "following" | null;

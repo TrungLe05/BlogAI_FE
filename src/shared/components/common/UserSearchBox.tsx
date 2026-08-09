@@ -1,5 +1,5 @@
 import { useUserSearch } from "@/features/user/hooks/useUserSearch";
-import { User } from "@/types/response/authResponse.type";
+import { User } from "@/features/user/types/user.types";
 import { Loader2, Search, UserRound, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";

@@ -1,6 +1,6 @@
 import { TrendingUp } from "lucide-react";
 import BlogCardMini from "./BlogCardMini";
-import { BlogResponse } from "@/types/response/blogResponse.types";
+import { BlogResponse } from "../types/blog.types";
 
 interface Props {
   relatedBlogs: BlogResponse[];
