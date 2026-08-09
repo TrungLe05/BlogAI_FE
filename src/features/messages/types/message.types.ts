@@ -13,6 +13,8 @@ export interface MessageResponse {
   fileSize?: number;
   isRead: boolean;
   createdAt: string;
+  isUploading?: boolean;
+  localPreviewUrl?: string;
 }
 
 export type PendingFile = {
@@ -29,22 +31,6 @@ export interface ConversationResponse {
   lastMessageAt: string | null; // ← string | null, không phải Instant
   lastMessageSenderId: string | null; // ← thêm
   unreadCount: number;
-}
-
-// types/message.types.ts
-export interface MessageResponse {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  senderName: string;
-  senderAvatar: string;
-  content: string;
-  type: "TEXT" | "IMAGE" | "FILE";
-  fileUrl?: string;
-  fileName?: string;
-  fileSize?: number;
-  isRead: boolean;
-  createdAt: string;
 }
 
 export interface ChatMessagePayload {

@@ -1,6 +1,6 @@
 import { Search } from "lucide-react";
-import { ConversationResponse } from "@/types/response/conversationResponse.types";
 import ConversationItem from "./ConversationItem";
+import { ConversationResponse } from "../types/message.types";
 
 interface Props {
   conversations: ConversationResponse[];

@@ -10,6 +10,7 @@ import { ActiveView } from "@/features/dashboard/types/dashboard.types";
 import SettingsView from "@/features/dashboard/views/SettingsView";
 import Enable2FADialog from "@/features/auth/components/TwoFAPromptDialog";
 import StatsView from "@/features/dashboard/views/StatsView";
+import UserAvatar from "@/shared/components/common/userAvatar";
 
 export { initTheme } from "@/features/dashboard/utils/theme";
 
@@ -20,9 +21,12 @@ function DashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const viewParam = searchParams.get("view") as ActiveView;
-  const activeView: ActiveView = VALID_VIEWS.includes(viewParam) ? viewParam : "write";
+  const activeView: ActiveView = VALID_VIEWS.includes(viewParam)
+    ? viewParam
+    : "write";
 
-  const goToSettings = () => setSearchParams({ view: "settings" }, { replace: true });
+  const goToSettings = () =>
+    setSearchParams({ view: "settings" }, { replace: true });
 
   return (
     <div className="bg-[#f2fbfc] dark:bg-[#0f1117] h-screen flex flex-col font-sans">
@@ -33,6 +37,7 @@ function DashboardPage() {
               Blog<span className="text-[#d32f2f]">AI</span>
             </span>
           </Link>
+          {/* <AvatarDropdown /> */}
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">

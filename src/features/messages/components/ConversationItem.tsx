@@ -1,4 +1,4 @@
-import { ConversationResponse } from "@/types/response/conversationResponse.types";
+import { ConversationResponse } from "../types/message.types";
 
 function formatTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();

@@ -33,10 +33,10 @@ function LoginPage() {
       const { data } = await userApi.getMe();
       setAuth(res.data.result.token, res.data.result.tempToken, data.result);
 
-      toast.success("Đăng nhập thành công!");
+      toast.success("Login Successfully");
       navigate("/dashboard", { replace: true });
     } catch {
-      toast.error("Email hoặc mật khẩu không đúng");
+      toast.error("Incorrect email or password!");
     }
   };
 

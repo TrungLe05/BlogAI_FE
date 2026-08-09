@@ -2,7 +2,7 @@ import { NotificationBell } from "@/shared/components/common/NotificationBell";
 import UserSearchBox from "@/shared/components/common/UserSearchBox";
 import { AvatarDropdown } from "@/shared/components/common/AvatarDropdown";
 import useAuthStore from "@/features/auth/stores/authStore";
-import { Menu, PenLine, X } from "lucide-react";
+import { Menu, MessageCircle, PenLine, X } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -47,7 +47,14 @@ export default function Header() {
             <PenLine size={15} strokeWidth={1.8} />
             <span className="font-sans">Write</span>
           </button>
-
+          {/* Message */}
+          <button
+            onClick={() => navigate("/messages")}
+            title="Messages"
+            className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-gray-500 dark:text-zinc-400 hover:text-[#0d0d0d] dark:hover:text-zinc-100 hover:bg-black/5 dark:hover:bg-white/6 transition-colors cursor-pointer"
+          >
+            <MessageCircle size={17} strokeWidth={1.8} />
+          </button>
           {/* Notification Bell */}
           {user && (
             <div className="flex items-center">

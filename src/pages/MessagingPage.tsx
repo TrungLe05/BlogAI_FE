@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import LoadingSpinner from "@/shared/components/common/LoadingSpinner";
 import useWebSocketStore from "@/features/messages/stores/websocketStore";
 import messageApi from "@/features/messages/api/messageApi";
-import { ConversationResponse } from "@/types/response/conversationResponse.types";
 
 import { useConversations } from "@/features/messages/hooks/useConversations";
 import { useMessages } from "@/features/messages/hooks/useMessages";
@@ -16,6 +15,8 @@ import { useChatSocket } from "@/features/messages/hooks/useChatSocket";
 import ChatWindow from "@/features/messages/components/ChatWindow";
 import ImageLightbox from "@/features/messages/components/ImageLightbox";
 import ConversationList from "@/features/messages/components/ConversationList";
+import { ConversationResponse } from "@/features/messages/types/message.types";
+import DashboardSidebar from "@/features/dashboard/components/layout/DashboardSidebar";
 
 export default function MessagingPage() {
   const { user } = useAuthStore();
@@ -106,9 +107,10 @@ export default function MessagingPage() {
     const target = conversations.find((c) => c.id === focusId);
     if (target) {
       handleSelectConv(target);
-      window.history.replaceState({}, "");
+      // Xoá state của React Router để useEffect không bị trigger lại khi conversations thay đổi
+      navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state, conversations]);
+  }, [location.state, conversations, navigate]);
 
   useChatSocket({
     selectedConvRef,
@@ -149,24 +151,50 @@ export default function MessagingPage() {
     setIsSending(true);
     sendTyping(selectedConv.id, selectedConv.otherUser.id, false);
 
-    let type: "TEXT" | "IMAGE" | "FILE" = "TEXT";
-    let fileData:
-      | { fileUrl: string; fileName: string; fileSize: number }
-      | undefined;
     const capturedFile = pendingFile;
     if (capturedFile) clearFile();
 
+    const type: "TEXT" | "IMAGE" | "FILE" = capturedFile
+      ? capturedFile.isImage
+        ? "IMAGE"
+        : "FILE"
+      : "TEXT";
+
+    // Tạo url tạm ngay trên máy để hiển thị preview trong lúc upload
+    const localPreviewUrl = capturedFile
+      ? URL.createObjectURL(capturedFile.file)
+      : undefined;
+
     const optimisticId = `optimistic-${Date.now()}`;
 
+    // 1. Hiện bubble ngay lập tức, kèm cờ isUploading — spinner sẽ dựa vào cờ này
+    appendMessage({
+      id: optimisticId,
+      conversationId: selectedConv.id,
+      senderId: user?.id ?? "",
+      senderName: user?.fullName ?? "",
+      senderAvatar: user?.avatarUrl ?? "",
+      content: content || "",
+      type,
+      fileUrl: localPreviewUrl,
+      fileName: capturedFile?.file.name,
+      fileSize: capturedFile?.file.size,
+      isRead: false,
+      createdAt: new Date().toISOString(),
+      isUploading: !!capturedFile,
+    });
+
     try {
+      let fileData:
+        | { fileUrl: string; fileName: string; fileSize: number }
+        | undefined;
+
+      // 2. Upload chạy nền — bubble vẫn đang hiện ảnh preview + spinner
       if (capturedFile) {
-        toast.loading("Đang upload...", { id: "upload" });
         const { data: uploadRes } = await messageApi.uploadChatFile(
           capturedFile.file,
           selectedConv.id,
         );
-        toast.dismiss("upload");
-        type = capturedFile.isImage ? "IMAGE" : "FILE";
         fileData = {
           fileUrl: uploadRes.result.url,
           fileName: uploadRes.result.fileName,
@@ -174,27 +202,14 @@ export default function MessagingPage() {
         };
       }
 
-      appendMessage({
-        id: optimisticId,
-        conversationId: selectedConv.id,
-        senderId: user?.id ?? "",
-        senderName: user?.fullName ?? "",
-        senderAvatar: user?.avatarUrl ?? "",
-        content: content || "",
-        type,
-        fileUrl: fileData?.fileUrl,
-        fileName: fileData?.fileName,
-        fileSize: fileData?.fileSize,
-        isRead: false,
-        createdAt: new Date().toISOString(),
-      });
-
       const { data } = await messageApi.sendMessage(
         selectedConv.id,
         content,
         type,
         fileData,
       );
+
+      // 3. Thay optimistic bằng message thật từ server (đã có fileUrl thật, isUploading không còn true)
       replaceOptimistic(optimisticId, data.result);
       updateLastMessage(
         selectedConv.id,
@@ -207,10 +222,10 @@ export default function MessagingPage() {
         user?.id ?? "",
       );
     } catch {
-      toast.dismiss("upload");
       toast.error("Không thể gửi");
       removeOptimistic(optimisticId);
     } finally {
+      if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
       setIsSending(false);
     }
   };
@@ -255,28 +270,7 @@ export default function MessagingPage() {
     <>
       {isLoading && <LoadingSpinner />}
       <style>{`@keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.5} 30%{transform:translateY(-6px);opacity:1} }`}</style>
-
-      <div className="h-screen flex flex-col bg-[#ebf4f5] dark:bg-zinc-950 font-sans">
-        {/* ── TOP BAR ── */}
-        <div className="shrink-0 flex items-center gap-3 px-4 sm:px-6 h-14 bg-white dark:bg-zinc-900 border-b-[3px] border-[#0d0d0d] dark:border-zinc-700 z-50">
-          {/* Back button — mobile: quay lại list khi đang ở chat, desktop/mobile-list: navigate(-1) */}
-          <button
-            onClick={() =>
-              mobilePanel === "chat" && window.innerWidth < 640
-                ? setMobilePanel("list")
-                : navigate(-1)
-            }
-            className="w-8 h-8 flex items-center justify-center border-2 border-[#0d0d0d] dark:border-zinc-600 text-[#0d0d0d] dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer shrink-0"
-          >
-            <ArrowLeft size={16} />
-          </button>
-          <span className="text-sm sm:text-base font-black uppercase tracking-widest text-[#0d0d0d] dark:text-white font-display truncate">
-            {mobilePanel === "chat" && selectedConv
-              ? selectedConv.otherUser.fullName
-              : "Messages"}
-          </span>
-        </div>
-
+      <div className=" h-screen flex bg-[#ebf4f5] dark:bg-zinc-950 font-sans">
         {/* ── BODY ── */}
         <div className="flex flex-1 overflow-hidden">
           {/* Conversation List:
@@ -326,6 +320,10 @@ export default function MessagingPage() {
                 onFileSelect={handleFileSelect}
                 onClearFile={clearFile}
                 onImageClick={handleOpenLightbox}
+                onBack={() => {
+                  setSelectedConv(null);
+                  setMobilePanel("list");
+                }}
               />
             ) : (
               <div className="hidden sm:flex flex-col items-center justify-center flex-1 gap-4 bg-[#ebf4f5] dark:bg-zinc-950">

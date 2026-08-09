@@ -23,13 +23,13 @@ const OAuth2Callback = () => {
       return;
     }
 
-    setAuth(accessToken, null);
+    setAuth(accessToken, "", null);
     if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
 
     userApi
       .getMe()
       .then((res) => {
-        setAuth(accessToken, res.data.result);
+        setAuth(accessToken, "", res.data.result);
         Cookies.remove("accessToken"); // xoá cookie sau khi đã lưu
         navigate("/dashboard", { replace: true });
       })
