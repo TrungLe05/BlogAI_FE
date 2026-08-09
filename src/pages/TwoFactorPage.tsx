@@ -1,6 +1,6 @@
-import { authApi } from "@/api/authApi";
-import { userApi } from "@/api/userApi";
-import useAuthStore from "@/stores/authStore";
+import { authApi } from "@/features/auth/api/authApi";
+import { userApi } from "@/features/user/api/userApi";
+import useAuthStore from "@/features/auth/stores/authStore";
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ const TwoFactorPage: React.FC = () => {
 
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
-
+  const tempToken = useAuthStore((state) => state.tempToken) ?? "";
   useEffect(() => {
     if (mode === "otp") {
       setTimeout(() => hiddenInputRef.current?.focus(), 50);
@@ -36,15 +36,15 @@ const TwoFactorPage: React.FC = () => {
       setLoading(true);
       setError(false);
       try {
-        const tempToken = localStorage.getItem("temp-token") ?? "";
+        // const tempToken = localStorage.getItem("temp-token") ?? "";
         const res = await authApi.verifyLoginOtp({ otpCode: code, tempToken });
         const { token, refreshToken } = res.data.result;
 
         localStorage.setItem("refreshToken", refreshToken);
-        setAuth(token, null);
+        setAuth(token, "", null);
 
         const { data } = await userApi.getMe();
-        setAuth(token, data.result);
+        setAuth(token, "", data.result);
 
         toast.success("Authentication successful!");
         navigate("/dashboard", { replace: true });
@@ -99,14 +99,11 @@ const TwoFactorPage: React.FC = () => {
   const isOtpComplete = otpValue.length === 6;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#ebf4f5] dark:bg-zinc-950 p-6 font-sans" >
+    <div className="min-h-screen flex items-center justify-center bg-[#ebf4f5] dark:bg-zinc-950 p-6 font-sans">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <span
-            className="font-black text-2xl text-[#0d0d0d] dark:text-white font-display"
-            
-          >
+          <span className="font-black text-2xl text-[#0d0d0d] dark:text-white font-display">
             Blog<span className="text-[#d32f2f]">AI</span>
           </span>
         </div>
@@ -129,11 +126,11 @@ const TwoFactorPage: React.FC = () => {
             <div className="text-center">
               <h2
                 className="font-black text-xl text-[#0d0d0d] dark:text-white mb-1 font-display"
-                style={{ letterSpacing: "-0.01em"  }}
+                style={{ letterSpacing: "-0.01em" }}
               >
                 {mode === "otp" ? "Two-Factor Auth" : "Recovery Code"}
               </h2>
-              <p className="text-xs text-[#666] dark:text-zinc-400 font-sans" >
+              <p className="text-xs text-[#666] dark:text-zinc-400 font-sans">
                 {mode === "otp"
                   ? "Enter the 6-digit code from your authenticator app"
                   : "Enter one of your saved recovery codes"}
@@ -168,17 +165,16 @@ const TwoFactorPage: React.FC = () => {
                     <div
                       key={i}
                       className={`flex items-center justify-center font-black select-none transition-all
-                        ${error
-                          ? "border-[3px] border-[#d32f2f] bg-red-50 dark:bg-red-950/30 text-[#d32f2f]"
-                          : isCursor
-                            ? "border-[3px] border-[#0d0d0d] dark:border-zinc-400 bg-[#f2fbfc] dark:bg-zinc-800 text-[#0d0d0d] dark:text-white shadow-[3px_3px_0_#d32f2f]"
-                            : hasValue
-                              ? "border-[3px] border-[#0d0d0d] dark:border-zinc-500 bg-[#f2fbfc] dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
-                              : "border-[3px] border-[#ccc] dark:border-zinc-600 bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
+                        ${
+                          error
+                            ? "border-[3px] border-[#d32f2f] bg-red-50 dark:bg-red-950/30 text-[#d32f2f]"
+                            : isCursor
+                              ? "border-[3px] border-[#0d0d0d] dark:border-zinc-400 bg-[#f2fbfc] dark:bg-zinc-800 text-[#0d0d0d] dark:text-white shadow-[3px_3px_0_#d32f2f]"
+                              : hasValue
+                                ? "border-[3px] border-[#0d0d0d] dark:border-zinc-500 bg-[#f2fbfc] dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
+                                : "border-[3px] border-[#ccc] dark:border-zinc-600 bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
                         }`}
-                       style={{ width: 48,
-                        height: 58,
-                        fontSize: "1.5rem" }}
+                      style={{ width: 48, height: 58, fontSize: "1.5rem" }}
                     >
                       {hasValue ? (
                         otpValue[i]
@@ -205,9 +201,12 @@ const TwoFactorPage: React.FC = () => {
                   <span
                     key={i}
                     className={`w-1.5 h-1.5 rounded-full transition-colors
-                      ${i < otpValue.length
-                        ? error ? "bg-[#d32f2f]" : "bg-[#0d0d0d] dark:bg-white"
-                        : "bg-[#ddd] dark:bg-zinc-600"
+                      ${
+                        i < otpValue.length
+                          ? error
+                            ? "bg-[#d32f2f]"
+                            : "bg-[#0d0d0d] dark:bg-white"
+                          : "bg-[#ddd] dark:bg-zinc-600"
                       }`}
                   />
                 ))}
@@ -223,12 +222,12 @@ const TwoFactorPage: React.FC = () => {
               <button
                 onClick={() => doVerify(otpValue)}
                 disabled={!isOtpComplete || loading}
-                className={`w-full flex items-center justify-center gap-2 py-3 font-black text-xs uppercase tracking-[0.1em] text-white transition-all mb-3
-                  ${isOtpComplete && !loading
-                    ? "bg-[#0d0d0d] dark:bg-zinc-200 dark:text-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-200 shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f] cursor-pointer"
-                    : "bg-[#aaa] dark:bg-zinc-600 border-[3px] border-[#aaa] dark:border-zinc-600 cursor-not-allowed"
+                className={`w-full flex items-center justify-center gap-2 py-3 font-black text-xs uppercase tracking-widest text-white transition-all mb-3
+                  ${
+                    isOtpComplete && !loading
+                      ? "bg-[#0d0d0d] dark:bg-zinc-200 dark:text-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-200 shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f] cursor-pointer"
+                      : "bg-[#aaa] dark:bg-zinc-600 border-[3px] border-[#aaa] dark:border-zinc-600 cursor-not-allowed"
                   }`}
-                
               >
                 {loading ? (
                   <>
@@ -244,8 +243,7 @@ const TwoFactorPage: React.FC = () => {
               {/* Switch to recovery */}
               <button
                 onClick={() => switchMode("recovery")}
-                className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer mb-2.5"
-                
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-2 border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer mb-2.5"
               >
                 <Key size={13} /> Use a recovery code instead
               </button>
@@ -256,7 +254,7 @@ const TwoFactorPage: React.FC = () => {
           {mode === "recovery" && (
             <>
               {/* Info box */}
-              <div className="bg-red-50 dark:bg-red-950/30 border-[2px] border-[#d32f2f] p-3 mb-4">
+              <div className="bg-red-50 dark:bg-red-950/30 border-2 border-[#d32f2f] p-3 mb-4">
                 <p className="text-xs text-[#7f0d12] dark:text-red-400 leading-relaxed">
                   Recovery codes were provided when you enabled 2FA. Each code
                   can only be used once. Format:{" "}
@@ -271,10 +269,11 @@ const TwoFactorPage: React.FC = () => {
                 onChange={(e) => setRecoveryCode(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === "Enter" && doVerify(recoveryCode)}
                 autoFocus
-                className={`w-full py-3.5 font-mono font-bold text-lg text-center tracking-[0.1em] outline-none border-[3px] mb-4 transition-all focus:shadow-[4px_4px_0_#0d0d0d] dark:focus:shadow-[4px_4px_0_#52525b]
-                  ${error
-                    ? "border-[#d32f2f] bg-red-50 dark:bg-red-950/30 text-[#d32f2f]"
-                    : "border-[#0d0d0d] dark:border-zinc-600 bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
+                className={`w-full py-3.5 font-mono font-bold text-lg text-center tracking-widest outline-none border-[3px] mb-4 transition-all focus:shadow-[4px_4px_0_#0d0d0d] dark:focus:shadow-[4px_4px_0_#52525b]
+                  ${
+                    error
+                      ? "border-[#d32f2f] bg-red-50 dark:bg-red-950/30 text-[#d32f2f]"
+                      : "border-[#0d0d0d] dark:border-zinc-600 bg-white dark:bg-zinc-800 text-[#0d0d0d] dark:text-white"
                   }`}
               />
 
@@ -288,12 +287,12 @@ const TwoFactorPage: React.FC = () => {
               <button
                 onClick={() => doVerify(recoveryCode)}
                 disabled={!recoveryCode.trim() || loading}
-                className={`w-full flex items-center justify-center gap-2 py-3 font-black text-xs uppercase tracking-[0.1em] text-white transition-all mb-3
-                  ${recoveryCode.trim() && !loading
-                    ? "bg-[#0d0d0d] dark:bg-zinc-200 dark:text-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-200 shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f] cursor-pointer"
-                    : "bg-[#aaa] dark:bg-zinc-600 border-[3px] border-[#0d0d0d] dark:border-zinc-600 cursor-not-allowed"
+                className={`w-full flex items-center justify-center gap-2 py-3 font-black text-xs uppercase tracking-widest text-white transition-all mb-3
+                  ${
+                    recoveryCode.trim() && !loading
+                      ? "bg-[#0d0d0d] dark:bg-zinc-200 dark:text-zinc-900 border-[3px] border-[#0d0d0d] dark:border-zinc-200 shadow-[4px_4px_0_#d32f2f] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#d32f2f] cursor-pointer"
+                      : "bg-[#aaa] dark:bg-zinc-600 border-[3px] border-[#0d0d0d] dark:border-zinc-600 cursor-not-allowed"
                   }`}
-                
               >
                 {loading ? (
                   <>
@@ -309,8 +308,7 @@ const TwoFactorPage: React.FC = () => {
               {/* Switch back to OTP */}
               <button
                 onClick={() => switchMode("otp")}
-                className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer mb-2.5"
-                
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-2 border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer mb-2.5"
               >
                 <ShieldCheck size={13} /> Use authenticator app instead
               </button>
@@ -320,14 +318,13 @@ const TwoFactorPage: React.FC = () => {
           {/* Back to login */}
           <button
             onClick={() => navigate("/login")}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-[2px] border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer"
-            
+            className="w-full flex items-center justify-center gap-1.5 py-2.5 font-bold text-xs uppercase tracking-[0.08em] text-[#666] dark:text-zinc-400 bg-transparent border-2 border-[#ddd] dark:border-zinc-700 hover:border-[#0d0d0d] dark:hover:border-zinc-400 hover:text-[#0d0d0d] dark:hover:text-white transition-all cursor-pointer"
           >
             <ArrowLeft size={13} /> Back to Login
           </button>
         </div>
 
-        <p className="text-center text-xs text-[#999] dark:text-zinc-600 mt-4 font-sans" >
+        <p className="text-center text-xs text-[#999] dark:text-zinc-600 mt-4 font-sans">
           {mode === "otp"
             ? "Code refreshes every 30 seconds · Works with Google Authenticator & Authy"
             : "Each recovery code can only be used once"}

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import messageApi from "@/api/messageApi";
-import useWebSocketStore from "@/stores/websocketStore";
+import messageApi from "@/features/messages/api/messageApi";
+import useWebSocketStore from "@/features/messages/stores/websocketStore";
 import { MessageResponse } from "../types/message.types";
 import { ConversationResponse } from "@/types/response/conversationResponse.types";
 
@@ -8,7 +8,10 @@ interface Props {
   selectedConvRef: React.MutableRefObject<ConversationResponse | null>;
   appendMessage: (msg: MessageResponse) => void;
   markAllAsRead: (userId: string) => void;
-  updateConversationFromPayload: (payload: any, currentConvId: string | null) => void;
+  updateConversationFromPayload: (
+    payload: any,
+    currentConvId: string | null,
+  ) => void;
   setIsOtherTyping: (v: boolean) => void;
   userId?: string;
 }
@@ -51,13 +54,22 @@ export function useChatSocket({
       updateConversationFromPayload(payload, currentConv?.id ?? null);
     }
 
-    if (payload.type === "TYPING" && payload.conversationId === currentConv?.id) {
+    if (
+      payload.type === "TYPING" &&
+      payload.conversationId === currentConv?.id
+    ) {
       setIsOtherTyping(true);
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = setTimeout(() => setIsOtherTyping(false), 3000);
+      typingTimeoutRef.current = setTimeout(
+        () => setIsOtherTyping(false),
+        3000,
+      );
     }
 
-    if (payload.type === "STOP_TYPING" && payload.conversationId === currentConv?.id) {
+    if (
+      payload.type === "STOP_TYPING" &&
+      payload.conversationId === currentConv?.id
+    ) {
       setIsOtherTyping(false);
     }
 

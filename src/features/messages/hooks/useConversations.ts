@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import conversationApi from "@/api/conversationApi";
+import conversationApi from "@/features/messages/api/conversationApi";
 import { toast } from "sonner";
 import { extractApiError } from "@/utils/apiError";
 import { ConversationResponse } from "@/types/response/conversationResponse.types";
-import { ChatMessagePayload } from "@/stores/websocketStore";
+import { ChatMessagePayload } from "@/features/messages/stores/websocketStore";
 
 export function useConversations() {
-  const [conversations, setConversations] = useState<ConversationResponse[]>([]);
+  const [conversations, setConversations] = useState<ConversationResponse[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -34,7 +36,9 @@ export function useConversations() {
           ? {
               ...c,
               unreadCount:
-                payload.conversationId === currentConvId ? 0 : c.unreadCount + 1,
+                payload.conversationId === currentConvId
+                  ? 0
+                  : c.unreadCount + 1,
               lastMessage: payload.content ?? null,
               lastMessageAt: payload.createdAt ?? null,
               lastMessageSenderId: payload.senderId ?? null,

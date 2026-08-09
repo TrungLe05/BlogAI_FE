@@ -1,9 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import blogApi from "@/api/blogApi";
-import tagApi from "@/api/tagApi";
-import { BlogResponse, TagResponse, TagStatsResponse } from "@/types/response/blogResponse.types";
+import blogApi from "@/features/blog/api/blogApi";
+import tagApi from "@/features/blog/api/tagApi";
+import {
+  BlogResponse,
+  TagResponse,
+  TagStatsResponse,
+} from "@/types/response/blogResponse.types";
 import { extractApiError } from "@/utils/apiError";
 
 const SORTS = ["Latest", "Most Viewed"] as const;
@@ -18,9 +22,12 @@ export function useExplore() {
   const location = useLocation();
 
   const [search, setSearch] = useState("");
-  const [activeTag, setActiveTag] = useState(location.state?.selectedTag ?? "All");
+  const [activeTag, setActiveTag] = useState(
+    location.state?.selectedTag ?? "All",
+  );
   const [activeGroup, setActiveGroup] = useState("All");
-  const [activeSort, setActiveSort] = useState<typeof SORTS[number]>("Latest");
+  const [activeSort, setActiveSort] =
+    useState<(typeof SORTS)[number]>("Latest");
   const [blogs, setBlogs] = useState<BlogResponse[]>([]);
   const [tags, setTags] = useState<TagResponse[]>([]);
   const [page, setPage] = useState(1);
@@ -49,7 +56,9 @@ export function useExplore() {
     fetchAll();
   }, []);
 
-  useEffect(() => { setPage(1); }, [search, activeTag, activeSort, activeGroup]);
+  useEffect(() => {
+    setPage(1);
+  }, [search, activeTag, activeSort, activeGroup]);
 
   useEffect(() => {
     if (location.state?.selectedTag) {
@@ -91,7 +100,10 @@ export function useExplore() {
   }, [blogs, activeTag, activeGroup, search, activeSort, tags]);
 
   const totalPages = Math.ceil(filteredAndSorted.length / PAGE_SIZE);
-  const paginated = filteredAndSorted.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const paginated = filteredAndSorted.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE,
+  );
 
   const handleGroupClick = (group: string) => {
     setActiveGroup(group);
@@ -103,16 +115,20 @@ export function useExplore() {
   };
 
   return {
-    search, setSearch,
-    activeTag, setActiveTag,
+    search,
+    setSearch,
+    activeTag,
+    setActiveTag,
     activeGroup,
-    activeSort, setActiveSort,
+    activeSort,
+    setActiveSort,
     groups,
     filteredTagsByGroup,
     filteredAndSorted,
     paginated,
     totalPages,
-    page, setPage,
+    page,
+    setPage,
     loading,
     tags,
     groupTrending,

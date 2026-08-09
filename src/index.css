@@ -769,3 +769,73 @@ body {
   height: 0;
   pointer-events: none;
 }
+
+/* Toolbar cuộn ngang mượt trên mobile, ẩn thanh scrollbar nhưng vẫn scroll được */
+.rich-toolbar-scroll {
+  scrollbar-width: none; /* Firefox */
+  -webkit-overflow-scrolling: touch;
+}
+.rich-toolbar-scroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* responsive */
+.rich-toolbar-btn {
+  padding: 8px 10px; /* mobile: touch target rộng rãi hơn desktop */
+  min-width: 40px;
+  min-height: 40px;
+}
+
+@media (min-width: 640px) {
+  .rich-toolbar-btn {
+    padding: 6px 8px;
+    min-width: auto;
+    min-height: auto;
+  }
+}
+
+.rich-editor-content {
+  min-height: 280px;
+  padding: 14px;
+}
+
+@media (min-width: 640px) {
+  .rich-editor-content {
+    min-height: 420px;
+    padding: 20px;
+  }
+}
+
+/* ── Mobile (mặc định): bottom sheet ── */
+.ai-result-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-height: 75vh;
+  box-shadow: 0 -6px 0 #d32f2f;
+  border-radius: 12px 12px 0 0;
+  transform: translateY(110%);
+}
+.ai-result-panel[data-visible="true"] {
+  transform: translateY(0);
+}
+
+/* Desktop */
+@media (min-width: 640px) {
+  .ai-result-panel {
+    left: auto;
+    bottom: auto;
+    top: 50%;
+    right: 20px;
+    width: 320px;
+    max-height: 70vh;
+    box-shadow: 6px 6px 0 #d32f2f;
+    border-radius: 4px;
+    transform: translateY(-50%) translateX(110%);
+  }
+  .ai-result-panel[data-visible="true"] {
+    transform: translateY(-50%) translateX(0);
+  }
+}

@@ -1,4 +1,4 @@
-import { ChangePasswordRequest } from "@/types/request/authRequest.types";
+import { ChangePasswordRequest } from "@/features/auth/types/auth.types";
 import { ValidationError } from "./errorFormat";
 
 export function validationUpdateMe(data: {
@@ -27,20 +27,28 @@ export function validationUpdateMe(data: {
   return errors;
 }
 
-export function validateChangePassword(data: ChangePasswordRequest) : ValidationError[]{
-    const errors: ValidationError[] = [];
-    if(!data?.newPassword.trim()){
-        errors.push({field: "newPassword", message: "New password is required"})
-    }
-    if(!data.currentPassword.trim()){
-        errors.push({field: "currentPassword", message: "Current password is required"})
-    }
-    if(!data.confirmPassword.trim()){
-        errors.push({field: "confirmPassword", message: "Confirm password is required"})
-    }
+export function validateChangePassword(
+  data: ChangePasswordRequest,
+): ValidationError[] {
+  const errors: ValidationError[] = [];
+  if (!data?.newPassword.trim()) {
+    errors.push({ field: "newPassword", message: "New password is required" });
+  }
+  if (!data.currentPassword.trim()) {
+    errors.push({
+      field: "currentPassword",
+      message: "Current password is required",
+    });
+  }
+  if (!data.confirmPassword.trim()) {
+    errors.push({
+      field: "confirmPassword",
+      message: "Confirm password is required",
+    });
+  }
 
-    if(data.confirmPassword.trim() != data.newPassword.trim()){
-        errors.push({field: "confirmPassword", message: "password not matches"})
-    }
-    return errors;
+  if (data.confirmPassword.trim() != data.newPassword.trim()) {
+    errors.push({ field: "confirmPassword", message: "password not matches" });
+  }
+  return errors;
 }

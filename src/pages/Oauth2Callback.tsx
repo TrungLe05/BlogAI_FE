@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
-import { userApi } from "@/api/userApi";
-import useAuthStore from "@/stores/authStore";
+import { userApi } from "@/features/user/api/userApi";
+import useAuthStore from "@/features/auth/stores/authStore";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 

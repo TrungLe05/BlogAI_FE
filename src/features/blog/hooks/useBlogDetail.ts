@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import blogApi from "@/api/blogApi";
-import followApi from "@/api/followApi";
-import useAuthStore from "@/stores/authStore";
+import blogApi from "@/features/blog/api/blogApi";
+import followApi from "@/features/user/api/followApi";
+import useAuthStore from "@/features/auth/stores/authStore";
 import { BlogResponse } from "@/types/response/blogResponse.types";
 import { extractApiError } from "@/utils/apiError";
 
@@ -20,7 +20,9 @@ export function useBlogDetail(blogId: string | undefined) {
 
   const isAuthor = blogDetail?.author.email === user?.email;
   const isFollowing =
-    followOverride !== null ? followOverride : (blogDetail?.author?.following ?? false);
+    followOverride !== null
+      ? followOverride
+      : (blogDetail?.author?.following ?? false);
 
   // Reset override khi chuyển blog
   useEffect(() => {
@@ -52,7 +54,9 @@ export function useBlogDetail(blogId: string | undefined) {
     };
 
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [blogId]);
 
   // Fetch related blogs
@@ -75,7 +79,11 @@ export function useBlogDetail(blogId: string | undefined) {
       const { data } = await blogApi.toggleLike(blogId);
       setBlogDetail((prev) =>
         prev
-          ? { ...prev, likeCount: data.result.likeCount, likedByCurrentUser: data.result.likedByCurrentUser }
+          ? {
+              ...prev,
+              likeCount: data.result.likeCount,
+              likedByCurrentUser: data.result.likedByCurrentUser,
+            }
           : prev,
       );
     } catch (e) {

@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import { Heart, FileText, BarChart2 } from "lucide-react";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
+import LoadingSpinner from "@/shared/components/common/LoadingSpinner";
 import { useUserDetail } from "@/features/user/hooks/useUserDetail";
 import UserHero from "@/features/user/components/UserHero";
 import SummaryPill from "@/features/user/components/SummaryPill";
 import UserBlogGrid from "@/features/user/components/UserBlogGrid";
-import Header from "@/components/layout/Header";
+import Header from "@/shared/components/layout/Header";
 
 function formatNum(n: number): string {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}K` : String(n);
@@ -30,10 +30,7 @@ export default function UserDetailPage() {
   if (!profileUser) return null;
 
   return (
-    <div
-      className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950 font-sans"
-      
-    >
+    <div className="min-h-screen bg-[#ebf4f5] dark:bg-zinc-950 font-sans">
       {/* Header */}
       <Header />
       {/* Hero */}
@@ -75,12 +72,10 @@ export default function UserDetailPage() {
           <div className="flex items-end gap-4 mb-1">
             <h2
               className="font-black text-[#0d0d0d] dark:text-white font-display"
-              style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                lineHeight: 1.1 }}
+              style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", lineHeight: 1.1 }}
             >
               Published Stories
             </h2>
-            
           </div>
           <div className="h-1 bg-[#d32f2f] w-20" />
         </div>

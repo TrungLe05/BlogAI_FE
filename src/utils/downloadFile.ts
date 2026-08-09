@@ -1,7 +1,10 @@
-import axiosClient from "@/api/axiosClient";
+import axiosClient from "@/shared/lib/axiosClient";
 import { toast } from "sonner";
 
-export async function downloadFile(fileUrl: string, fileName: string): Promise<void> {
+export async function downloadFile(
+  fileUrl: string,
+  fileName: string,
+): Promise<void> {
   const toastId = toast.loading(`Đang tải ${fileName}...`);
   try {
     const response = await axiosClient.get("/messages/download", {

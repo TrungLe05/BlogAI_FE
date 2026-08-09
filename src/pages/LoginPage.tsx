@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, PenLine } from "lucide-react";
-import { authApi } from "@/api/authApi";
+import { authApi } from "@/features/auth/api/authApi";
 import { toast } from "sonner";
-import useAuthStore from "@/stores/authStore";
-import { userApi } from "@/api/userApi";
+import useAuthStore from "@/features/auth/stores/authStore";
+import { userApi } from "@/features/user/api/userApi";
 
 function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,16 +21,17 @@ function LoginPage() {
       console.log(res.data);
 
       if (res.data.result.require2FA) {
-        localStorage.setItem("temp-token", res.data.result.tempToken);
+        // localStorage.setItem("temp-token", res.data.result.tempToken);
+        setAuth("", res.data.result.tempToken, null);
         navigate("/auth/2fa-verify-otp-code");
         return;
       }
 
       localStorage.setItem("refreshToken", res.data.result.refreshToken);
-      setAuth(res.data.result.token, null);
+      setAuth(res.data.result.token, "", null);
 
       const { data } = await userApi.getMe();
-      setAuth(res.data.result.token, data.result);
+      setAuth(res.data.result.token, res.data.result.tempToken, data.result);
 
       toast.success("Đăng nhập thành công!");
       navigate("/dashboard", { replace: true });
@@ -40,10 +41,7 @@ function LoginPage() {
   };
 
   return (
-    <div
-      className="min-h-screen grid lg:grid-cols-2 bg-[#ebf4f5]  font-sans"
-      
-    >
+    <div className="min-h-screen grid lg:grid-cols-2 bg-[#ebf4f5]  font-sans">
       {/* Left Panel */}
       <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden bg-[#0d0d0d]">
         {/* Decorative brute shapes */}
@@ -53,10 +51,7 @@ function LoginPage() {
         {/* Logo */}
         <div className="relative z-10">
           <Link to="/">
-            <span
-              className="text-2xl font-black text-white font-display"
-              
-            >
+            <span className="text-2xl font-black text-white font-display">
               Blog<span className="text-[#d32f2f]">AI</span>
             </span>
           </Link>
@@ -66,8 +61,7 @@ function LoginPage() {
         <div className="relative z-10">
           <h2
             className="font-black mb-6 text-white font-display"
-            style={{ fontSize: "clamp(36px, 4vw, 52px)",
-              lineHeight: 1.1 }}
+            style={{ fontSize: "clamp(36px, 4vw, 52px)", lineHeight: 1.1 }}
           >
             Welcome Back,
             <br />
@@ -98,10 +92,7 @@ function LoginPage() {
                 style={{ border: "2px solid #0d0d0d" }}
               />
               <div>
-                <p
-                  className="text-xs font-black text-[#0d0d0d] font-display"
-                  
-                >
+                <p className="text-xs font-black text-[#0d0d0d] font-display">
                   Sarah Chen
                 </p>
                 <p className="text-xs text-[#888]">
@@ -123,10 +114,7 @@ function LoginPage() {
           {/* Mobile Logo */}
           <div className="lg:hidden mb-8 text-center">
             <Link to="/">
-              <span
-                className="text-2xl font-black text-[#0d0d0d]  font-display"
-                
-              >
+              <span className="text-2xl font-black text-[#0d0d0d]  font-display">
                 Blog<span className="text-[#d32f2f]">AI</span>
               </span>
             </Link>
@@ -141,10 +129,7 @@ function LoginPage() {
                 <PenLine size={18} color="white" />
               </div>
               <div>
-                <h1
-                  className="font-black text-2xl text-[#0d0d0d]  font-display"
-                  
-                >
+                <h1 className="font-black text-2xl text-[#0d0d0d]  font-display">
                   Sign In
                 </h1>
                 <p className="text-xs text-[#888]">
@@ -199,10 +184,7 @@ function LoginPage() {
             {/* Divider */}
             <div className="flex items-center gap-3 mb-6">
               <div className="flex-1 h-0.5 bg-[#0d0d0d] " />
-              <span
-                className="text-xs font-bold uppercase text-[#0d0d0d]  font-display"
-                
-              >
+              <span className="text-xs font-bold uppercase text-[#0d0d0d]  font-display">
                 or
               </span>
               <div className="flex-1 h-0.5 bg-[#0d0d0d] " />
@@ -210,10 +192,7 @@ function LoginPage() {
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label
-                  className="block mb-2 text-xs font-black uppercase tracking-widest text-[#0d0d0d] dark:text-zinc-200 font-display"
-                  
-                >
+                <label className="block mb-2 text-xs font-black uppercase tracking-widest text-[#0d0d0d] dark:text-zinc-200 font-display">
                   Email Address
                 </label>
                 <input
@@ -226,10 +205,7 @@ function LoginPage() {
                 />
               </div>
               <div className="mb-6">
-                <label
-                  className="block mb-2 text-xs font-black uppercase tracking-widest text-[#0d0d0d] font-display"
-                  
-                >
+                <label className="block mb-2 text-xs font-black uppercase tracking-widest text-[#0d0d0d] font-display">
                   Password
                 </label>
                 <div className="relative">
@@ -252,7 +228,6 @@ function LoginPage() {
                 <Link
                   to="/forgot-password"
                   className="block mt-2 text-xs font-bold text-right text-[#d32f2f] font-display"
-                  
                 >
                   Forgot Password?
                 </Link>
@@ -272,7 +247,6 @@ function LoginPage() {
               <Link
                 to="/register"
                 className="font-black text-[#d32f2f] font-display"
-                
               >
                 Start Writing →
               </Link>

@@ -20,7 +20,7 @@ export default function ConversationList({
   onSearch,
 }: Props) {
   return (
-    <div className="w-72 shrink-0 flex flex-col bg-white dark:bg-zinc-900 border-r-[3px] border-[#0d0d0d] dark:border-zinc-700">
+    <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-zinc-900 h-full">
       {/* Search */}
       <div className="p-3 border-b-2 border-[#0d0d0d] dark:border-zinc-700">
         <div className="relative">

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import blogApi from "@/api/blogApi";
-import followApi from "@/api/followApi";
-import useAuthStore from "@/stores/authStore";
+import blogApi from "@/features/blog/api/blogApi";
+import followApi from "@/features/user/api/followApi";
+import useAuthStore from "@/features/auth/stores/authStore";
 import { User } from "@/types/response/authResponse.type";
 import { BlogResponse } from "@/types/response/blogResponse.types";
 import { extractApiError } from "@/utils/apiError";
@@ -18,7 +18,9 @@ export function useUserDetail(userId: string | undefined) {
 
   const isOwnProfile = profileUser?.id === currentUser?.id;
   const isFollowing =
-    followOverride !== null ? followOverride : (profileUser?.following ?? false);
+    followOverride !== null
+      ? followOverride
+      : (profileUser?.following ?? false);
 
   useEffect(() => {
     if (!userId) return;

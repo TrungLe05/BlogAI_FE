@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import messageApi from "@/api/messageApi";
+import messageApi from "@/features/messages/api/messageApi";
 import { toast } from "sonner";
 import { extractApiError } from "@/utils/apiError";
 import { MessageResponse } from "../types/message.types";
@@ -45,7 +45,10 @@ export function useMessages() {
       const prevScrollHeight = container?.scrollHeight ?? 0;
 
       try {
-        const { data } = await messageApi.getMessages(convId, oldestCreatedAt.current);
+        const { data } = await messageApi.getMessages(
+          convId,
+          oldestCreatedAt.current,
+        );
         const older: MessageResponse[] = data.result;
 
         if (older.length === 0 || older.length < PAGE_SIZE) setHasMore(false);
@@ -56,7 +59,8 @@ export function useMessages() {
         setMessages((prev) => [...older, ...prev]);
 
         requestAnimationFrame(() => {
-          if (container) container.scrollTop = container.scrollHeight - prevScrollHeight;
+          if (container)
+            container.scrollTop = container.scrollHeight - prevScrollHeight;
           isLoadingMoreRef.current = false;
         });
       } catch (e) {

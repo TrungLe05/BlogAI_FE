@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, MessageCircle } from "lucide-react";
-import useAuthStore from "@/stores/authStore";
+import useAuthStore from "@/features/auth/stores/authStore";
 import { toast } from "sonner";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
-import useWebSocketStore from "@/stores/websocketStore";
-import messageApi from "@/api/messageApi";
+import LoadingSpinner from "@/shared/components/common/LoadingSpinner";
+import useWebSocketStore from "@/features/messages/stores/websocketStore";
+import messageApi from "@/features/messages/api/messageApi";
 import { ConversationResponse } from "@/types/response/conversationResponse.types";
 
 import { useConversations } from "@/features/messages/hooks/useConversations";
@@ -33,6 +33,8 @@ export default function MessagingPage() {
     images: { url: string; fileName?: string }[];
     currentIndex: number;
   } | null>(null);
+  // Mobile: "list" | "chat" — quyết định panel nào hiển thị
+  const [mobilePanel, setMobilePanel] = useState<"list" | "chat">("list");
 
   const selectedConvRef = useRef<ConversationResponse | null>(null);
   const stopTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -69,13 +71,12 @@ export default function MessagingPage() {
 
   const { pendingFile, handleFileSelect, clearFile } = useFileUpload();
 
-  // Sync ref
   useEffect(() => {
     selectedConvRef.current = selectedConv;
   }, [selectedConv]);
   useEffect(() => () => setCurrentConversationId(null), []);
 
-  // Scroll effects
+  // Scroll to bottom on new messages
   useEffect(() => {
     if (messages.length === 0 || isLoadingMoreRef.current) return;
     const prevCount = prevMessageCountRef.current;
@@ -124,9 +125,10 @@ export default function MessagingPage() {
     setSelectedConv(conv);
     setIsOtherTyping(false);
     markConversationAsRead(conv.id);
+    setMobilePanel("chat"); // chuyển sang chat panel trên mobile
     try {
       await loadMessages(conv.id);
-    } catch (e) {
+    } catch {
       toast.error("Không thể tải tin nhắn");
     }
     inputRef.current?.focus();
@@ -255,29 +257,55 @@ export default function MessagingPage() {
       <style>{`@keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.5} 30%{transform:translateY(-6px);opacity:1} }`}</style>
 
       <div className="h-screen flex flex-col bg-[#ebf4f5] dark:bg-zinc-950 font-sans">
-        <div className="shrink-0 flex items-center gap-3 px-6 h-14 bg-white dark:bg-zinc-900 border-b-[3px] border-[#0d0d0d] dark:border-zinc-700 z-50">
+        {/* ── TOP BAR ── */}
+        <div className="shrink-0 flex items-center gap-3 px-4 sm:px-6 h-14 bg-white dark:bg-zinc-900 border-b-[3px] border-[#0d0d0d] dark:border-zinc-700 z-50">
+          {/* Back button — mobile: quay lại list khi đang ở chat, desktop/mobile-list: navigate(-1) */}
           <button
-            onClick={() => navigate(-1)}
-            className="w-8 h-8 flex items-center justify-center border-2 border-[#0d0d0d] dark:border-zinc-600 text-[#0d0d0d] dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-400 transition-colors cursor-pointer"
+            onClick={() =>
+              mobilePanel === "chat" && window.innerWidth < 640
+                ? setMobilePanel("list")
+                : navigate(-1)
+            }
+            className="w-8 h-8 flex items-center justify-center border-2 border-[#0d0d0d] dark:border-zinc-600 text-[#0d0d0d] dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer shrink-0"
           >
             <ArrowLeft size={16} />
           </button>
-          <span className="text-base font-black uppercase tracking-widest text-[#0d0d0d] dark:text-white font-display">
-            Messages
+          <span className="text-sm sm:text-base font-black uppercase tracking-widest text-[#0d0d0d] dark:text-white font-display truncate">
+            {mobilePanel === "chat" && selectedConv
+              ? selectedConv.otherUser.fullName
+              : "Messages"}
           </span>
         </div>
 
+        {/* ── BODY ── */}
         <div className="flex flex-1 overflow-hidden">
-          <ConversationList
-            conversations={filteredConvs}
-            selectedConv={selectedConv}
-            searchQuery={searchQuery}
-            userId={user?.id}
-            onSelect={handleSelectConv}
-            onSearch={setSearchQuery}
-          />
+          {/* Conversation List:
+              - Mobile (< sm): absolute, full width, z-index trên để che chat. Ẩn khi mobilePanel=chat.
+              - Desktop (≥ sm): fixed sidebar 288px, luôn hiển thị. */}
+          <div
+            className={`
+              shrink-0 flex flex-col bg-white dark:bg-zinc-900 border-r-[3px] border-[#0d0d0d] dark:border-zinc-700
+              sm:w-72 sm:flex
+              ${mobilePanel === "list" ? "flex w-full" : "hidden"}
+            `}
+          >
+            <ConversationList
+              conversations={filteredConvs}
+              selectedConv={selectedConv}
+              searchQuery={searchQuery}
+              userId={user?.id}
+              onSelect={handleSelectConv}
+              onSearch={setSearchQuery}
+            />
+          </div>
 
-          <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Chat Area: full width trên mobile khi mobilePanel=chat */}
+          <div
+            className={`
+              flex-1 flex flex-col overflow-hidden
+              ${mobilePanel === "chat" ? "flex" : "hidden sm:flex"}
+            `}
+          >
             {selectedConv ? (
               <ChatWindow
                 conv={selectedConv}
@@ -300,11 +328,11 @@ export default function MessagingPage() {
                 onImageClick={handleOpenLightbox}
               />
             ) : (
-              <div className="flex flex-col items-center justify-center flex-1 gap-4 bg-[#ebf4f5] dark:bg-zinc-950">
+              <div className="hidden sm:flex flex-col items-center justify-center flex-1 gap-4 bg-[#ebf4f5] dark:bg-zinc-950">
                 <div className="w-20 h-20 flex items-center justify-center bg-white dark:bg-zinc-800 border-[3px] border-[#0d0d0d] dark:border-zinc-600 shadow-[6px_6px_0_#0d0d0d]">
                   <MessageCircle size={36} className="text-[#d32f2f]" />
                 </div>
-                <p className="text-lg font-display font-bold uppercase tracking-widest text-[#0d0d0d] dark:text-white ">
+                <p className="text-lg font-display font-bold uppercase tracking-widest text-[#0d0d0d] dark:text-white">
                   Select a conversation
                 </p>
               </div>
