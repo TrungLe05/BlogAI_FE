@@ -49,4 +49,9 @@ export const authApi = {
 
   disableWithRecovery: (data: RecoveryCodeRequest) =>
     axiosClient.post<ApiResponse<void>>("/2fa/disable-with-recovery", data),
+  exchangeOAuthCode: (code: string) =>
+    axiosClient.post<ApiResponse<{ accessToken: string }>>(
+      "/auth/oauth2/exchange",
+      { code },
+    ),
 };
